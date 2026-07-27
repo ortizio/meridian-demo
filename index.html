@@ -1,0 +1,1492 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meridian — Family Office Intelligence</title>
+<style>*{margin:0}body{margin:0}</style>
+</head>
+<body>
+<style>
+  :root {
+    --ground:#EEF0F1; --surface:#FAFBFB; --surface-2:#F1F4F5; --surface-3:#E8EDEF;
+    --on-brass:#FAFBFB;
+    --line:#D5DBDE; --line-soft:#E3E8EA;
+    --text:#16212B; --text-2:#4A5B69; --text-3:#77899A;
+    --brass:#8A5F14; --brass-bright:#B98426;
+    --brass-wash:rgba(185,132,38,0.13); --brass-line:rgba(138,95,20,0.35);
+    --good:#1F6B4C; --good-wash:rgba(31,107,76,0.11);
+    --caution:#9C4A2C; --caution-wash:rgba(156,74,44,0.11);
+    --null:#6C7C8A; --null-wash:rgba(108,124,138,0.11);
+    --font-display:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --font-ui:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",sans-serif;
+    --font-data:"Cascadia Mono",Consolas,ui-monospace,"SF Mono",Menlo,monospace;
+    --radius:3px;
+    --shadow:0 1px 2px rgba(22,33,43,0.05), 0 8px 24px -12px rgba(22,33,43,0.16);
+    --shadow-lg:0 4px 10px rgba(22,33,43,0.09), 0 24px 60px -20px rgba(22,33,43,0.30);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:#0B1219; --surface:#111C25; --surface-2:#16232E; --surface-3:#1C2B37;
+      --on-brass:#0B1219;
+      --line:#24343F; --line-soft:#1C2A34;
+      --text:#E6EDF1; --text-2:#A3B4C0; --text-3:#738795;
+      --brass:#D8A445; --brass-bright:#EBBB63;
+      --brass-wash:rgba(216,164,69,0.14); --brass-line:rgba(216,164,69,0.38);
+      --good:#4FBF8B; --good-wash:rgba(79,191,139,0.13);
+      --caution:#E08A63; --caution-wash:rgba(224,138,99,0.13);
+      --null:#8195A3; --null-wash:rgba(129,149,163,0.13);
+      --shadow:0 1px 2px rgba(0,0,0,0.4), 0 10px 30px -14px rgba(0,0,0,0.7);
+      --shadow-lg:0 4px 12px rgba(0,0,0,0.5), 0 28px 70px -22px rgba(0,0,0,0.85);
+    }
+  }
+  :root[data-theme="light"] {
+    --ground:#EEF0F1; --surface:#FAFBFB; --surface-2:#F1F4F5; --surface-3:#E8EDEF;
+    --on-brass:#FAFBFB; --line:#D5DBDE; --line-soft:#E3E8EA;
+    --text:#16212B; --text-2:#4A5B69; --text-3:#77899A;
+    --brass:#8A5F14; --brass-bright:#B98426;
+    --brass-wash:rgba(185,132,38,0.13); --brass-line:rgba(138,95,20,0.35);
+    --good:#1F6B4C; --good-wash:rgba(31,107,76,0.11);
+    --caution:#9C4A2C; --caution-wash:rgba(156,74,44,0.11);
+    --null:#6C7C8A; --null-wash:rgba(108,124,138,0.11);
+    --shadow:0 1px 2px rgba(22,33,43,0.05), 0 8px 24px -12px rgba(22,33,43,0.16);
+    --shadow-lg:0 4px 10px rgba(22,33,43,0.09), 0 24px 60px -20px rgba(22,33,43,0.30);
+  }
+  :root[data-theme="dark"] {
+    --ground:#0B1219; --surface:#111C25; --surface-2:#16232E; --surface-3:#1C2B37;
+    --on-brass:#0B1219; --line:#24343F; --line-soft:#1C2A34;
+    --text:#E6EDF1; --text-2:#A3B4C0; --text-3:#738795;
+    --brass:#D8A445; --brass-bright:#EBBB63;
+    --brass-wash:rgba(216,164,69,0.14); --brass-line:rgba(216,164,69,0.38);
+    --good:#4FBF8B; --good-wash:rgba(79,191,139,0.13);
+    --caution:#E08A63; --caution-wash:rgba(224,138,99,0.13);
+    --null:#8195A3; --null-wash:rgba(129,149,163,0.13);
+    --shadow:0 1px 2px rgba(0,0,0,0.4), 0 10px 30px -14px rgba(0,0,0,0.7);
+    --shadow-lg:0 4px 12px rgba(0,0,0,0.5), 0 28px 70px -22px rgba(0,0,0,0.85);
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+
+  body {
+    margin:0; background:var(--ground); color:var(--text);
+    font-family:var(--font-ui); font-size:15px; line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap { max-width:1320px; margin:0 auto; padding:0 22px 120px; }
+
+  /* ── masthead ── */
+  .masthead {
+    display:flex; align-items:center; gap:13px; flex-wrap:wrap;
+    padding:18px 0 15px; border-bottom:1px solid var(--line);
+  }
+  .mark { flex:none; color:var(--brass); }
+  .brand { display:flex; flex-direction:column; gap:0; margin-right:auto; }
+  .brand-name { font-family:var(--font-display); font-size:19px; letter-spacing:.01em; line-height:1.15; }
+  .brand-sub { font-size:9.5px; text-transform:uppercase; letter-spacing:.14em; color:var(--text-3); font-weight:600; }
+  .demo-chip {
+    font-size:10.5px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--caution); background:var(--caution-wash); border:1px solid currentColor;
+    border-radius:999px; padding:4px 10px; white-space:nowrap;
+  }
+  .stat-strip { display:flex; gap:16px; font-family:var(--font-data); font-size:11px; color:var(--text-3); font-variant-numeric:tabular-nums; }
+  .stat-strip b { color:var(--text-2); font-weight:600; }
+
+  /* ── search ── */
+  .searchbar { padding:22px 0 0; }
+  .field {
+    display:flex; gap:9px; align-items:center;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:5px 5px 5px 15px; box-shadow:var(--shadow); transition:border-color .18s ease;
+  }
+  .field:focus-within { border-color:var(--brass-line); }
+  .field svg { flex:none; color:var(--text-3); }
+  .field input {
+    flex:1 1 auto; min-width:0; border:0; outline:0; background:none;
+    color:var(--text); font:inherit; font-size:15px; padding:10px 0;
+  }
+  .field input::placeholder { color:var(--text-3); }
+  .go {
+    flex:none; border:0; border-radius:2px; background:var(--brass); color:var(--on-brass);
+    font:inherit; font-size:13px; font-weight:650; letter-spacing:.02em;
+    padding:10px 19px; cursor:pointer; transition:background .15s ease;
+  }
+  .go:hover { background:var(--brass-bright); }
+
+  .presets { display:flex; flex-wrap:wrap; gap:7px; margin-top:11px; align-items:center; }
+  .presets-lead { font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:var(--text-3); font-weight:650; }
+  .preset {
+    font:inherit; font-size:12.5px; color:var(--text-2);
+    background:var(--surface-2); border:1px solid var(--line-soft); border-radius:999px;
+    padding:5px 12px; cursor:pointer; text-align:left; transition:color .15s, border-color .15s;
+  }
+  .preset:hover { color:var(--text); border-color:var(--brass-line); }
+
+  :where(button,input,select,a,[tabindex]):focus-visible { outline:2px solid var(--brass); outline-offset:2px; }
+
+  /* ── interpretation ── */
+  .interp {
+    display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+    margin-top:16px; padding:11px 14px;
+    background:var(--surface-2); border:1px solid var(--line-soft); border-radius:var(--radius);
+  }
+  .interp-lead { font-size:10px; text-transform:uppercase; letter-spacing:.11em; color:var(--text-3); font-weight:650; }
+  .con {
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:12px; font-family:var(--font-data);
+    color:var(--brass); background:var(--brass-wash);
+    border:1px solid var(--brass-line); border-radius:2px; padding:3px 4px 3px 8px;
+  }
+  .con.soft { color:var(--text-2); background:var(--surface-3); border-color:var(--line); }
+  .con-x {
+    border:0; background:none; color:inherit; cursor:pointer;
+    font:inherit; font-size:14px; line-height:1; padding:0 3px; opacity:.65;
+  }
+  .con-x:hover { opacity:1; }
+  .interp-none { font-size:12.5px; color:var(--text-3); font-style:normal; }
+
+  /* ── toolbar ── */
+  .toolbar {
+    display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+    margin-top:14px; padding-bottom:14px; border-bottom:1px solid var(--line);
+  }
+  .seg { display:flex; border:1px solid var(--line); border-radius:2px; overflow:hidden; }
+  .seg button {
+    font:inherit; font-size:12.5px; border:0; background:var(--surface);
+    color:var(--text-2); padding:7px 14px; cursor:pointer; transition:background .15s,color .15s;
+  }
+  .seg button + button { border-left:1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background:var(--brass); color:var(--on-brass); font-weight:600; }
+  .tool-sel {
+    font:inherit; font-size:12.5px; color:var(--text-2);
+    background:var(--surface); border:1px solid var(--line); border-radius:2px;
+    padding:7px 9px; cursor:pointer;
+  }
+  .tool-spacer { margin-left:auto; }
+  .ghost {
+    font:inherit; font-size:12.5px; color:var(--text-2);
+    background:none; border:1px solid var(--line); border-radius:2px;
+    padding:7px 13px; cursor:pointer; transition:border-color .15s,color .15s;
+  }
+  .ghost:hover { color:var(--brass); border-color:var(--brass-line); }
+  .ghost[disabled] { opacity:.4; cursor:default; }
+  .ghost[disabled]:hover { color:var(--text-2); border-color:var(--line); }
+
+  /* ── stage ── */
+  .stage { display:flex; gap:20px; flex-wrap:wrap; padding:18px 0 0; font-family:var(--font-data); font-size:11px; color:var(--text-3); }
+  .stage-step { display:flex; align-items:center; gap:6px; }
+  .stage-dot { width:6px; height:6px; border-radius:50%; background:var(--line); flex:none; }
+  .stage-step.on { color:var(--text-2); } .stage-step.on .stage-dot { background:var(--brass); }
+  .stage-step.done .stage-dot { background:var(--good); }
+
+  /* ── results ── */
+  .results { display:grid; grid-template-columns:minmax(0,1fr); gap:36px; padding-top:24px; align-items:start; }
+  @media (min-width:1040px) { .results { grid-template-columns:minmax(0,1.02fr) minmax(0,0.98fr); gap:48px; } }
+
+  .verdict { display:flex; gap:12px; align-items:flex-start; padding:13px 15px; border-radius:var(--radius); border:1px solid; margin-bottom:24px; }
+  .verdict-icon { flex:none; margin-top:1px; }
+  .verdict-title { font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.09em; margin-bottom:3px; }
+  .verdict-body { font-size:13px; color:var(--text-2); line-height:1.5; }
+  .verdict.grounded { border-color:var(--good); background:var(--good-wash); }
+  .verdict.grounded .verdict-title, .verdict.grounded .verdict-icon { color:var(--good); }
+  .verdict.qualified { border-color:var(--caution); background:var(--caution-wash); }
+  .verdict.qualified .verdict-title, .verdict.qualified .verdict-icon { color:var(--caution); }
+  .verdict.declined { border-color:var(--null); background:var(--null-wash); }
+  .verdict.declined .verdict-title, .verdict.declined .verdict-icon { color:var(--null); }
+
+  .answer { max-width:63ch; }
+  .answer p {
+    font-family:var(--font-display); font-size:16.5px; line-height:1.62;
+    margin:0 0 16px; padding-left:14px; border-left:2px solid var(--line-soft);
+    transition:border-color .2s ease;
+  }
+  .answer p.lit { border-left-color:var(--brass); }
+  .answer p:last-child { margin-bottom:0; }
+  .cite {
+    font-family:var(--font-ui); font-size:10px; font-weight:700; font-variant-numeric:tabular-nums;
+    vertical-align:.42em; line-height:1; color:var(--brass); background:var(--brass-wash);
+    border:1px solid var(--brass-line); border-radius:2px; padding:2px 4px; margin-left:2px; cursor:pointer;
+  }
+  .cite:hover, .cite.lit { background:var(--brass); color:var(--on-brass); }
+
+  .followups { margin-top:26px; padding-top:18px; border-top:1px solid var(--line-soft); display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
+  .followups-lead { font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:var(--text-3); font-weight:650; }
+  .followup { font:inherit; font-size:13px; text-align:left; color:var(--brass); background:none; border:0; padding:0; cursor:pointer; border-bottom:1px solid var(--brass-line); }
+  .followup:hover { border-bottom-color:var(--brass); }
+
+  /* ── evidence ── */
+  .ev-head { display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:13px; padding-bottom:9px; border-bottom:1px solid var(--line); }
+  .ev-title { font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; font-weight:700; color:var(--text-2); }
+  .ev-count { font-family:var(--font-data); font-size:11px; color:var(--text-3); font-variant-numeric:tabular-nums; }
+  .cards { display:flex; flex-direction:column; gap:13px; }
+
+  .card { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:15px 16px; transition:border-color .2s, box-shadow .2s; }
+  .card.lit { border-color:var(--brass-line); box-shadow:var(--shadow); }
+  .card-top { display:flex; gap:10px; align-items:flex-start; }
+  .card-num {
+    flex:none; font-size:10px; font-weight:700; font-variant-numeric:tabular-nums;
+    color:var(--brass); border:1px solid var(--brass-line); background:var(--brass-wash);
+    border-radius:2px; padding:2px 5px; margin-top:3px;
+  }
+  .card-id { flex:1 1 auto; min-width:0; }
+  .card-name { font-size:15.5px; font-weight:650; letter-spacing:-.01em; line-height:1.3; }
+  .card-meta { font-family:var(--font-data); font-size:11px; color:var(--text-3); margin-top:2px; font-variant-numeric:tabular-nums; }
+  .card-actions { display:flex; gap:5px; flex:none; }
+  .icon-btn {
+    border:1px solid var(--line); background:var(--surface-2); color:var(--text-3);
+    border-radius:2px; width:26px; height:26px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; padding:0; transition:color .15s,border-color .15s;
+  }
+  .icon-btn:hover { color:var(--brass); border-color:var(--brass-line); }
+  .icon-btn[aria-pressed="true"] { color:var(--brass); border-color:var(--brass-line); background:var(--brass-wash); }
+
+  .why { display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; }
+  .why-chip {
+    font-size:10px; font-family:var(--font-data); color:var(--text-3);
+    background:var(--surface-2); border:1px solid var(--line-soft); border-radius:2px; padding:2px 6px;
+  }
+  .why-chip.hit { color:var(--brass); border-color:var(--brass-line); background:var(--brass-wash); }
+
+  .type-tag { display:inline-block; font-size:9.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:3px 7px; border-radius:2px; margin:10px 0 0; }
+  .type-tag.sfo { color:var(--brass); background:var(--brass-wash); border:1px solid var(--brass-line); }
+  .type-tag.mfo { color:var(--text-2); background:var(--surface-2); border:1px solid var(--line); }
+  .type-tag.unk { color:var(--null); background:var(--null-wash); border:1px dashed currentColor; }
+
+  .rows { display:flex; flex-direction:column; gap:10px; margin-top:12px; }
+  .row { display:grid; grid-template-columns:72px minmax(0,1fr); gap:11px; align-items:baseline; }
+  .row-key { font-size:9.5px; text-transform:uppercase; letter-spacing:.09em; color:var(--text-3); font-weight:650; padding-top:2px; }
+  .row-val { font-size:13px; color:var(--text); min-width:0; }
+  .row-val .mono { font-family:var(--font-data); font-size:12px; word-break:break-all; }
+  .row-val .muted { color:var(--text-3); }
+  .basis { display:block; font-size:10.5px; color:var(--text-3); margin-top:3px; line-height:1.45; }
+
+  .badge { display:inline-block; font-size:9px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; padding:2px 5px; border-radius:2px; margin-left:5px; vertical-align:1px; white-space:nowrap; }
+  .badge.verified { color:var(--good); background:var(--good-wash); border:1px solid currentColor; }
+  .badge.provider { color:var(--good); background:none; border:1px solid currentColor; }
+  .badge.catchall { color:var(--caution); background:var(--caution-wash); border:1px solid currentColor; }
+  .badge.unverified { color:var(--null); background:none; border:1px solid currentColor; }
+  .badge.none { color:var(--null); background:var(--null-wash); border:1px dashed currentColor; }
+
+  .signals { margin-top:12px; padding-top:11px; border-top:1px solid var(--line-soft); display:flex; flex-direction:column; gap:6px; }
+  .signal { display:grid; grid-template-columns:58px minmax(0,1fr); gap:9px; align-items:baseline; }
+  .signal-date { font-family:var(--font-data); font-size:10.5px; color:var(--brass); font-variant-numeric:tabular-nums; }
+  .signal-text { font-size:12.5px; color:var(--text-2); line-height:1.45; }
+
+  /* ── table ── */
+  .tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); margin-top:24px; }
+  table { border-collapse:collapse; width:100%; min-width:1000px; font-size:12.5px; }
+  th, td { text-align:left; padding:9px 12px; border-bottom:1px solid var(--line-soft); vertical-align:top; }
+  th {
+    font-size:9.5px; text-transform:uppercase; letter-spacing:.09em; color:var(--text-3);
+    font-weight:650; background:var(--surface-2); position:sticky; top:0; white-space:nowrap;
+    cursor:pointer; user-select:none;
+  }
+  th:hover { color:var(--brass); }
+  th .arrow { opacity:.5; font-size:9px; margin-left:3px; }
+  tbody tr:hover { background:var(--surface-2); }
+  td.num { font-family:var(--font-data); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  td .mono { font-family:var(--font-data); font-size:11.5px; }
+
+  /* ── empty ── */
+  .empty { border:1px dashed var(--line); border-radius:var(--radius); padding:28px 24px; max-width:63ch; margin-top:24px; }
+  .empty h3 { font-family:var(--font-display); font-size:19px; font-weight:500; margin:0 0 8px; }
+  .empty p { font-size:13.5px; color:var(--text-2); margin:0 0 6px; line-height:1.55; }
+
+  /* ── shortlist bar ── */
+  .tray {
+    position:fixed; left:0; right:0; bottom:0; z-index:40;
+    background:var(--surface); border-top:1px solid var(--brass-line);
+    box-shadow:0 -6px 24px -12px rgba(0,0,0,.4);
+  }
+  .tray-in { max-width:1320px; margin:0 auto; padding:11px 22px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  .tray-count { font-size:12.5px; color:var(--text-2); }
+  .tray-count b { color:var(--brass); font-variant-numeric:tabular-nums; }
+  .tray-names { font-family:var(--font-data); font-size:11px; color:var(--text-3); flex:1 1 240px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  /* ── modal ── */
+  .scrim { position:fixed; inset:0; z-index:50; background:rgba(6,12,17,.62); display:flex; align-items:flex-start; justify-content:center; padding:36px 20px; overflow-y:auto; }
+  .modal { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow-lg); max-width:720px; width:100%; }
+  .modal-head { display:flex; align-items:flex-start; gap:12px; padding:18px 20px 14px; border-bottom:1px solid var(--line); }
+  .modal-title { font-family:var(--font-display); font-size:20px; line-height:1.25; flex:1 1 auto; }
+  .modal-sub { font-family:var(--font-data); font-size:11px; color:var(--text-3); margin-top:3px; }
+  .modal-body { padding:18px 20px 22px; }
+  .chain { display:flex; flex-direction:column; gap:0; }
+  .chain-step { display:grid; grid-template-columns:22px minmax(0,1fr); gap:13px; }
+  .chain-rail { display:flex; flex-direction:column; align-items:center; }
+  .chain-dot { width:9px; height:9px; border-radius:50%; border:2px solid var(--brass); background:var(--surface); margin-top:5px; flex:none; }
+  .chain-line { width:1px; flex:1 1 auto; background:var(--line); min-height:14px; }
+  .chain-body { padding-bottom:18px; }
+  .chain-k { font-size:9.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--brass); font-weight:700; margin-bottom:4px; }
+  .chain-v { font-size:13.5px; color:var(--text-2); line-height:1.55; }
+  .chain-v code { font-family:var(--font-data); font-size:12px; color:var(--text); background:var(--surface-2); padding:1px 4px; border-radius:2px; }
+  .csv { width:100%; height:190px; font-family:var(--font-data); font-size:11px; line-height:1.5; color:var(--text); background:var(--surface-2); border:1px solid var(--line); border-radius:2px; padding:11px; resize:vertical; white-space:pre; }
+
+  .foot { margin-top:48px; padding-top:18px; border-top:1px solid var(--line); font-size:11.5px; color:var(--text-3); line-height:1.6; max-width:78ch; }
+  .foot b { color:var(--text-2); font-weight:600; }
+  .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+
+  @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+  .fade { animation:rise .40s cubic-bezier(.2,.7,.3,1) both; }
+  @keyframes rise { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <svg class="mark" width="24" height="24" viewBox="0 0 26 26" aria-hidden="true">
+      <path d="M13 1.6 24.4 13 13 24.4 1.6 13Z" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M13 6.6 19.4 13 13 19.4 6.6 13Z" fill="none" stroke="currentColor" stroke-width="1.3" opacity=".55"/>
+      <circle cx="13" cy="13" r="2" fill="currentColor"/>
+    </svg>
+    <div class="brand">
+      <div class="brand-name">Meridian</div>
+      <div class="brand-sub">Family Office Intelligence</div>
+    </div>
+    <span class="demo-chip">Demo · fictional firms</span>
+    <div class="stat-strip" id="stats"></div>
+  </header>
+
+  <section class="searchbar">
+    <form class="field" id="form">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/>
+      </svg>
+      <label class="sr" for="q">Your question</label>
+      <input id="q" type="text" autocomplete="off" placeholder="Ask anything about these offices — who invests in what, and who to call" />
+      <button class="go" type="submit">Ask</button>
+    </form>
+
+    <div class="presets">
+      <span class="presets-lead">Try</span>
+      <button class="preset" type="button">Which single-family offices invest directly in healthcare?</button>
+      <button class="preset" type="button">Nordic offices under $1B with a verified email</button>
+      <button class="preset" type="button">Who runs private credit in Europe?</button>
+      <button class="preset" type="button">Which offices will increase crypto allocation next quarter?</button>
+      <button class="preset" type="button">Show me every office with a named principal in Asia</button>
+    </div>
+
+    <div class="interp" id="interp"></div>
+
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="View">
+        <button type="button" id="view-answer" aria-pressed="true">Answer</button>
+        <button type="button" id="view-table" aria-pressed="false">Table</button>
+      </div>
+      <label class="sr" for="f-type">Office type</label>
+      <select class="tool-sel" id="f-type">
+        <option value="">All office types</option>
+        <option value="sfo">Single-family only</option>
+        <option value="mfo">Multi-family only</option>
+        <option value="unk">Type unconfirmed</option>
+      </select>
+      <label class="sr" for="f-contact">Contact quality</label>
+      <select class="tool-sel" id="f-contact">
+        <option value="">Any contact quality</option>
+        <option value="complete">Complete — verified email</option>
+        <option value="usable">Usable — provider or better</option>
+        <option value="named">Named principal only</option>
+        <option value="gap">Documented gaps</option>
+      </select>
+      <label class="sr" for="f-region">Region</label>
+      <select class="tool-sel" id="f-region">
+        <option value="">All regions</option>
+        <option value="north america">North America</option>
+        <option value="europe">Europe</option>
+        <option value="nordic">Nordic</option>
+        <option value="uk">United Kingdom</option>
+        <option value="asia">Asia</option>
+        <option value="middle east">Middle East</option>
+      </select>
+      <div class="tool-spacer"></div>
+      <button class="ghost" type="button" id="reset">Reset</button>
+    </div>
+  </section>
+
+  <div class="stage" id="stage" hidden>
+    <span class="stage-step"><span class="stage-dot"></span>Parsing question</span>
+    <span class="stage-step"><span class="stage-dot"></span>Filtering records</span>
+    <span class="stage-step"><span class="stage-dot"></span>Checking evidence</span>
+    <span class="stage-step"><span class="stage-dot"></span>Composing answer</span>
+  </div>
+
+  <div class="results" id="results" hidden>
+    <div>
+      <div id="verdict"></div>
+      <div class="answer" id="answer"></div>
+      <div class="followups" id="followups" hidden></div>
+    </div>
+    <aside class="evidence" id="evidence"></aside>
+  </div>
+
+  <div class="tablewrap" id="tablewrap" hidden>
+    <table id="table"></table>
+  </div>
+
+  <div id="empty" hidden>
+    <div class="empty">
+      <h3>Nothing in the file matches that.</h3>
+      <p id="empty-why">Meridian answers only from its own verified records, and no record met the constraints in your question.</p>
+      <p>Loosen a filter, or try one of the suggested questions above.</p>
+    </div>
+  </div>
+
+  <p class="foot">
+    <b>This is an interface prototype.</b> Every firm, person, email address and figure is invented for demonstration;
+    no real family office or individual is represented. Retrieval is real — the question is parsed into structured
+    constraints, records are filtered and ranked, and the answer is composed from whatever survives. What is simulated
+    is the corpus, not the behaviour.
+  </p>
+</div>
+
+<div class="tray" id="tray" hidden>
+  <div class="tray-in">
+    <span class="tray-count"><b id="tray-n">0</b> on your shortlist</span>
+    <span class="tray-names" id="tray-names"></span>
+    <button class="ghost" type="button" id="tray-clear">Clear</button>
+    <button class="go" type="button" id="tray-export">Export CSV</button>
+  </div>
+</div>
+
+<div id="modal-root"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ════════════════════════════════════════════════════════
+     CORPUS — entirely fictional. Invented firms, invented people.
+     ════════════════════════════════════════════════════════ */
+  var DATA = [
+    {
+      id:"hgv", name:"Harrowgate Ventures", city:"Greenwich, CT", country:"United States",
+      regions:["north america"], aum:1400, aumLabel:"$1.4B",
+      type:"sfo", typeLabel:"Single-family office",
+      typeBasis:"Exemption filing lists one family as sole client; firm site states it serves a single family. Corroborated by a 2021 founder profile.",
+      family:"Wealth from a 2019 enterprise-software exit.",
+      mandate:"Direct minority stakes in healthcare IT and vertical SaaS; fund commitments to lower-mid-market buyout.",
+      sectors:["healthcare","technology","software"], classes:["direct","funds","venture"],
+      principal:{
+        name:"Dana Reisinger", title:"Chief Investment Officer",
+        titleBasis:"Firm leadership page, retrieved 2026-07-19; matches her own profile headline.",
+        li:"linkedin.com/in/dana-reisinger-cio", liStatus:"verified",
+        liBasis:"Profile names Harrowgate as current employer with the same title.",
+        email:"d.reisinger@harrowgateventures.com", emailStatus:"verified",
+        emailBasis:"Returned by enrichment provider from its own data; confirmed deliverable to this named mailbox.",
+        phone:"+1 203 555 0164", phoneStatus:"provider",
+        phoneBasis:"Direct line returned by provider; not independently confirmed."
+      },
+      signals:[
+        {d:"2026-06", t:"Led a $12M Series A in a clinical-workflow software company.", tags:["healthcare","direct"]},
+        {d:"2026-03", t:"Committed to a $400M healthcare-focused buyout fund (Fund III).", tags:["healthcare","funds"]},
+        {d:"2025-11", t:"Hired a Director of Direct Investments from a mid-market PE firm.", tags:["hire"]}
+      ],
+      chain:{
+        discovery:"Surfaced in a regulatory exemption filing sweep, not a list purchase — the firm appears in no commercial family-office directory we checked.",
+        extraction:"Structured fields parsed from the filing; mandate and sector language taken verbatim from the firm site.",
+        enrichment:"Principal identified from the leadership page, then matched to a profile by name, employer and title. Email requested from two providers; one returned it from its own dataset.",
+        validation:"Employer, title and tenure agreed across three independent sources. Mailbox confirmed deliverable and domain is not catch-all, so the address resolves to this individual.",
+        confidence:"High on firm identity, principal and email. Medium on AUM, which is a press estimate rather than a filed figure."
+      }
+    },
+    {
+      id:"ost", name:"Ostrander Holdings", city:"Dallas, TX", country:"United States",
+      regions:["north america"], aum:2100, aumLabel:"$2.1B",
+      type:"sfo", typeLabel:"Single-family office",
+      typeBasis:"State entity registration lists the family trust as sole member; no external clients disclosed anywhere.",
+      family:"Third-generation energy and midstream wealth.",
+      mandate:"Real assets and energy transition; opportunistic direct healthcare services since 2024.",
+      sectors:["energy","healthcare","real assets"], classes:["direct","real assets"],
+      principal:{
+        name:"Marcus Oyelaran", title:"Head of Direct Investments",
+        titleBasis:"Conference speaker biography, April 2026; consistent with his profile.",
+        li:"linkedin.com/in/marcus-oyelaran", liStatus:"verified",
+        liBasis:"Profile lists Ostrander Holdings, current, same title.",
+        email:"moyelaran@ostranderholdings.com", emailStatus:"provider",
+        emailBasis:"Provider returned this from its own dataset. Mailbox exists; never published by the firm, so not upgraded to verified.",
+        phone:null, phoneStatus:"none",
+        phoneBasis:"Switchboard only. Four providers queried, none returned a direct line."
+      },
+      signals:[
+        {d:"2026-05", t:"Acquired a majority stake in a regional dialysis operator.", tags:["healthcare","direct"]},
+        {d:"2026-01", t:"Opened a second office to house the direct-investments team.", tags:["hire"]}
+      ],
+      chain:{
+        discovery:"Found via a state corporate registry search on trust-linked entity names, then confirmed as an operating office rather than a holding shell.",
+        extraction:"Ownership structure read from the registration; mandate assembled from two conference appearances.",
+        enrichment:"Principal identified from a conference programme. Email returned by one of three providers queried.",
+        validation:"Role confirmed against two sources. Email exists but the firm has never published it, so it ships as provider-returned, not verified.",
+        confidence:"High on firm identity. Medium on the email. Low on AUM — a single secondary estimate."
+      }
+    },
+    {
+      id:"cvp", name:"Cedar & Vane Partners", city:"London", country:"United Kingdom",
+      regions:["europe","uk"], aum:3200, aumLabel:"$3.2B",
+      type:"mfo", typeLabel:"Multi-family office",
+      typeBasis:"Firm states it serves 14 families; regulated advisory permissions on file.",
+      family:"Serves 14 families. No single controlling family.",
+      mandate:"Multi-asset discretionary with a growing private credit sleeve since 2023.",
+      sectors:["credit","multi-asset"], classes:["credit","funds"],
+      principal:{
+        name:"Priya Ellsworth", title:"Partner, Private Credit",
+        titleBasis:"Firm team page, retrieved 2026-07-21.",
+        li:"linkedin.com/in/priya-ellsworth-credit", liStatus:"verified",
+        liBasis:"Profile matches firm, title and tenure shown on the team page.",
+        email:"p.ellsworth@cedarvane.co.uk", emailStatus:"catchall",
+        emailBasis:"Domain accepts all addresses, so delivery proves nothing about this mailbox. Format matches two published partner addresses. Shipped labelled, not as verified.",
+        phone:"+44 20 7555 0198", phoneStatus:"provider",
+        phoneBasis:"Desk line returned by provider."
+      },
+      signals:[
+        {d:"2026-07", t:"Announced a £250M private credit allocation target for 2027.", tags:["credit","target"]},
+        {d:"2026-02", t:"Recruited two credit analysts from a European direct lender.", tags:["credit","hire"]}
+      ],
+      chain:{
+        discovery:"Publicly marketed and easy to find — a multi-family office that wants to be discovered. Low discovery value, kept for coverage.",
+        extraction:"Team, permissions and mandate all read from the firm's own published pages.",
+        enrichment:"Principal taken from the team page. Email inferred format confirmed against two published partner addresses.",
+        validation:"Person and role are solid. Email failed to resolve: the domain is catch-all, so no delivery test can attribute it to her.",
+        confidence:"High on firm and principal. Low on email attribution — labelled catch-all rather than shipped as verified."
+      }
+    },
+    {
+      id:"lqv", name:"Lindqvist Familjekontor", city:"Stockholm", country:"Sweden",
+      regions:["europe","nordic"], aum:840, aumLabel:"€780M",
+      type:"sfo", typeLabel:"Single-family office",
+      typeBasis:"Company register shows the family holding company as sole owner; annual report names no external clients.",
+      family:"Industrials wealth from a 2016 sale of a components manufacturer.",
+      mandate:"Nordic industrials, listed equities, selective venture through funds.",
+      sectors:["industrials","equities","venture"], classes:["direct","funds","listed"],
+      principal:{
+        name:"Annika Lindqvist-Sandel", title:"Managing Director",
+        titleBasis:"Named as MD in the 2025 annual filing.",
+        li:"linkedin.com/in/annika-lindqvist-sandel", liStatus:"verified",
+        liBasis:"Profile lists the office as current employer, same title.",
+        email:"annika@lindqvistfk.se", emailStatus:"verified",
+        emailBasis:"Published by the office on its own contact page alongside her name and title.",
+        phone:"+46 8 555 0142", phoneStatus:"verified",
+        phoneBasis:"Published on the same contact page."
+      },
+      signals:[
+        {d:"2026-04", t:"Anchored a €90M Nordic industrial-technology fund.", tags:["industrials","funds"]},
+        {d:"2025-12", t:"Added a sustainability mandate to the listed-equity sleeve.", tags:["mandate"]}
+      ],
+      chain:{
+        discovery:"Found through a national company register query on holding-company ownership patterns, not through any family-office list.",
+        extraction:"Ownership and officers parsed from the register; AUM read from the filed annual report.",
+        enrichment:"MD named in the filing itself. Contact details published by the office, so no provider was needed.",
+        validation:"Every high-value cell traces to a primary source the office or the state published. Strongest record in the file.",
+        confidence:"High throughout, including AUM — a filed figure rather than an estimate."
+      }
+    },
+    {
+      id:"nps", name:"Nakashima Private Office", city:"Singapore", country:"Singapore",
+      regions:["asia"], aum:650, aumLabel:"$650M",
+      type:"sfo", typeLabel:"Single-family office",
+      typeBasis:"Licensed under the single-family-office exemption; no marketing to outside families.",
+      family:"Shipping and logistics wealth, relocated from Japan in 2018.",
+      mandate:"Asia-Pacific logistics, trade finance, early-stage deep tech.",
+      sectors:["logistics","technology","trade finance"], classes:["direct","venture"],
+      principal:{
+        name:"Wei-Lin Toh", title:"Investment Director",
+        titleBasis:"Portfolio-company board listing, March 2026.",
+        li:"linkedin.com/in/wei-lin-toh-investments", liStatus:"verified",
+        liBasis:"Profile confirms current role at the office.",
+        email:null, emailStatus:"none",
+        emailBasis:"Five providers queried, none returned an address. Domain rejects unknown mailboxes, so no pattern address was shipped. Left blank rather than guessed.",
+        phone:null, phoneStatus:"none",
+        phoneBasis:"No direct line found through any provider."
+      },
+      signals:[ {d:"2026-06", t:"Backed a Series B in a port-automation company.", tags:["technology","direct"]} ],
+      chain:{
+        discovery:"Identified from a regulator's exemption register, cross-checked against portfolio-company board filings.",
+        extraction:"Licence class read from the register; mandate assembled from three portfolio-company disclosures.",
+        enrichment:"Principal found via a board listing. Email attempted with five providers — all returned nothing.",
+        validation:"Firm and principal confirmed. Contact honestly unresolved; the domain rejects unknown mailboxes, so pattern-guessing was ruled out rather than dressed up.",
+        confidence:"High on firm and principal. Contact documented as unresolved, not claimed."
+      }
+    },
+    {
+      id:"mrq", name:"Marchetti Quaranta", city:"Milan", country:"Italy",
+      regions:["europe"], aum:1150, aumLabel:"€1.06B",
+      type:"sfo", typeLabel:"Single-family office",
+      typeBasis:"Chamber of commerce filing shows a single family holding as sole shareholder.",
+      family:"Luxury goods wealth, second generation.",
+      mandate:"Italian real estate, luxury and consumer brands, opportunistic credit.",
+      sectors:["real estate","consumer","luxury","credit"], classes:["direct","real assets"],
+      principal:{
+        name:"Giulia Marchetti", title:"Head of Investments",
+        titleBasis:"Named in a 2026 trade-press interview and on the firm's contact page.",
+        li:"linkedin.com/in/giulia-marchetti-investments", liStatus:"verified",
+        liBasis:"Profile matches firm and title.",
+        email:"g.marchetti@marchettiquaranta.it", emailStatus:"verified",
+        emailBasis:"Published on the firm's contact page next to her name.",
+        phone:"+39 02 5550 0117", phoneStatus:"verified",
+        phoneBasis:"Published on the same page."
+      },
+      signals:[
+        {d:"2026-05", t:"Bought a Milan mixed-use development site for a reported €48M.", tags:["real estate","direct"]},
+        {d:"2026-02", t:"Took a minority stake in a leather-goods manufacturer.", tags:["consumer","direct"]}
+      ],
+      chain:{
+        discovery:"Chamber of commerce ownership search, filtered to holdings with an investment function.",
+        extraction:"Shareholding read from the filing; mandate from the firm site and one trade interview.",
+        enrichment:"Principal and contact both published by the firm — no provider needed.",
+        validation:"Contact cells trace to the firm's own page, captured with a retrieval date.",
+        confidence:"High across the record."
+      }
+    },
+    {
+      id:"kpa", name:"Kepler Anstalt", city:"Vaduz", country:"Liechtenstein",
+      regions:["europe"], aum:2600, aumLabel:"$2.6B",
+      type:"mfo", typeLabel:"Multi-family office",
+      typeBasis:"Discloses nine client families in its regulatory statement.",
+      family:"Serves nine families across German-speaking Europe.",
+      mandate:"Capital preservation, private credit, structured products.",
+      sectors:["credit","multi-asset","structured"], classes:["credit","funds"],
+      principal:{
+        name:"Tobias Reisch", title:"Head of Private Markets",
+        titleBasis:"Firm team page, retrieved 2026-07-20.",
+        li:"linkedin.com/in/tobias-reisch-privatemarkets", liStatus:"verified",
+        liBasis:"Profile confirms firm and title.",
+        email:"t.reisch@kepleranstalt.li", emailStatus:"catchall",
+        emailBasis:"Catch-all domain. Format matches the firm's published convention but cannot be attributed to him specifically.",
+        phone:"+423 555 0173", phoneStatus:"provider",
+        phoneBasis:"Returned by provider."
+      },
+      signals:[ {d:"2026-06", t:"Increased private credit allocation to 18% of assets.", tags:["credit","allocation"]} ],
+      chain:{
+        discovery:"Regulatory statement search across small-jurisdiction advisory licences.",
+        extraction:"Client count and permissions from the statement; mandate from the firm site.",
+        enrichment:"Principal from the team page; email format inferred and then flagged, not shipped as fact.",
+        validation:"Person confirmed. Email unresolvable against a catch-all domain.",
+        confidence:"High on firm and principal, low on email attribution."
+      }
+    },
+    {
+      id:"tsw", name:"Tessaro Wachter Office", city:"Vienna", country:"Austria",
+      regions:["europe"], aum:520, aumLabel:"€480M",
+      type:"sfo", typeLabel:"Single-family office",
+      typeBasis:"Register shows a single family foundation as controlling owner.",
+      family:"Pharmaceutical wealth, sold a generics business in 2011.",
+      mandate:"Life sciences venture, European growth equity.",
+      sectors:["healthcare","life sciences","venture"], classes:["venture","funds"],
+      principal:{
+        name:"Katrin Wachter", title:"Partner",
+        titleBasis:"Named in two portfolio-company announcements, 2025 and 2026.",
+        li:"linkedin.com/in/katrin-wachter-lifesciences", liStatus:"verified",
+        liBasis:"Profile confirms current role.",
+        email:"k.wachter@tessarowachter.at", emailStatus:"provider",
+        emailBasis:"Returned by one provider from its own data; not published by the firm.",
+        phone:null, phoneStatus:"none",
+        phoneBasis:"No direct line returned by any provider queried."
+      },
+      signals:[
+        {d:"2026-07", t:"Co-led a €14M Series A in a diagnostics company.", tags:["healthcare","direct","venture"]},
+        {d:"2025-10", t:"Committed to a European life-sciences fund.", tags:["healthcare","funds"]}
+      ],
+      chain:{
+        discovery:"Traced backwards from portfolio-company announcements naming an unfamiliar backer, then confirmed in the company register.",
+        extraction:"Ownership from the register; mandate inferred from six disclosed investments.",
+        enrichment:"Principal named in deal announcements. Email returned by one of four providers.",
+        validation:"Role confirmed across two announcements a year apart, establishing she is current rather than former.",
+        confidence:"High on firm and principal. Medium on email — provider-returned only."
+      }
+    },
+    {
+      id:"ahb", name:"Al-Hamadi Bureau", city:"Dubai", country:"United Arab Emirates",
+      regions:["middle east"], aum:3900, aumLabel:"$3.9B",
+      type:"sfo", typeLabel:"Single-family office",
+      typeBasis:"Free-zone licence issued under a single-family designation; family named as sole beneficial owner.",
+      family:"Real estate and infrastructure wealth, first generation.",
+      mandate:"Regional infrastructure, logistics real estate, selective global funds.",
+      sectors:["real estate","infrastructure","logistics"], classes:["direct","real assets","funds"],
+      principal:{
+        name:"Noor Al-Hamadi", title:"Managing Partner",
+        titleBasis:"Named on the firm's site and in a 2026 infrastructure conference programme.",
+        li:"linkedin.com/in/noor-al-hamadi-bureau", liStatus:"verified",
+        liBasis:"Profile confirms firm and title.",
+        email:"n.alhamadi@alhamadibureau.ae", emailStatus:"verified",
+        emailBasis:"Provider returned it from its own data; domain is not catch-all and the mailbox confirmed deliverable.",
+        phone:"+971 4 555 0129", phoneStatus:"provider",
+        phoneBasis:"Direct line returned by provider."
+      },
+      signals:[
+        {d:"2026-06", t:"Committed $120M to a regional logistics-property platform.", tags:["real estate","direct"]},
+        {d:"2026-04", t:"Hired a Head of Global Funds from a sovereign investor.", tags:["hire"]},
+        {d:"2025-12", t:"Backed a desalination infrastructure project.", tags:["infrastructure","direct"]}
+      ],
+      chain:{
+        discovery:"Free-zone licence register, filtered by single-family designation.",
+        extraction:"Licence class and ownership from the register; mandate from the site and conference materials.",
+        enrichment:"Principal named in two independent sources. Email returned by provider and delivery-confirmed on a non-catch-all domain.",
+        validation:"Firm type comes from the licence designation itself, the strongest evidence class available here.",
+        confidence:"High throughout."
+      }
+    },
+    {
+      id:"brn", name:"Brennholm Kapital", city:"Oslo", country:"Norway",
+      regions:["europe","nordic"], aum:470, aumLabel:"€430M",
+      type:"sfo", typeLabel:"Single-family office",
+      typeBasis:"Register lists a single family holding as sole owner; no advisory permissions for external clients.",
+      family:"Shipping wealth, now redeploying into renewables.",
+      mandate:"Offshore wind, maritime decarbonisation, Nordic growth equity.",
+      sectors:["renewables","shipping","industrials"], classes:["direct","funds"],
+      principal:{
+        name:"Henrik Brennholm", title:"Chief Executive",
+        titleBasis:"Named as CEO in the 2025 annual filing.",
+        li:"linkedin.com/in/henrik-brennholm", liStatus:"verified",
+        liBasis:"Profile confirms current role at the office.",
+        email:"hb@brennholmkapital.no", emailStatus:"provider",
+        emailBasis:"Returned by two providers independently; not published by the firm.",
+        phone:"+47 22 555 0188", phoneStatus:"provider",
+        phoneBasis:"Returned by provider."
+      },
+      signals:[ {d:"2026-03", t:"Took a stake in an offshore wind service vessel operator.", tags:["renewables","direct"]} ],
+      chain:{
+        discovery:"National register query on shipping-family holding structures.",
+        extraction:"Ownership and officers from the register; mandate from the annual report.",
+        enrichment:"CEO named in the filing. Email returned by two providers independently, which raises confidence but is still not publication.",
+        validation:"Two independent provider returns agreeing on the same address is the strongest signal short of publication.",
+        confidence:"High on firm and principal. Medium-high on email."
+      }
+    },
+    {
+      id:"wcp", name:"Westcliff Peak Advisors", city:"Toronto", country:"Canada",
+      regions:["north america"], aum:1800, aumLabel:"$1.8B",
+      type:"mfo", typeLabel:"Multi-family office",
+      typeBasis:"Registered advisor serving 22 disclosed family relationships.",
+      family:"Serves 22 families. No controlling family.",
+      mandate:"Discretionary multi-asset, alternatives sleeve via funds.",
+      sectors:["multi-asset","alternatives"], classes:["funds"],
+      principal:{
+        name:"Alan Petrossian", title:"Director of Alternatives",
+        titleBasis:"Firm team page, retrieved 2026-07-18.",
+        li:"linkedin.com/in/alan-petrossian-alts", liStatus:"verified",
+        liBasis:"Profile confirms firm and title.",
+        email:"apetrossian@westcliffpeak.ca", emailStatus:"unverified",
+        emailBasis:"Constructed from the firm's published convention and never confirmed by any provider. Kept only because it is labelled unverified — it is a lead, not a contact.",
+        phone:null, phoneStatus:"none",
+        phoneBasis:"Switchboard only."
+      },
+      signals:[ {d:"2026-01", t:"Expanded the alternatives sleeve to 15% of client assets.", tags:["allocation"]} ],
+      chain:{
+        discovery:"Advisor registration database — a convenient source, and it shows: this is the least distinctive record in the file.",
+        extraction:"Client count and permissions from the registration.",
+        enrichment:"Principal from the team page. Email never resolved by any provider.",
+        validation:"Email is pattern-derived and marked unverified. It would not ship in a paid file without a provider return behind it.",
+        confidence:"High on firm and principal. The email is a lead only, and labelled as such."
+      }
+    },
+    {
+      id:"bwt", name:"Bellweather Trust Office", city:"Zurich", country:"Switzerland",
+      regions:["europe"], aum:null, aumLabel:"Not disclosed",
+      type:"unk", typeLabel:"Type unconfirmed",
+      typeBasis:"Presents as a family office but publishes no ownership or client structure. Evidence does not establish single- or multi-family. Held as unconfirmed rather than labelled either way.",
+      family:"Not established.",
+      mandate:"Described only as wealth structuring and investment oversight.",
+      sectors:[], classes:[],
+      principal:{
+        name:null, title:null,
+        titleBasis:"No named investment decision-maker found in public sources.",
+        li:null, liStatus:"none",
+        liBasis:"No individual profile could be tied to the firm with confidence.",
+        email:null, emailStatus:"none",
+        emailBasis:"Only a general enquiries address exists, which does not qualify as a principal contact.",
+        phone:null, phoneStatus:"none", phoneBasis:"Switchboard only."
+      },
+      signals:[],
+      chain:{
+        discovery:"Appeared in a conference attendee list. That is a discovery signal only — it proves attendance, not firm type.",
+        extraction:"Almost nothing to extract; the firm publishes no structure.",
+        enrichment:"No principal could be identified with confidence, so none was invented.",
+        validation:"Failed the firm-identity test. Retained in the demo to show what an unqualified record looks like — in a paid file it would not count toward the deliverable.",
+        confidence:"Low. Type unconfirmed, which blocks the record from qualifying regardless of any other cell."
+      }
+    }
+  ];
+
+  var BY_ID = {};
+  DATA.forEach(function (r) { BY_ID[r.id] = r; });
+
+  var STATUS_LABEL = {
+    verified:"Verified", provider:"Returned by provider", catchall:"Catch-all",
+    unverified:"Unverified", none:"Could not verify"
+  };
+  var STATUS_RANK = { verified:4, provider:3, catchall:2, unverified:1, none:0 };
+
+  /* ════════════════════════════════════════════════════════
+     QUERY PARSER — question text to structured constraints
+     ════════════════════════════════════════════════════════ */
+  var SECTOR_WORDS = {
+    healthcare:["healthcare","health care","health","medical","clinical","dialysis","diagnostics","pharma","life science","life sciences"],
+    technology:["technology","tech","software","saas","deep tech","automation"],
+    energy:["energy","oil","gas","midstream"],
+    renewables:["renewable","renewables","wind","offshore wind","decarbon","clean energy"],
+    "real estate":["real estate","property","development"],
+    credit:["credit","private credit","lending","direct lending"],
+    industrials:["industrial","industrials","manufacturing","components"],
+    logistics:["logistics","shipping","maritime","port","freight"],
+    infrastructure:["infrastructure","desalination"],
+    consumer:["consumer","luxury","leather","brands"],
+    venture:["venture","series a","series b","early stage","early-stage","startup"],
+    equities:["equities","listed","public markets"]
+  };
+  var REGION_WORDS = {
+    "north america":["north america","us","u.s.","usa","united states","american","canada","canadian","texas","connecticut","toronto","dallas","greenwich"],
+    nordic:["nordic","scandinavia","scandinavian","sweden","swedish","norway","norwegian","stockholm","oslo","denmark"],
+    uk:["uk","u.k.","britain","british","england","london"],
+    europe:["europe","european","eu","italy","italian","austria","austrian","switzerland","swiss","milan","vienna","zurich","liechtenstein","germany","german"],
+    asia:["asia","asian","apac","singapore","japan","japanese","asia-pacific","asia pacific"],
+    "middle east":["middle east","gulf","uae","dubai","emirates","gcc"]
+  };
+  var SPECULATIVE = ["will ","will they","going to","plan to","plans to","planning","intend","intends","intention","next quarter","next year","forecast","predict","expect","expects","likely to","about to","upcoming","future","2027 plans","projected","anticipate"];
+  var CONTACT_WORDS = { complete:["verified email","verified contact","confirmed email","reachable today","complete contact"], usable:["with an email","with email","email address","contactable","reachable","can i reach","how do i reach","who do i contact","who to call"], named:["named principal","named contact","named decision","who runs","who leads","who heads","decision-maker","decision maker","principal"] };
+
+  function parseQuery(text) {
+    var t = " " + text.toLowerCase().replace(/[^\w\s€$.&-]/g, " ").replace(/\s+/g, " ") + " ";
+    var c = { type:null, regions:[], sectors:[], aumMax:null, aumMin:null, contact:null, speculative:false, raw:text, tokens:[] };
+
+    if (/single[- ]family|\bsfo\b|single family/.test(t)) c.type = "sfo";
+    else if (/multi[- ]family|\bmfo\b|multi family/.test(t)) c.type = "mfo";
+    else if (/unconfirmed|unknown type/.test(t)) c.type = "unk";
+
+    Object.keys(REGION_WORDS).forEach(function (k) {
+      if (REGION_WORDS[k].some(function (w) { return t.indexOf(" " + w + " ") !== -1 || t.indexOf(" " + w) !== -1; })) c.regions.push(k);
+    });
+    if (c.regions.indexOf("nordic") !== -1) c.regions = c.regions.filter(function (r) { return r !== "europe"; });
+    if (c.regions.indexOf("uk") !== -1 && c.regions.indexOf("europe") !== -1) c.regions = c.regions.filter(function (r) { return r !== "europe"; });
+
+    Object.keys(SECTOR_WORDS).forEach(function (k) {
+      if (SECTOR_WORDS[k].some(function (w) { return t.indexOf(w) !== -1; })) c.sectors.push(k);
+    });
+
+    var m = t.match(/(under|below|less than|smaller than)\s*[€$£]?\s*([\d.]+)\s*(b|bn|billion|m|mm|million)/);
+    if (m) c.aumMax = parseFloat(m[2]) * (/^m/.test(m[3]) ? 1 : 1000);
+    var m2 = t.match(/(over|above|more than|larger than|at least)\s*[€$£]?\s*([\d.]+)\s*(b|bn|billion|m|mm|million)/);
+    if (m2) c.aumMin = parseFloat(m2[2]) * (/^m/.test(m2[3]) ? 1 : 1000);
+
+    ["complete","usable","named"].forEach(function (k) {
+      if (!c.contact && CONTACT_WORDS[k].some(function (w) { return t.indexOf(w) !== -1; })) c.contact = k;
+    });
+
+    c.speculative = SPECULATIVE.some(function (w) { return t.indexOf(w) !== -1; });
+
+    /* timing and intent words drive the speculative check; they are never subject terms */
+    var stop = "which what who where when how are is the a an of in to for with and or do does me show list all their them that this on by from has have had can i offices office family single multi " +
+               "will plan plans planning intend intends intention going forecast predict expect expects expecting likely about upcoming future projected anticipate anticipates " +
+               "next quarter year month soon later now today currently";
+    var stopSet = {}; stop.split(" ").forEach(function (w) { stopSet[w] = 1; });
+    c.tokens = t.trim().split(" ").filter(function (w) { return w.length > 2 && !stopSet[w]; });
+
+    return c;
+  }
+
+  /* ════════════════════════════════════════════════════════
+     RETRIEVER — structured prefilter, then lexical ranking
+     ════════════════════════════════════════════════════════ */
+  function contactTier(r) {
+    var p = r.principal;
+    if (!p.name) return "gap";
+    var e = STATUS_RANK[p.emailStatus] || 0;
+    if (e >= 4) return "complete";
+    if (e >= 3) return "usable";
+    if (e >= 1) return "named";
+    return "gap";
+  }
+  var TIER_RANK = { complete:3, usable:2, named:1, gap:0 };
+
+  function blob(r) {
+    return [r.name, r.city, r.country, r.mandate, r.family, r.typeLabel,
+            r.sectors.join(" "), r.classes.join(" "),
+            r.principal.name || "", r.principal.title || "",
+            r.signals.map(function (s) { return s.t; }).join(" ")].join(" ").toLowerCase();
+  }
+
+  function sectorHit(r, s) {
+    return r.sectors.indexOf(s) !== -1 || r.signals.some(function (g) { return g.tags.indexOf(s) !== -1; });
+  }
+
+  function retrieve(c, filters) {
+    var kept = [], dropped = { type:0, region:0, aum:0, contact:0, sector:0 };
+
+    DATA.forEach(function (r) {
+      var wantType = filters.type || c.type;
+      if (wantType && r.type !== wantType) { dropped.type++; return; }
+
+      var wantRegions = filters.region ? [filters.region] : c.regions;
+      if (wantRegions.length && !wantRegions.some(function (g) { return r.regions.indexOf(g) !== -1; })) { dropped.region++; return; }
+
+      if (c.aumMax !== null && (r.aum === null || r.aum > c.aumMax)) { dropped.aum++; return; }
+      if (c.aumMin !== null && (r.aum === null || r.aum < c.aumMin)) { dropped.aum++; return; }
+
+      /* a named sector is a claim the answer will make, so it filters rather than merely ranks */
+      if (c.sectors.length && !c.sectors.some(function (s) { return sectorHit(r, s); })) { dropped.sector++; return; }
+
+      var wantContact = filters.contact || c.contact;
+      if (wantContact) {
+        if (wantContact === "gap") { if (contactTier(r) !== "gap") { dropped.contact++; return; } }
+        else if (TIER_RANK[contactTier(r)] < TIER_RANK[wantContact]) { dropped.contact++; return; }
+      }
+
+      /* ── lexical scoring over weighted fields ── */
+      var score = 0, reasons = [];
+      var text = blob(r);
+
+      c.sectors.forEach(function (s) {
+        if (r.sectors.indexOf(s) !== -1) { score += 8; reasons.push({ t:"mandate: " + s, hit:true }); }
+        else if (r.signals.some(function (g) { return g.tags.indexOf(s) !== -1; })) { score += 6; reasons.push({ t:"recent activity: " + s, hit:true }); }
+        else if (text.indexOf(s) !== -1) { score += 3; reasons.push({ t:"mentions " + s, hit:true }); }
+      });
+      if (c.type && r.type === c.type) { score += 5; reasons.push({ t:r.typeLabel, hit:true }); }
+      if (c.regions.length) { score += 4; reasons.push({ t:r.city, hit:true }); }
+      if (c.aumMax !== null || c.aumMin !== null) { score += 3; reasons.push({ t:"AUM " + r.aumLabel, hit:true }); }
+      if (c.contact) { score += 3; reasons.push({ t:"contact: " + contactTier(r), hit:true }); }
+
+      c.tokens.forEach(function (tok) { if (text.indexOf(tok) !== -1) score += 1.5; });
+
+      score += TIER_RANK[contactTier(r)] * 0.6;
+      if (r.signals.length) score += Math.min(r.signals.length, 3) * 0.4;
+      if (r.type === "unk") score -= 2;
+
+      if (reasons.length === 0) reasons.push({ t:r.typeLabel, hit:false }, { t:r.city, hit:false });
+
+      kept.push({ r:r, score:score, reasons:reasons.slice(0, 4) });
+    });
+
+    kept.sort(function (a, b) { return b.score - a.score || a.r.name.localeCompare(b.r.name); });
+    return { hits:kept, dropped:dropped };
+  }
+
+  /* ════════════════════════════════════════════════════════
+     GROUNDING GATE — decides what the answer may claim
+     ════════════════════════════════════════════════════════ */
+  function gate(c, hits) {
+    if (c.speculative) {
+      return { kind:"declined", title:"Not answered — the file cannot support this",
+        body:"This asks what firms intend to do in future. Every record here is built from dated events that already happened. Nothing in the file evidences forward intent, so no answer is given." };
+    }
+    if (!hits.length) return { kind:"declined", title:"No qualifying records", body:"Nothing in the file met every constraint in your question." };
+
+    var top = hits.slice(0, 6);
+    var unconfirmed = top.filter(function (h) { return h.r.type === "unk"; }).length;
+    var weakContact = top.filter(function (h) { return TIER_RANK[contactTier(h.r)] <= 1; }).length;
+    var askedContact = !!c.contact;
+
+    if (unconfirmed > 0) {
+      return { kind:"qualified", title:"Answer qualified — one match is not a confirmed family office",
+        body:"One record below has an unconfirmed firm type. It is shown because it matched your question, but it would not count toward a delivered file until its type is established." };
+    }
+    if (askedContact && weakContact > 0) {
+      return { kind:"qualified", title:"Answer qualified — some contact evidence is weaker than it looks",
+        body:"You asked about reaching people. " + weakContact + " of the " + top.length + " matches carry an email that is catch-all, unverified, or absent. Those are labelled on the records and should not be treated as confirmed." };
+    }
+    if (top.length === 1) {
+      return { kind:"grounded", title:"Answer supported — but coverage is thin here",
+        body:"The single match is properly evidenced. Note this demo holds " + DATA.length + " offices in total, so one result describes the file, not the market." };
+    }
+    return { kind:"grounded", title:"Answer supported",
+      body:"Every firm below carries affirmative evidence of its type, and each claim traces to a dated source. Contact strength varies by record — see the labels." };
+  }
+
+  /* ════════════════════════════════════════════════════════
+     COMPOSER — builds prose from what actually survived
+     ════════════════════════════════════════════════════════ */
+  function listNames(hits, n) {
+    var names = hits.slice(0, n).map(function (h) { return "<b>" + esc(h.r.name) + "</b> {{" + h.r.id + "}}"; });
+    if (names.length === 1) return names[0];
+    return names.slice(0, -1).join(", ") + " and " + names[names.length - 1];
+  }
+
+  function compose(c, hits, g) {
+    var paras = [];
+    var declined = g.kind === "declined";
+    var top = hits.slice(0, declined ? 2 : 5);
+
+    if (declined && c.speculative) {
+      paras.push("<b>Meridian cannot answer this.</b> Your question asks what firms will do, not what they have done. Records here are built from dated, evidenced events — investments made, funds committed, people hired, statements published. Inferring intent from past activity would be a guess presented as intelligence, so the system declines rather than obliges.");
+
+      /* separate 'no coverage of the subject' from 'covered, but not forward-looking' */
+      var subject = c.tokens.filter(function (t) { return t.length > 3; });
+      var uncovered = subject.filter(function (t) {
+        return !DATA.some(function (r) { return blob(r).indexOf(t) !== -1; });
+      });
+      if (uncovered.length) {
+        paras.push("Separately, the file has no coverage of " + esc(uncovered.slice(0, 3).join(", ")) +
+          " at all — not in a mandate, a signal, or a principal's remit. So there is nothing here to partially answer, even setting the timing aside.");
+      } else if (top.length) {
+        paras.push("The nearest material by wording is " + listNames(top, 2) +
+          ". Both describe things that already happened, with dates attached. Neither establishes what comes next.");
+      }
+
+      paras.push("Where a forward statement does exist, it is because a firm published one — Cedar &amp; Vane's £250M private credit target for 2027 is the only such case in this file. That is the firm's stated intention, recorded as theirs. It is not us predicting on their behalf, and the distinction is the whole point.");
+      return paras;
+    }
+
+    if (!top.length) return paras;
+
+    /* lead */
+    var what = [];
+    if (c.type) what.push(c.type === "sfo" ? "single-family offices" : c.type === "mfo" ? "multi-family offices" : "offices of unconfirmed type");
+    else what.push("offices");
+    var qual = [];
+    if (c.sectors.length) qual.push("active in " + c.sectors.slice(0, 2).join(" and "));
+    if (c.regions.length) qual.push("in " + c.regions.slice(0, 2).map(regionLabel).join(" and "));
+    if (c.aumMax !== null) qual.push("under " + fmtAum(c.aumMax));
+    if (c.aumMin !== null) qual.push("above " + fmtAum(c.aumMin));
+
+    var lead = top.length === 1 ? "One record matches" : (top.length + " records match");
+    lead += ": " + what[0] + (qual.length ? " " + qual.join(", ") : "") + ". ";
+    lead += "In rank order that is " + listNames(top, Math.min(top.length, 4)) + ".";
+    paras.push(lead);
+
+    /* strongest record detail */
+    var best = top[0].r;
+    var bs = best.signals[0];
+    var detail = "<b>" + esc(best.name) + "</b> {{" + best.id + "}} ranks first. " +
+      esc(best.mandate.charAt(0).toUpperCase() + best.mandate.slice(1)) +
+      (bs ? " Most recently, in " + esc(bs.d) + ", it " + esc(bs.t.charAt(0).toLowerCase() + bs.t.slice(1)) : "") + " ";
+    if (best.principal.name) {
+      detail += "The person to approach is <b>" + esc(best.principal.name) + "</b>, " + esc(best.principal.title) + ".";
+    } else {
+      detail += "No principal has been identified here, which is why it is not a record you can act on yet.";
+    }
+    paras.push(detail);
+
+    /* contact quality across the set */
+    var tiers = { complete:[], usable:[], named:[], gap:[] };
+    top.forEach(function (h) { tiers[contactTier(h.r)].push(h.r); });
+    var cparts = [];
+    if (tiers.complete.length) cparts.push("<b>" + tiers.complete.length + "</b> carry an email confirmed to the named individual");
+    if (tiers.usable.length) cparts.push("<b>" + tiers.usable.length + "</b> carry a provider-returned address that the firm never published");
+    if (tiers.named.length) cparts.push("<b>" + tiers.named.length + "</b> have an address that is catch-all or unverified");
+    if (tiers.gap.length) cparts.push("<b>" + tiers.gap.length + "</b> have no usable principal contact at all");
+    if (cparts.length) {
+      var cp = "On reachability, of the " + top.length + " shown: " + cparts.join("; ") + ". ";
+      cp += tiers.complete.length
+        ? "Start with the confirmed ones — the rest are leads, not contacts."
+        : "Nothing here is confirmed to an individual, so treat every address below as a lead and verify before you use it.";
+      paras.push(cp);
+    }
+
+    /* honest caveat */
+    var caveats = [];
+    if (top.length < 3) caveats.push("this demo holds only " + DATA.length + " offices, so the count reflects the file rather than the market");
+    var unk = top.filter(function (h) { return h.r.type === "unk"; });
+    if (unk.length) caveats.push("one match has an unconfirmed firm type and would not ship in a paid file");
+    var noSig = top.filter(function (h) { return !h.r.signals.length; });
+    if (noSig.length) caveats.push(noSig.length + " of these have no recent activity on file, which limits how current the intelligence is");
+    if (caveats.length) {
+      paras.push("Two things to hold lightly: " + caveats.join("; ") + ". Ranking here is relevance, not a quality judgement — a high-ranking record can still have a weak contact cell, and the labels on each record are the thing to read.");
+    }
+
+    return paras;
+  }
+
+  function fmtAum(m) { return m >= 1000 ? "$" + (m / 1000).toFixed(1).replace(/\.0$/, "") + "B" : "$" + m + "M"; }
+
+  var REGION_LABEL = { "north america":"North America", nordic:"the Nordics", uk:"the UK", europe:"Europe", asia:"Asia", "middle east":"the Middle East" };
+  function regionLabel(r) { return REGION_LABEL[r] || r; }
+
+  /* ════════════════════════════════════════════════════════
+     RENDER
+     ════════════════════════════════════════════════════════ */
+  var el = function (id) { return document.getElementById(id); };
+  var form = el("form"), input = el("q"), stage = el("stage"), results = el("results"),
+      empty = el("empty"), verdictEl = el("verdict"), answerEl = el("answer"),
+      evidenceEl = el("evidence"), followEl = el("followups"), interpEl = el("interp"),
+      tablewrap = el("tablewrap"), tableEl = el("table"), modalRoot = el("modal-root"),
+      tray = el("tray");
+
+  var state = { c:null, hits:[], g:null, view:"answer", sort:{ k:"score", dir:-1 }, shortlist:[] };
+  var filters = { type:"", contact:"", region:"" };
+
+  var ICONS = {
+    grounded:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 8.4l3.6 3.6L13.5 4.6"/></svg>',
+    qualified:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.8 15 14H1L8 1.8Z"/><path d="M8 6.4v3.2"/><path d="M8 11.6v.1"/></svg>',
+    declined:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.3"/><path d="M3.6 3.6l8.8 8.8"/></svg>'
+  };
+  var IC_STAR = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l1.8 4 4.2.5-3.1 2.8.9 4.2L8 11.6 4.2 13.5l.9-4.2L2 6.5 6.2 6 8 2Z"/></svg>';
+  var IC_CHAIN = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.5 9.5 9.5 6.5"/><path d="M7 4.5 8.6 3a2.7 2.7 0 0 1 3.8 3.8L11 8.2"/><path d="M9 11.5 7.4 13a2.7 2.7 0 0 1-3.8-3.8L5 7.8"/></svg>';
+
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function badge(st) { return '<span class="badge ' + st + '">' + esc(STATUS_LABEL[st]) + "</span>"; }
+
+  function renderInterp(c) {
+    var chips = [];
+    function chip(label, key, soft) {
+      chips.push('<span class="con' + (soft ? " soft" : "") + '">' + esc(label) +
+        (key ? '<button class="con-x" type="button" data-drop="' + key + '" aria-label="Remove ' + esc(label) + '">×</button>' : "") + "</span>");
+    }
+    if (c.type) chip("type = " + (c.type === "sfo" ? "single-family" : c.type === "mfo" ? "multi-family" : "unconfirmed"), "type");
+    c.regions.forEach(function (r) { chip("region = " + regionLabel(r), "region:" + r); });
+    c.sectors.forEach(function (s) { chip("sector = " + s, "sector:" + s); });
+    if (c.aumMax !== null) chip("AUM < " + fmtAum(c.aumMax), "aumMax");
+    if (c.aumMin !== null) chip("AUM > " + fmtAum(c.aumMin), "aumMin");
+    if (c.contact) chip("contact = " + c.contact, "contact");
+    if (c.speculative) chip("intent = speculative (blocked)", null, true);
+
+    interpEl.innerHTML = '<span class="interp-lead">Read as</span>' +
+      (chips.length ? chips.join("") : '<span class="interp-none">no structured constraints — ranking every record by relevance</span>');
+
+    interpEl.querySelectorAll("[data-drop]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var d = b.getAttribute("data-drop");
+        if (d === "type") state.c.type = null;
+        else if (d === "aumMax") state.c.aumMax = null;
+        else if (d === "aumMin") state.c.aumMin = null;
+        else if (d === "contact") state.c.contact = null;
+        else if (d.indexOf("region:") === 0) state.c.regions = state.c.regions.filter(function (x) { return x !== d.slice(7); });
+        else if (d.indexOf("sector:") === 0) state.c.sectors = state.c.sectors.filter(function (x) { return x !== d.slice(7); });
+        rerun();
+      });
+    });
+  }
+
+  function renderCard(h, n) {
+    var r = h.r, p = r.principal, s = "";
+    var starred = state.shortlist.indexOf(r.id) !== -1;
+
+    s += '<article class="card" data-rec="' + r.id + '">';
+    s += '<div class="card-top"><span class="card-num">' + n + '</span><div class="card-id">';
+    s += '<div class="card-name">' + esc(r.name) + "</div>";
+    s += '<div class="card-meta">' + esc(r.city) + " · " + esc(r.country) + " · " + esc(r.aumLabel) + "</div>";
+    s += '</div><div class="card-actions">';
+    s += '<button class="icon-btn" type="button" data-star="' + r.id + '" aria-pressed="' + starred + '" title="Add to shortlist">' + IC_STAR + "</button>";
+    s += '<button class="icon-btn" type="button" data-chain="' + r.id + '" title="Validation chain">' + IC_CHAIN + "</button>";
+    s += "</div></div>";
+
+    s += '<div class="why">' + h.reasons.map(function (x) {
+      return '<span class="why-chip' + (x.hit ? " hit" : "") + '">' + esc(x.t) + "</span>";
+    }).join("") + "</div>";
+
+    s += '<span class="type-tag ' + r.type + '">' + esc(r.typeLabel) + "</span>";
+    s += '<span class="basis">' + esc(r.typeBasis) + "</span>";
+
+    s += '<div class="rows">';
+    s += '<div class="row"><div class="row-key">Mandate</div><div class="row-val">' + esc(r.mandate) + "</div></div>";
+
+    s += '<div class="row"><div class="row-key">Principal</div><div class="row-val">';
+    s += p.name ? esc(p.name) + ' · <span class="muted">' + esc(p.title) + "</span>"
+               : '<span class="muted">None identified</span>' + badge("none");
+    s += '<span class="basis">' + esc(p.titleBasis) + "</span></div></div>";
+
+    s += '<div class="row"><div class="row-key">LinkedIn</div><div class="row-val">';
+    s += (p.li ? '<span class="mono">' + esc(p.li) + "</span>" : '<span class="muted">—</span>') + badge(p.liStatus);
+    s += '<span class="basis">' + esc(p.liBasis) + "</span></div></div>";
+
+    s += '<div class="row"><div class="row-key">Email</div><div class="row-val">';
+    s += (p.email ? '<span class="mono">' + esc(p.email) + "</span>" : '<span class="muted">—</span>') + badge(p.emailStatus);
+    s += '<span class="basis">' + esc(p.emailBasis) + "</span></div></div>";
+
+    s += '<div class="row"><div class="row-key">Direct line</div><div class="row-val">';
+    s += (p.phone ? '<span class="mono">' + esc(p.phone) + "</span>" : '<span class="muted">—</span>') + badge(p.phoneStatus);
+    s += '<span class="basis">' + esc(p.phoneBasis) + "</span></div></div>";
+    s += "</div>";
+
+    if (r.signals.length) {
+      s += '<div class="signals">' + r.signals.map(function (g) {
+        return '<div class="signal"><span class="signal-date">' + esc(g.d) + '</span><span class="signal-text">' + esc(g.t) + "</span></div>";
+      }).join("") + "</div>";
+    }
+    s += "</article>";
+    return s;
+  }
+
+  function paint() {
+    var c = state.c, hits = state.hits, g = state.g;
+
+    verdictEl.className = "verdict " + g.kind;
+    verdictEl.innerHTML = '<span class="verdict-icon">' + ICONS[g.kind] + '</span><div>' +
+      '<div class="verdict-title">' + esc(g.title) + "</div>" +
+      '<div class="verdict-body">' + esc(g.body) + "</div></div>";
+
+    /* a refusal has no supporting set — show only the nearest material, and say so */
+    var declined = g.kind === "declined";
+    var top = hits.slice(0, declined ? 2 : 5);
+    var order = top.map(function (h) { return h.r.id; });
+
+    answerEl.innerHTML = compose(c, hits, g).map(function (para, i) {
+      var used = [];
+      var body = para.replace(/\{\{(\w+)\}\}/g, function (_, id) {
+        var n = order.indexOf(id) + 1;
+        if (n === 0) return "";
+        used.push(id);
+        return '<button class="cite" type="button" data-rec="' + id + '">' + n + "</button>";
+      });
+      return '<p class="fade" style="animation-delay:' + (i * 80) + 'ms" data-refs="' + used.join(" ") + '">' + body + "</p>";
+    }).join("");
+
+    evidenceEl.innerHTML = '<div class="ev-head"><span class="ev-title">' +
+      (declined ? "Nearest material — not an answer" : "Records behind this answer") + "</span>" +
+      '<span class="ev-count">' + top.length + " shown · " +
+      (declined ? DATA.length + " in file" : hits.length + " matched · " + DATA.length + " in file") + "</span></div>" +
+      (declined ? '<p style="font-size:12.5px;color:var(--text-3);margin:0 0 13px;line-height:1.5">' +
+        "These are the closest records by wording. They do not support the question you asked, and are shown only so you can see what the file does hold." + "</p>" : "") +
+      '<div class="cards">' + top.map(function (h, i) { return renderCard(h, i + 1); }).join("") + "</div>";
+
+    var fus = buildFollowups(c, hits);
+    followEl.hidden = !fus.length;
+    followEl.innerHTML = '<span class="followups-lead">Ask next</span>' +
+      fus.map(function (f) { return '<button class="followup" type="button">' + esc(f) + "</button>"; }).join("");
+
+    wire();
+  }
+
+  function buildFollowups(c, hits) {
+    var out = [];
+    if (c.type !== "sfo") out.push("Which single-family offices have a verified email?");
+    if (!c.contact) out.push("Show me only records I can contact today");
+    if (!c.regions.length) out.push("Which offices are in the Nordics?");
+    if (hits.length && hits[0].r.sectors.length) out.push("Who else invests in " + hits[0].r.sectors[0] + "?");
+    out.push("Which records have documented contact gaps?");
+    return out.slice(0, 3);
+  }
+
+  function renderTable() {
+    var cols = [
+      { k:"rank", t:"#", get:function (h, i) { return i + 1; }, cls:"num" },
+      { k:"name", t:"Firm", get:function (h) { return esc(h.r.name); } },
+      { k:"type", t:"Type", get:function (h) { return '<span class="type-tag ' + h.r.type + '" style="margin:0">' + esc(h.r.typeLabel) + "</span>"; } },
+      { k:"loc", t:"Location", get:function (h) { return esc(h.r.city) + ", " + esc(h.r.country); } },
+      { k:"aum", t:"AUM", get:function (h) { return esc(h.r.aumLabel); }, cls:"num" },
+      { k:"principal", t:"Principal", get:function (h) { return h.r.principal.name ? esc(h.r.principal.name) + '<br><span style="color:var(--text-3);font-size:11px">' + esc(h.r.principal.title) + "</span>" : '<span style="color:var(--text-3)">—</span>'; } },
+      { k:"email", t:"Email", get:function (h) { return (h.r.principal.email ? '<span class="mono">' + esc(h.r.principal.email) + "</span>" : '<span style="color:var(--text-3)">—</span>') + "<br>" + badge(h.r.principal.emailStatus); } },
+      { k:"signal", t:"Latest signal", get:function (h) { return h.r.signals.length ? '<span class="mono" style="color:var(--brass)">' + esc(h.r.signals[0].d) + "</span> " + esc(h.r.signals[0].t) : '<span style="color:var(--text-3)">None on file</span>'; } },
+      { k:"score", t:"Relevance", get:function (h) { return h.score.toFixed(1); }, cls:"num" }
+    ];
+    var rows = state.hits.slice();
+    var sk = state.sort.k;
+    if (sk !== "score" && sk !== "rank") {
+      rows.sort(function (a, b) {
+        var va, vb;
+        if (sk === "aum") { va = a.r.aum === null ? -1 : a.r.aum; vb = b.r.aum === null ? -1 : b.r.aum; }
+        else if (sk === "name") { va = a.r.name; vb = b.r.name; }
+        else if (sk === "type") { va = a.r.typeLabel; vb = b.r.typeLabel; }
+        else if (sk === "loc") { va = a.r.country; vb = b.r.country; }
+        else if (sk === "principal") { va = a.r.principal.name || "zzz"; vb = b.r.principal.name || "zzz"; }
+        else if (sk === "email") { va = STATUS_RANK[a.r.principal.emailStatus]; vb = STATUS_RANK[b.r.principal.emailStatus]; }
+        else if (sk === "signal") { va = a.r.signals.length ? a.r.signals[0].d : ""; vb = b.r.signals.length ? b.r.signals[0].d : ""; }
+        else { va = a.score; vb = b.score; }
+        if (va < vb) return -1 * state.sort.dir;
+        if (va > vb) return 1 * state.sort.dir;
+        return 0;
+      });
+    } else if (state.sort.dir === 1) { rows.reverse(); }
+
+    tableEl.innerHTML =
+      "<thead><tr>" + cols.map(function (col) {
+        var arrow = state.sort.k === col.k ? '<span class="arrow">' + (state.sort.dir === -1 ? "▼" : "▲") + "</span>" : "";
+        return '<th data-sort="' + col.k + '">' + esc(col.t) + arrow + "</th>";
+      }).join("") + "</tr></thead><tbody>" +
+      (rows.length ? rows.map(function (h, i) {
+        return '<tr data-rec="' + h.r.id + '">' + cols.map(function (col) {
+          return '<td class="' + (col.cls || "") + '">' + col.get(h, i) + "</td>";
+        }).join("") + "</tr>";
+      }).join("") : '<tr><td colspan="' + cols.length + '" style="color:var(--text-3);padding:22px">No records match the current question and filters.</td></tr>') +
+      "</tbody>";
+
+    tableEl.querySelectorAll("th[data-sort]").forEach(function (th) {
+      th.addEventListener("click", function () {
+        var k = th.getAttribute("data-sort");
+        if (state.sort.k === k) state.sort.dir *= -1; else { state.sort.k = k; state.sort.dir = -1; }
+        renderTable();
+      });
+    });
+    tableEl.querySelectorAll("tr[data-rec]").forEach(function (tr) {
+      tr.addEventListener("click", function () { openChain(tr.getAttribute("data-rec")); });
+    });
+  }
+
+  function wire() {
+    function setLit(id, on) {
+      document.querySelectorAll('.card[data-rec="' + id + '"]').forEach(function (c) { c.classList.toggle("lit", on); });
+      document.querySelectorAll('.cite[data-rec="' + id + '"]').forEach(function (c) { c.classList.toggle("lit", on); });
+      document.querySelectorAll("#answer p").forEach(function (p) {
+        if ((p.getAttribute("data-refs") || "").split(" ").indexOf(id) !== -1) p.classList.toggle("lit", on);
+      });
+    }
+    document.querySelectorAll(".cite").forEach(function (b) {
+      var id = b.getAttribute("data-rec");
+      ["mouseenter","focus"].forEach(function (e) { b.addEventListener(e, function () { setLit(id, true); }); });
+      ["mouseleave","blur"].forEach(function (e) { b.addEventListener(e, function () { setLit(id, false); }); });
+      b.addEventListener("click", function () {
+        var card = document.querySelector('.card[data-rec="' + id + '"]');
+        if (card) card.scrollIntoView({ behavior:"smooth", block:"center" });
+      });
+    });
+    document.querySelectorAll(".followup").forEach(function (b) {
+      b.addEventListener("click", function () { input.value = b.textContent; run(b.textContent); });
+    });
+    document.querySelectorAll("[data-star]").forEach(function (b) {
+      b.addEventListener("click", function () { toggleStar(b.getAttribute("data-star")); });
+    });
+    document.querySelectorAll("[data-chain]").forEach(function (b) {
+      b.addEventListener("click", function () { openChain(b.getAttribute("data-chain")); });
+    });
+  }
+
+  /* ── shortlist ── */
+  function toggleStar(id) {
+    var i = state.shortlist.indexOf(id);
+    if (i === -1) state.shortlist.push(id); else state.shortlist.splice(i, 1);
+    document.querySelectorAll('[data-star="' + id + '"]').forEach(function (b) {
+      b.setAttribute("aria-pressed", String(state.shortlist.indexOf(id) !== -1));
+    });
+    renderTray();
+  }
+  function renderTray() {
+    var n = state.shortlist.length;
+    tray.hidden = n === 0;
+    el("tray-n").textContent = n;
+    el("tray-names").textContent = state.shortlist.map(function (id) { return BY_ID[id].name; }).join(" · ");
+  }
+
+  function toCSV() {
+    var head = ["firm","type","type_evidence","city","country","aum","mandate","principal","title","linkedin","linkedin_status","email","email_status","email_basis","phone","phone_status","latest_signal_date","latest_signal"];
+    function q(v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; }
+    var lines = [head.join(",")];
+    state.shortlist.forEach(function (id) {
+      var r = BY_ID[id], p = r.principal, s = r.signals[0];
+      lines.push([r.name, r.typeLabel, r.typeBasis, r.city, r.country, r.aumLabel, r.mandate,
+        p.name, p.title, p.li, STATUS_LABEL[p.liStatus], p.email, STATUS_LABEL[p.emailStatus], p.emailBasis,
+        p.phone, STATUS_LABEL[p.phoneStatus], s ? s.d : "", s ? s.t : ""].map(q).join(","));
+    });
+    return lines.join("\n");
+  }
+
+  /* ── modals ── */
+  function closeModal() { modalRoot.innerHTML = ""; document.removeEventListener("keydown", escClose); }
+  function escClose(e) { if (e.key === "Escape") closeModal(); }
+  function showModal(html) {
+    modalRoot.innerHTML = '<div class="scrim" id="scrim"><div class="modal" role="dialog" aria-modal="true">' + html + "</div></div>";
+    document.getElementById("scrim").addEventListener("click", function (e) { if (e.target.id === "scrim") closeModal(); });
+    modalRoot.querySelectorAll("[data-close]").forEach(function (b) { b.addEventListener("click", closeModal); });
+    document.addEventListener("keydown", escClose);
+  }
+
+  function openChain(id) {
+    var r = BY_ID[id], ch = r.chain;
+    var steps = [
+      ["Discovery", ch.discovery], ["Extraction", ch.extraction], ["Enrichment", ch.enrichment],
+      ["Validation", ch.validation], ["Confidence", ch.confidence]
+    ];
+    showModal(
+      '<div class="modal-head"><div><div class="modal-title">' + esc(r.name) + "</div>" +
+      '<div class="modal-sub">Validation chain · ' + esc(r.city) + " · " + esc(r.aumLabel) + "</div></div>" +
+      '<button class="ghost" type="button" data-close>Close</button></div>' +
+      '<div class="modal-body"><div class="chain">' +
+      steps.map(function (s, i) {
+        return '<div class="chain-step"><div class="chain-rail"><span class="chain-dot"></span>' +
+          (i < steps.length - 1 ? '<span class="chain-line"></span>' : "") + "</div>" +
+          '<div class="chain-body"><div class="chain-k">' + esc(s[0]) + '</div><div class="chain-v">' + esc(s[1]) + "</div></div></div>";
+      }).join("") + "</div></div>"
+    );
+  }
+
+  function openExport() {
+    var csv = toCSV();
+    showModal(
+      '<div class="modal-head"><div><div class="modal-title">Export shortlist</div>' +
+      '<div class="modal-sub">' + state.shortlist.length + " records · every cell ships with its verification status</div></div>" +
+      '<button class="ghost" type="button" data-close>Close</button></div>' +
+      '<div class="modal-body"><textarea class="csv" id="csvbox" readonly></textarea>' +
+      '<div style="display:flex;gap:8px;margin-top:12px"><button class="go" type="button" id="copycsv">Copy to clipboard</button>' +
+      '<span id="copied" style="font-size:12.5px;color:var(--good);align-self:center"></span></div></div>'
+    );
+    el("csvbox").value = csv;
+    el("copycsv").addEventListener("click", function () {
+      var box = el("csvbox"); box.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      if (!ok && navigator.clipboard) { navigator.clipboard.writeText(csv).then(function () { el("copied").textContent = "Copied."; }); }
+      else { el("copied").textContent = ok ? "Copied." : "Select the text above and copy."; }
+    });
+  }
+
+  /* ── run cycle ── */
+  var timers = [];
+  function rerun() {
+    var out = retrieve(state.c, filters);
+    state.hits = out.hits;
+    state.g = gate(state.c, state.hits);
+    renderInterp(state.c);
+    if (state.view === "table") { renderTable(); tablewrap.hidden = false; results.hidden = true; empty.hidden = true; return; }
+    tablewrap.hidden = true;
+    if (!state.hits.length) {
+      results.hidden = true; empty.hidden = false;
+      var d = out.dropped, why = [];
+      if (d.type) why.push(d.type + " excluded by office type");
+      if (d.region) why.push(d.region + " excluded by region");
+      if (d.aum) why.push(d.aum + " excluded by size");
+      if (d.contact) why.push(d.contact + " excluded by contact quality");
+      if (d.sector) why.push(d.sector + " excluded by sector");
+      el("empty-why").textContent = why.length
+        ? "Of " + DATA.length + " records: " + why.join(", ") + "."
+        : "Meridian answers only from its own verified records, and none met the constraints in your question.";
+      return;
+    }
+    empty.hidden = true; results.hidden = false; paint();
+  }
+
+  function run(text) {
+    timers.forEach(clearTimeout); timers = [];
+    state.c = parseQuery(text || "");
+    results.hidden = true; empty.hidden = true; tablewrap.hidden = true;
+    stage.hidden = false;
+    var steps = Array.prototype.slice.call(stage.querySelectorAll(".stage-step"));
+    steps.forEach(function (s) { s.className = "stage-step"; });
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var beat = reduce ? 0 : 210;
+    steps.forEach(function (s, i) {
+      timers.push(setTimeout(function () {
+        steps.forEach(function (o, j) { o.className = "stage-step" + (j < i ? " done" : j === i ? " on" : ""); });
+      }, i * beat));
+    });
+    timers.push(setTimeout(function () { stage.hidden = true; rerun(); }, steps.length * beat));
+  }
+
+  /* ── events ── */
+  form.addEventListener("submit", function (e) { e.preventDefault(); run(input.value); });
+  document.querySelectorAll(".preset").forEach(function (p) {
+    p.addEventListener("click", function () { input.value = p.textContent.trim(); run(input.value); });
+  });
+  ["type","contact","region"].forEach(function (k) {
+    el("f-" + k).addEventListener("change", function (e) { filters[k] = e.target.value; rerun(); });
+  });
+  el("view-answer").addEventListener("click", function () {
+    state.view = "answer"; el("view-answer").setAttribute("aria-pressed","true"); el("view-table").setAttribute("aria-pressed","false"); rerun();
+  });
+  el("view-table").addEventListener("click", function () {
+    state.view = "table"; el("view-table").setAttribute("aria-pressed","true"); el("view-answer").setAttribute("aria-pressed","false"); rerun();
+  });
+  el("reset").addEventListener("click", function () {
+    filters = { type:"", contact:"", region:"" };
+    ["type","contact","region"].forEach(function (k) { el("f-" + k).value = ""; });
+    input.value = ""; run("");
+  });
+  el("tray-clear").addEventListener("click", function () {
+    state.shortlist = [];
+    document.querySelectorAll("[data-star]").forEach(function (b) { b.setAttribute("aria-pressed","false"); });
+    renderTray();
+  });
+  el("tray-export").addEventListener("click", openExport);
+
+  /* ── file-level stats ── */
+  (function () {
+    var sfo = DATA.filter(function (r) { return r.type === "sfo"; }).length;
+    var comp = DATA.filter(function (r) { return contactTier(r) === "complete"; }).length;
+    var sig = DATA.filter(function (r) { return r.signals.length; }).length;
+    el("stats").innerHTML =
+      "<span><b>" + DATA.length + "</b> records</span>" +
+      "<span><b>" + sfo + "</b> single-family</span>" +
+      "<span><b>" + comp + "</b> verified contact</span>" +
+      "<span><b>" + sig + "</b> with signals</span>";
+  })();
+
+  input.value = "Which single-family offices invest directly in healthcare?";
+  run(input.value);
+})();
+</script>
+
+</body>
+</html>
