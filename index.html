@@ -106,11 +106,16 @@
   .preset { font:inherit; font-size:12.5px; line-height:1.4; color:var(--text-2); background:none; border:0; border-left:2px solid var(--line); padding:3px 0 3px 9px; cursor:pointer; text-align:left; transition:color .15s,border-color .15s; }
   .preset:hover { color:var(--brass); border-left-color:var(--brass); }
 
-  .ask-limit { padding:13px 15px; background:var(--caution-wash); border-top:1px solid var(--line-soft); display:flex; flex-direction:column; align-items:flex-start; gap:5px; }
-  .ask-limit-k { font-size:9.5px; text-transform:uppercase; letter-spacing:.1em; font-weight:700; color:var(--caution); }
-  .preset.limit { color:var(--caution); border-left-color:var(--caution); opacity:.9; }
-  .preset.limit:hover { color:var(--caution); border-left-color:var(--caution); opacity:1; }
-  .ask-limit-note { font-size:11.5px; color:var(--text-2); line-height:1.5; margin:3px 0 0; max-width:74ch; }
+  .ask-pred { padding:13px 15px; background:var(--brass-wash); border-top:1px solid var(--brass-line); }
+  .ask-pred-head { display:flex; align-items:baseline; gap:9px; flex-wrap:wrap; margin-bottom:8px; }
+  .ask-pred-k { font-size:9.5px; text-transform:uppercase; letter-spacing:.1em; font-weight:700; color:var(--brass); }
+  .ask-pred-tag { font-size:9px; text-transform:uppercase; letter-spacing:.07em; font-weight:700; color:var(--brass); border:1px solid var(--brass-line); border-radius:2px; padding:2px 6px; }
+  .ask-pred-row { display:flex; flex-direction:column; gap:5px; align-items:flex-start; }
+  @media (min-width:840px) { .ask-pred-row { flex-direction:row; flex-wrap:wrap; gap:6px 22px; } }
+  .preset.pred { color:var(--brass); border-left-color:var(--brass-line); }
+  .preset.pred:hover { color:var(--brass-bright); border-left-color:var(--brass); }
+  .ask-pred-note { font-size:11.5px; color:var(--text-2); line-height:1.55; margin:9px 0 0; max-width:92ch; }
+  .ask-pred-note b { color:var(--text); }
 
   /* ── facet bar ── */
   .facetbar { display:flex; flex-wrap:wrap; gap:9px; align-items:center; margin-top:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
@@ -201,6 +206,31 @@
   .verdict.qualified .verdict-title, .verdict.qualified .verdict-icon { color:var(--caution); }
   .verdict.declined { border-color:var(--null); background:var(--null-wash); }
   .verdict.declined .verdict-title, .verdict.declined .verdict-icon { color:var(--null); }
+  .verdict.modelled { border-color:var(--brass); background:var(--brass-wash); }
+  .verdict.modelled .verdict-title, .verdict.modelled .verdict-icon { color:var(--brass); }
+
+  /* ── predictability index ── */
+  .pred { margin-top:12px; padding:12px 13px; border:1px solid var(--brass-line); border-radius:2px; background:var(--brass-wash); }
+  .pred.pred-none, .pred.pred-minimal { border-color:var(--line); background:var(--null-wash); }
+  .pred-top { display:flex; align-items:baseline; gap:9px; flex-wrap:wrap; }
+  .pred-k { font-size:9px; text-transform:uppercase; letter-spacing:.11em; font-weight:700; color:var(--brass); margin-right:auto; }
+  .pred.pred-none .pred-k, .pred.pred-minimal .pred-k { color:var(--null); }
+  .pred-score { font-family:var(--font-data); font-size:19px; font-weight:700; color:var(--brass); line-height:1; font-variant-numeric:tabular-nums; }
+  .pred.pred-none .pred-score, .pred.pred-minimal .pred-score { color:var(--null); }
+  .pred-of { font-size:10px; font-weight:400; opacity:.6; }
+  .pred-band { font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--brass); border:1px solid currentColor; border-radius:2px; padding:2px 6px; }
+  .pred.pred-none .pred-band, .pred.pred-minimal .pred-band { color:var(--null); border-style:dashed; }
+  .pred-bar { height:4px; border-radius:2px; background:var(--line); margin:9px 0 8px; overflow:hidden; }
+  .pred-bar span { display:block; height:100%; background:var(--brass); }
+  .pred.pred-none .pred-bar span, .pred.pred-minimal .pred-bar span { background:var(--null); }
+  .pred-why { font-size:10.5px; color:var(--text-3); line-height:1.45; }
+  .pred-sub { display:block; font-size:8.5px; text-transform:uppercase; letter-spacing:.1em; font-weight:700; color:var(--text-3); margin-bottom:4px; }
+  .pred-areas { margin-top:10px; padding-top:9px; border-top:1px solid var(--line-soft); }
+  .pred-area { font-size:12px; color:var(--text-2); line-height:1.5; }
+  .pred-weak { color:var(--caution); font-size:10.5px; }
+  .pred-drivers { margin-top:9px; padding-top:9px; border-top:1px solid var(--line-soft); display:flex; flex-wrap:wrap; gap:4px 6px; }
+  .pred-driver { font-family:var(--font-data); font-size:10px; color:var(--text-3); background:var(--surface); border:1px solid var(--line-soft); border-radius:2px; padding:2px 6px; }
+  .pred-driver b { color:var(--brass); }
 
   .answer { max-width:63ch; }
   .answer p { font-family:var(--font-display); font-size:16.5px; line-height:1.62; margin:0 0 16px; padding-left:14px; border-left:2px solid var(--line-soft); transition:border-color .2s; }
@@ -374,11 +404,22 @@
         </div>
       </div>
 
-      <div class="ask-limit">
-        <span class="ask-limit-k">What it will not answer</span>
-        <button class="preset limit" type="button">Which offices will increase crypto allocation next quarter?</button>
-        <p class="ask-limit-note">Records are dated events that already happened, so a question about future
-          intent is declined rather than guessed. Run it and the answer explains what the file does hold instead.</p>
+      <div class="ask-pred">
+        <div class="ask-pred-head">
+          <span class="ask-pred-k">Predictability Index</span>
+          <span class="ask-pred-tag">Modelled, not stated</span>
+        </div>
+        <div class="ask-pred-row">
+          <button class="preset pred" type="button">Which offices are most likely to invest in healthcare again?</button>
+          <button class="preset pred" type="button">Show me the most predictable offices</button>
+          <button class="preset pred" type="button">Which offices have a repeat pattern in private credit?</button>
+        </div>
+        <p class="ask-pred-note">Every record carries an index scored from its own dated events — how much it
+          does, how recently, how repetitively, how regularly, and whether it published a target in its own
+          words. Each score shows the inputs behind it, and points to where the record leans. It is an
+          inference drawn from history, never something a firm has said.
+          <b>Where there is no track record, nothing is produced:</b> ask about crypto and the answer is that
+          the file holds nothing to model.</p>
       </div>
     </section>
 
@@ -860,6 +901,7 @@
                  allocation:"Allocation change", target:"Stated target" },
     coinvest:{ evidenced:"Co-invests — evidenced", "not-found":"No co-investment found", unknown:"Not established" },
     channel:{ emailCorp:"Corporate email", phoneOffice:"Office phone", phoneMobile:"Mobile phone", linkedin:"LinkedIn profile" },
+    predict:{ patterned:"Patterned", emerging:"Emerging pattern", sparse:"Sparse", minimal:"Minimal basis", none:"Not modellable" },
     aum:{ lt500:"Under $500M", "500-1000":"$500M – $1B", "1000-3000":"$1B – $3B", gt3000:"Over $3B", undisclosed:"Undisclosed" },
     contact:{ complete:"Verified email", usable:"Provider-returned or better", named:"Named principal only", gap:"Documented gaps" },
     signalAge:{ "3":"Last 3 months", "6":"Last 6 months", "12":"Last 12 months", "24":"Last 2 years" },
@@ -890,6 +932,86 @@
     return "gap";
   }
   function sectorHit(r, s) { return r.sectors.indexOf(s) !== -1 || r.signals.some(function (g) { return g.tags.indexOf(s) !== -1; }); }
+
+  /* ── Predictability Index ──────────────────────────────────────────
+     Extrapolates from dated events already on file: how many, how recent,
+     how repetitive, how regular, and whether the firm published a target.
+     It models a PATTERN. It never asserts an intention. A firm with no
+     track record scores zero and is reported as not modellable rather than
+     given a speculative number. */
+  var PRED_BANDS = [
+    { min:70, key:"patterned", label:"Patterned" },
+    { min:45, key:"emerging",  label:"Emerging pattern" },
+    { min:20, key:"sparse",    label:"Sparse" },
+    { min:1,  key:"minimal",   label:"Minimal basis" },
+    { min:0,  key:"none",      label:"Not modellable" }
+  ];
+  function bandOf(score) {
+    for (var i = 0; i < PRED_BANDS.length; i++) if (score >= PRED_BANDS[i].min) return PRED_BANDS[i];
+    return PRED_BANDS[PRED_BANDS.length - 1];
+  }
+
+  function predictability(r) {
+    var sigs = r.signals;
+    if (!sigs.length) {
+      return { score:0, band:bandOf(0), drivers:[], areas:[],
+               why:"No dated events on file. There is nothing to extrapolate from, so no figure is produced." };
+    }
+    var score = 0, drivers = [];
+
+    var vol = Math.min(sigs.length, 4) * 8;
+    score += vol;
+    drivers.push({ k:"Volume", v:sigs.length + " dated event" + (sigs.length === 1 ? "" : "s") + " on file", pts:vol });
+
+    var age = monthsSince(sigs[0].d);
+    var rec = age <= 3 ? 22 : age <= 6 ? 16 : age <= 12 ? 9 : 2;
+    score += rec;
+    drivers.push({ k:"Recency", v:"Latest activity " + age + " month" + (age === 1 ? "" : "s") + " ago", pts:rec });
+
+    var counts = {};
+    sigs.forEach(function (s) { s.tags.forEach(function (t) { counts[t] = (counts[t] || 0) + 1; }); });
+    var repeated = Object.keys(counts).filter(function (k) { return counts[k] >= 2; });
+    if (repeated.length) {
+      var rep = Math.min(repeated.length, 2) * 14;
+      score += rep;
+      drivers.push({ k:"Repetition", v:"Recurring theme: " + repeated.join(", "), pts:rep });
+    }
+
+    if (sigs.length >= 2) {
+      var span = monthsSince(sigs[sigs.length - 1].d) - monthsSince(sigs[0].d);
+      var gap = span / (sigs.length - 1);
+      var cad = gap <= 4 ? 16 : gap <= 8 ? 10 : 4;
+      score += cad;
+      drivers.push({ k:"Cadence", v:"About one event every " + gap.toFixed(1) + " months", pts:cad });
+    }
+
+    if (sigs.some(function (s) { return s.type === "hire"; })) {
+      score += 10;
+      drivers.push({ k:"Capacity", v:"Hired into the investment function", pts:10 });
+    }
+    if (sigs.some(function (s) { return s.type === "target"; })) {
+      score += 18;
+      drivers.push({ k:"Published target", v:"The firm stated a forward target in its own words", pts:18 });
+    }
+
+    score = Math.min(100, score);
+
+    /* likely areas: sector themes the firm's own record actually supports */
+    var areas = Object.keys(counts)
+      .filter(function (t) { return r.sectors.indexOf(t) !== -1; })
+      .map(function (t) {
+        var hits = sigs.filter(function (s) { return s.tags.indexOf(t) !== -1; });
+        var vias = {};
+        hits.forEach(function (s) { s.tags.forEach(function (x) { if (r.vehicles.indexOf(x) !== -1) vias[x] = 1; }); });
+        return { tag:t, n:hits.length, last:hits[0].d,
+                 via:Object.keys(vias).map(function (v) { return lab("vehicle", v).toLowerCase(); }),
+                 strength:hits.length >= 2 ? "repeated" : "single" };
+      })
+      .sort(function (a, b) { return b.n - a.n || (a.last < b.last ? 1 : -1); });
+
+    return { score:score, band:bandOf(score), drivers:drivers, areas:areas,
+             why:"Modelled from " + sigs.length + " dated event" + (sigs.length === 1 ? "" : "s") + " already on file." };
+  }
 
   var CHANNELS = ["emailCorp", "phoneOffice", "phoneMobile", "linkedin"];
   function chan(r, ch) {
@@ -933,9 +1055,11 @@
       { key:"coinvest", label:"Co-investment",     kind:"coinvest",opts:function(){ return opts("coinvest", ["evidenced","not-found","unknown"]); } },
       { key:"geo",      label:"Where they deploy", kind:"geo",     opts:function(){ return opts("geo", distinct(function(r){return r.investGeo;})); } }
     ]},
-    { key:"signal", label:"Signal", note:"Why this record matters now. Everything here is a dated event that already happened.", facets:[
+    { key:"signal", label:"Signal", note:"Why this record matters now. Activity is a dated event that already happened; the Predictability Index is modelled from those events and is an inference, not a statement by the firm.", facets:[
       { key:"signalType", label:"Recent activity", kind:"signalType", opts:function(){ return opts("signalType", distinct(function(r){return r.signals.map(function(s){return s.type;});})); } },
-      { key:"signalAge",  label:"Within",          kind:"signalAge",  opts:function(){ return opts("signalAge", ["3","6","12","24"]); } }
+      { key:"signalAge",  label:"Within",          kind:"signalAge",  opts:function(){ return opts("signalAge", ["3","6","12","24"]); } },
+      { key:"predict",    label:"Predictability",  kind:"predict",
+        opts:function(){ return PRED_BANDS.map(function (b) { return { v:b.key, t:b.label }; }); } }
     ]},
     { key:"contact", label:"Contact", note:"Whether you can act on this today. A channel counts only at provider-grade or better — a catch-all address is a lead, not a route. Status is never upgraded by a delivery test.", facets:[
       { key:"channel",   label:"Reachable via — must have every box you tick", kind:"channel", multi:true,
@@ -966,7 +1090,8 @@
     contact:   function (r, v) { return v === "gap" ? tierOf(r) === "gap" : TIER_RANK[tierOf(r)] >= TIER_RANK[v]; },
     role:      function (r, v) { return r.principal.roleClass === v; },
     freshness: function (r, v) { return daysSince(r.verifiedAt) <= +v; },
-    channel:   function (r, v) { return hasChannel(r, v); }
+    channel:   function (r, v) { return hasChannel(r, v); },
+    predict:   function (r, v) { return predictability(r).band.key === v; }
   };
 
   /* ════════════════════════════════════════════════════════
@@ -1038,7 +1163,10 @@
     usable:["with an email","with email","email address","contactable","reachable","can i reach","how do i reach","who do i contact","who to call"],
     named:["named principal","named contact","named decision","who runs","who leads","who heads","decision-maker","decision maker"]
   };
-  var SPECULATIVE = ["will ","will they","going to","plan to","plans to","planning","intend","intends","intention","next quarter","next year","forecast","predict","expect","expects","likely to","about to","upcoming","future","projected","anticipate"];
+  /* Asking what a firm INTENDS is refused. Asking what its record makes LIKELY is
+     modelled — different questions, and only the second has evidence behind it. */
+  var SPECULATIVE = ["will ","will they","going to","plan to","plans to","planning","intend","intends","intention","next quarter","next year","forecast","expect","expects","about to","upcoming","projected","anticipate"];
+  var PROPENSITY = ["likely","likelihood","propensity","predictab","most predictable","again","repeat","more of the same","pattern","track record","tend to","typically"];
 
   /* longest phrase wins, and the winning phrase is reported so the caller can consume it */
   function longestMatch(map, t) {
@@ -1056,7 +1184,7 @@
   function parseQuery(text) {
     var t = " " + String(text || "").toLowerCase().replace(/[^\w\s€$.&-]/g, " ").replace(/\s+/g, " ") + " ";
     var t0 = t;  /* untouched copy — phrase consumption below must not affect token extraction */
-    var c = { list:[], speculative:false, tokens:[], raw:text };
+    var c = { list:[], speculative:false, propensity:false, tokens:[], raw:text };
 
     function add(key, value) { c.list.push({ key:key, value:value, origin:"query" }); }
 
@@ -1113,11 +1241,17 @@
     });
     if (con) add("contact", con);
 
-    c.speculative = SPECULATIVE.some(function (w) { return t0.indexOf(w) !== -1; });
+    c.propensity = PROPENSITY.some(function (w) { return t0.indexOf(w) !== -1; });
+    /* propensity wins: "likely to invest in healthcare again" is modellable,
+       even though it also trips a forward-looking word */
+    c.speculative = !c.propensity && SPECULATIVE.some(function (w) { return t0.indexOf(w) !== -1; });
 
     var stop = ("which what who where when how are is the a an of in to for with and or do does me show list all their them that this on by from has have had can i " +
       "offices office family single multi will plan plans planning intend intends intention going forecast predict expect expects likely about upcoming future " +
-      "projected anticipate next quarter year month soon later now today currently").split(" ");
+      "projected anticipate next quarter year month soon later now today currently " +
+      /* propensity vocabulary drives the index; none of it is a subject the file could cover */
+      "likely likelihood propensity predictable predictability again repeat repeated pattern patterns " +
+      "track tend tends typically most more same into move moving toward towards invest investing invests").split(" ");
     var stopSet = {}; stop.forEach(function (w) { stopSet[w] = 1; });
     c.tokens = t0.trim().split(" ").filter(function (w) { return w.length > 2 && !stopSet[w]; });
     return c;
@@ -1195,6 +1329,12 @@
         else { score += 3; }
       });
       (parsed ? parsed.tokens : []).forEach(function (tok) { if (text.indexOf(tok) !== -1) score += 1.5; });
+      /* a propensity question ranks by how modellable the firm is */
+      if (parsed && parsed.propensity) {
+        var pv = predictability(r);
+        score += pv.score * 0.25;
+        reasons.unshift({ t:"index " + pv.score + " · " + pv.band.label.toLowerCase(), hit:pv.score >= 45 });
+      }
       score += TIER_RANK[tierOf(r)] * 0.6;
       if (r.signals.length) score += Math.min(r.signals.length, 3) * 0.4;
       if (r.signals.length && monthsSince(r.signals[0].d) <= 3) score += 1.2;
@@ -1202,12 +1342,43 @@
       if (!reasons.length) reasons.push({ t:r.typeLabel, hit:false }, { t:r.city, hit:false });
       kept.push({ r:r, score:score, reasons:reasons.slice(0, 4) });
     });
-    kept.sort(function (a, b) { return b.score - a.score || a.r.name.localeCompare(b.r.name); });
+    kept.sort(function (a, b) {
+      /* a propensity question claims to rank by the index, so the index must dominate */
+      if (parsed && parsed.propensity) {
+        var pa = predictability(a.r).score, pb = predictability(b.r).score;
+        if (pb !== pa) return pb - pa;
+      }
+      return b.score - a.score || a.r.name.localeCompare(b.r.name);
+    });
     return { hits:kept, dropped:dropped };
   }
 
   /* ── grounding gate ── */
   function gate(parsed, cons, hits) {
+    if (parsed.propensity) {
+      /* An index can only extrapolate along a dimension the file actually covers.
+         Asked to project into a subject with zero history, it must produce nothing —
+         otherwise a general ranking reads as "these firms are likely to do X". */
+      var subject = parsed.tokens.filter(function (t) { return t.length >= 5; });
+      var uncovered = subject.filter(function (t) { return !DATA.some(function (r) { return blob(r).indexOf(t) !== -1; }); });
+      var anchored = cons.some(function (c) { return c.key === "sector" || c.key === "vehicle" || c.key === "signalType"; });
+      if (uncovered.length && !anchored) {
+        return { kind:"declined", title:"Nothing in that direction to model",
+          body:"The file holds no history of " + uncovered.slice(0, 3).join(", ") +
+               ". The index extrapolates along dimensions a firm has already acted on; with no track record in that direction there is nothing to project, and a general ranking here would read as a prediction it cannot support." };
+      }
+      var modellable = hits.filter(function (h) { return predictability(h.r).score >= 20; });
+      if (!hits.length) {
+        return { kind:"declined", title:"Nothing to model",
+          body:"No record matches the constraints, so there is no track record to extrapolate from. The index is built from events already on file; where the file is empty it produces nothing rather than a guess." };
+      }
+      if (!modellable.length) {
+        return { kind:"declined", title:"Too little history to model",
+          body:"Records matched, but none carries enough dated activity to support extrapolation. A number here would be invented rather than derived, so none is given." };
+      }
+      return { kind:"modelled", title:"This answer is a model, not a record",
+        body:"Every figure below is extrapolated from dated events already on file — volume, recency, repetition, cadence and any target the firm published itself. It is what the record makes likely, not anything a firm has stated. Each score shows the inputs that produced it." };
+    }
     if (parsed.speculative) {
       return { kind:"declined", title:"Not answered — the file cannot support this",
         body:"This asks what firms intend to do in future. Every record here is built from dated events that already happened. Nothing in the file evidences forward intent, so no answer is given." };
@@ -1295,6 +1466,30 @@
       paras.push("Where a forward statement does exist, it is because a firm published one — Cedar &amp; Vane's £250M private credit target for 2027 is the only such case in this file. That is the firm's stated intention, recorded as theirs, not our prediction on their behalf.");
       return paras;
     }
+    /* propensity: rank by how modellable the record is, and say plainly that it is modelled */
+    if (g.kind === "modelled") {
+      var ranked = top.map(function (h) { return { h:h, p:predictability(h.r) }; });
+      paras.push("Ranked by Predictability Index, the strongest pattern is <b>" + esc(ranked[0].h.r.name) +
+        "</b> {{" + ranked[0].h.r.id + "}} at <b>" + ranked[0].p.score + "/100</b> — " +
+        esc(ranked[0].p.band.label.toLowerCase()) + ". " + esc(ranked[0].p.why) +
+        " The score rises with how much a firm does, how recently, how repetitively, and whether it published a target in its own words.");
+
+      var withAreas = ranked.filter(function (x) { return x.p.areas.length; });
+      if (withAreas.length) {
+        paras.push("Where the records point: " + withAreas.slice(0, 3).map(function (x) {
+          var a = x.p.areas[0];
+          return "<b>" + esc(x.h.r.name) + "</b> {{" + x.h.r.id + "}} toward " + esc(a.tag) +
+                 " (" + a.n + " event" + (a.n === 1 ? "" : "s") + ", latest " + esc(a.last) + ")";
+        }).join("; ") + ". These are extrapolations from what each firm has already done, and each card shows the events behind them.");
+      }
+
+      var thin = ranked.filter(function (x) { return x.p.score < 45; });
+      paras.push("Read this as a prompt to look, not as a forecast. " +
+        (thin.length ? "<b>" + thin.length + "</b> of the " + ranked.length + " shown sit below an emerging pattern, meaning one or two events are carrying the score — thin ground for any conclusion. " : "") +
+        "No firm here has said what it will do next. If you need intent rather than pattern, the honest source is a published target, and only one firm in this file has one.");
+      return paras;
+    }
+
     if (!top.length) return paras;
 
     /* lead */
@@ -1381,7 +1576,8 @@
   var ICONS = {
     grounded:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 8.4l3.6 3.6L13.5 4.6"/></svg>',
     qualified:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.8 15 14H1L8 1.8Z"/><path d="M8 6.4v3.2"/><path d="M8 11.6v.1"/></svg>',
-    declined:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.3"/><path d="M3.6 3.6l8.8 8.8"/></svg>'
+    declined:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.3"/><path d="M3.6 3.6l8.8 8.8"/></svg>',
+    modelled:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1.6 12.4 5.6 7.4l3 2.6 4.8-6.4"/><path d="M11.2 3.6h2.2v2.2"/></svg>'
   };
   var IC_STAR = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l1.8 4 4.2.5-3.1 2.8.9 4.2L8 11.6 4.2 13.5l.9-4.2L2 6.5 6.2 6 8 2Z"/></svg>';
   var IC_CHAIN = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.5 9.5 9.5 6.5"/><path d="M7 4.5 8.6 3a2.7 2.7 0 0 1 3.8 3.8L11 8.2"/><path d="M9 11.5 7.4 13a2.7 2.7 0 0 1-3.8-3.8L5 7.8"/></svg>';
@@ -1559,6 +1755,31 @@
       }).join("") + "</div>";
     }
 
+    /* Predictability Index — derived, and labelled as derived */
+    var pv = predictability(r);
+    s += '<div class="pred pred-' + pv.band.key + '">';
+    s += '<div class="pred-top"><span class="pred-k">Predictability Index</span>' +
+         '<span class="pred-score">' + pv.score + '<span class="pred-of">/100</span></span>' +
+         '<span class="pred-band">' + esc(pv.band.label) + "</span></div>";
+    s += '<div class="pred-bar"><span style="width:' + pv.score + '%"></span></div>';
+    s += '<div class="pred-why">' + esc(pv.why) + " Derived from the record — not stated by the firm.</div>";
+    if (pv.areas.length) {
+      s += '<div class="pred-areas"><span class="pred-sub">Where the record points</span>' +
+        pv.areas.map(function (a) {
+          return '<div class="pred-area"><b>' + esc(a.tag.charAt(0).toUpperCase() + a.tag.slice(1)) + "</b> — " +
+            a.n + " event" + (a.n === 1 ? "" : "s") + ", latest " + esc(a.last) +
+            (a.via.length ? ", via " + esc(a.via.join(" and ")) : "") +
+            (a.strength === "single" ? ' <span class="pred-weak">single instance — weak basis</span>' : "") + "</div>";
+        }).join("") + "</div>";
+    }
+    if (pv.drivers.length) {
+      s += '<div class="pred-drivers"><span class="pred-sub">What produced this score</span>' +
+        pv.drivers.map(function (d) {
+          return '<span class="pred-driver">' + esc(d.k) + ": " + esc(d.v) + ' <b>+' + d.pts + "</b></span>";
+        }).join("") + "</div>";
+    }
+    s += "</div>";
+
     var last = r.signals.length ? monthsSince(r.signals[0].d) : null;
     s += '<div class="card-foot"><span>Record verified ' + esc(r.verifiedAt) + " · " + daysSince(r.verifiedAt) + "d ago</span>" +
          "<span>" + (last === null ? "No activity on file" : "Latest signal " + last + "mo ago") + "</span></div>";
@@ -1632,6 +1853,11 @@
                             : '<span style="color:var(--text-3)">None at provider grade</span>';
         } },
       { k:"signal", t:"Latest signal", g:function (h) { return h.r.signals.length ? '<span class="mono" style="color:var(--brass)">' + esc(h.r.signals[0].d) + "</span> " + esc(h.r.signals[0].t) : '<span style="color:var(--text-3)">None on file</span>'; } },
+      { k:"predict", t:"Predictability", g:function (h) {
+          var p = predictability(h.r);
+          return '<span class="mono" style="color:' + (p.score >= 45 ? "var(--brass)" : "var(--text-3)") + '">' + p.score +
+                 '</span> <span style="color:var(--text-3);font-size:11px">' + esc(p.band.label) + "</span>";
+        }, cls:"num" },
       { k:"verified", t:"Verified", g:function (h) { return esc(h.r.verifiedAt); }, cls:"num" },
       { k:"score", t:"Relevance", g:function (h) { return h.score.toFixed(1); }, cls:"num" }
     ];
@@ -1645,6 +1871,7 @@
         else if (sk === "signal") { va = a.r.signals.length ? a.r.signals[0].d : ""; vb = b.r.signals.length ? b.r.signals[0].d : ""; }
         else if (sk === "verified") { va = a.r.verifiedAt; vb = b.r.verifiedAt; }
         else if (sk === "channels") { va = channelsOf(a.r).length; vb = channelsOf(b.r).length; }
+        else if (sk === "predict") { va = predictability(a.r).score; vb = predictability(b.r).score; }
         else if (sk === "principal") { va = a.r.principal.name || "zzz"; vb = b.r.principal.name || "zzz"; }
         else if (sk === "origin") { va = a.r.origin; vb = b.r.origin; }
         else if (sk === "vehicle") { va = a.r.vehicles.join(); vb = b.r.vehicles.join(); }
@@ -1723,11 +1950,12 @@
       "coinvest_status","coinvest_basis","mandate","principal","title","role_class","linkedin","linkedin_status",
       "email","email_status","email_basis","phone_office","phone_office_status","phone_mobile","phone_mobile_status",
       "phone_mobile_basis","reachable_via","stated_preference","stated_preference_basis",
-      "latest_signal_date","latest_signal_type","latest_signal","record_verified_at"];
+      "latest_signal_date","latest_signal_type","latest_signal","record_verified_at",
+      "predictability_index_MODELLED","predictability_band","predictability_inputs","predictability_points_to"];
     function q(v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; }
     var lines = [head.join(",")];
     state.shortlist.forEach(function (id) {
-      var r = BY_ID[id], p = r.principal, s = r.signals[0];
+      var r = BY_ID[id], p = r.principal, s = r.signals[0], pv = predictability(r);
       lines.push([r.name, r.typeLabel, r.typeBasis, r.city, r.country, r.aumLabel, lab("origin", r.origin),
         r.vehicles.map(function (v) { return lab("vehicle", v); }).join("; "),
         r.investGeo.map(function (v) { return lab("geo", v); }).join("; "),
@@ -1739,7 +1967,10 @@
         channelsOf(r).map(function (ch) { return lab("channel", ch); }).join("; "),
         p.preferred ? lab("channel", p.preferred.channel) : "",
         p.preferred ? p.preferred.basis : "",
-        s ? s.d : "", s ? lab("signalType", s.type) : "", s ? s.t : "", r.verifiedAt].map(q).join(","));
+        s ? s.d : "", s ? lab("signalType", s.type) : "", s ? s.t : "", r.verifiedAt,
+        pv.score, pv.band.label,
+        pv.drivers.map(function (d) { return d.k + " (+" + d.pts + "): " + d.v; }).join("; "),
+        pv.areas.map(function (a) { return a.tag + " — " + a.n + " event(s), latest " + a.last; }).join("; ")].map(q).join(","));
     });
     return lines.join("\n");
   }
@@ -1855,10 +2086,11 @@
     var comp = DATA.filter(function (r) { return tierOf(r) === "complete"; }).length;
     var co = DATA.filter(function (r) { return r.coinvest.status === "evidenced"; }).length;
     var fresh = DATA.filter(function (r) { return r.signals.length && monthsSince(r.signals[0].d) <= 6; }).length;
+    var pat = DATA.filter(function (r) { return predictability(r).score >= 70; }).length;
     el("stats").innerHTML =
       "<span><b>" + DATA.length + "</b> records</span><span><b>" + sfo + "</b> single-family</span>" +
       "<span><b>" + comp + "</b> verified contact</span><span><b>" + co + "</b> co-investors</span>" +
-      "<span><b>" + fresh + "</b> active &lt;6mo</span>";
+      "<span><b>" + fresh + "</b> active &lt;6mo</span><span><b>" + pat + "</b> patterned</span>";
   })();
 
   renderFacets();
