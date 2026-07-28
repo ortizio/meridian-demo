@@ -172,7 +172,9 @@
   .seg button[aria-pressed="true"] { background:var(--brass); color:var(--on-brass); font-weight:600; }
 
   .facet-div { width:1px; align-self:stretch; background:var(--line); margin:0 3px; }
-  /* help markers sit on their own line above the control they describe */
+  /* each cluster is labelled, with help markers on their own line above the controls */
+  .ctrl-group { display:flex; flex-direction:column; gap:5px; }
+  .ctrl-label { font-size:9.5px; text-transform:uppercase; letter-spacing:.13em; font-weight:700; color:var(--text-3); }
   .ctrl { display:flex; flex-direction:column; gap:4px; }
   .ctrl-help { display:flex; gap:5px; min-height:15px; }
   .seg-help { justify-content:space-around; }
@@ -467,15 +469,22 @@
     </section>
 
     <div class="facetbar" id="facetbar">
-      <div class="ctrl">
-        <div class="ctrl-help seg-help" id="view-help"></div>
-        <div class="seg" role="group" aria-label="View">
-          <button type="button" id="view-answer" aria-pressed="true">Answer</button>
-          <button type="button" id="view-table" aria-pressed="false">Table</button>
+      <div class="ctrl-group">
+        <span class="ctrl-label" id="view-label">View</span>
+        <div class="ctrl">
+          <div class="ctrl-help seg-help" id="view-help"></div>
+          <div class="seg" role="group" aria-labelledby="view-label">
+            <button type="button" id="view-answer" aria-pressed="true">Answer</button>
+            <button type="button" id="view-table" aria-pressed="false">Table</button>
+          </div>
         </div>
       </div>
       <span class="facet-div" aria-hidden="true"></span>
-      <div id="facet-groups" style="display:flex;gap:9px;flex-wrap:wrap;align-items:flex-end"></div>
+      <div class="ctrl-group">
+        <span class="ctrl-label" id="filters-label">Filters</span>
+        <div id="facet-groups" role="group" aria-labelledby="filters-label"
+             style="display:flex;gap:9px;flex-wrap:wrap;align-items:flex-end"></div>
+      </div>
       <div class="spacer"></div>
       <button class="ghost" type="button" id="reset">Reset all</button>
     </div>
