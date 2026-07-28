@@ -523,7 +523,7 @@
       family:"Wealth from a 2019 enterprise-software exit.",
       mandate:"Direct minority stakes in healthcare IT and vertical SaaS; fund commitments to lower-mid-market buyout.",
       sectors:["healthcare","technology","software"],
-      coinvest:{ status:"evidenced", basis:"Took a minority position alongside the lead investor in the June 2026 Series A; the firm's site describes co-investing with managers as standard practice." },
+      coinvest:{ status:"evidenced", basis:"Invested in the June 2026 Series A alongside the venture fund leading the round. The firm's own site says it regularly takes positions in deals alongside the fund managers running them." },
       principal:{
         name:"Dana Reisinger", title:"Chief Investment Officer", roleClass:"cio",
         titleBasis:"Firm leadership page, retrieved 2026-07-19; matches her own profile headline.",
@@ -623,7 +623,7 @@
       family:"Industrials wealth from a 2016 sale of a components manufacturer.",
       mandate:"Nordic industrials, listed equities, selective venture through funds.",
       sectors:["industrials","equities","venture"],
-      coinvest:{ status:"evidenced", basis:"The April 2026 fund anchor was disclosed with a co-investment sleeve alongside the general partner, described in the fund's own launch announcement." },
+      coinvest:{ status:"evidenced", basis:"When it anchored the fund in April 2026, it also took a co-investment allocation alongside the general partner running that fund. Both were described in the fund's launch announcement." },
       principal:{
         name:"Annika Lindqvist-Sandel", title:"Managing Director", roleClass:"leadership",
         titleBasis:"Named as MD in the 2025 annual filing.",
@@ -656,7 +656,7 @@
       family:"Shipping and logistics wealth, relocated from Japan in 2018.",
       mandate:"Asia-Pacific logistics, trade finance, early-stage deep tech.",
       sectors:["logistics","technology","trade finance"],
-      coinvest:{ status:"evidenced", basis:"Participated in the June 2026 Series B alongside two named institutional leads, per the company's own funding announcement." },
+      coinvest:{ status:"evidenced", basis:"Invested in the June 2026 Series B alongside the two venture funds leading the round, both named in the company's funding announcement." },
       principal:{
         name:"Wei-Lin Toh", title:"Investment Director", roleClass:"directs",
         titleBasis:"Portfolio-company board listing, March 2026.",
@@ -749,7 +749,7 @@
       family:"Pharmaceutical wealth, sold a generics business in 2011.",
       mandate:"Life sciences venture, European growth equity.",
       sectors:["healthcare","life sciences","venture"],
-      coinvest:{ status:"evidenced", basis:"Co-led the July 2026 Series A with a named institutional investor, disclosed in the round announcement." },
+      coinvest:{ status:"evidenced", basis:"Co-led the July 2026 Series A alongside a named venture fund, disclosed in the round announcement." },
       principal:{
         name:"Katrin Wachter", title:"Partner", roleClass:"directs",
         titleBasis:"Named in two portfolio-company announcements, 2025 and 2026.",
@@ -782,7 +782,7 @@
       family:"Real estate and infrastructure wealth, first generation.",
       mandate:"Regional infrastructure, logistics real estate, selective global funds.",
       sectors:["real estate","infrastructure","logistics"],
-      coinvest:{ status:"evidenced", basis:"The $120M platform commitment was made alongside an institutional sponsor, named in the platform's launch announcement." },
+      coinvest:{ status:"evidenced", basis:"Committed $120M to the platform alongside the infrastructure fund manager sponsoring it, named in the platform's launch announcement." },
       principal:{
         name:"Noor Al-Hamadi", title:"Managing Partner", roleClass:"leadership",
         titleBasis:"Named on the firm's site and in a 2026 infrastructure conference programme.",
@@ -919,7 +919,7 @@
            leadership:"Chief Executive / Managing Partner", family:"Family principal" },
     signalType:{ investment:"Investment made", "fund-commitment":"Fund commitment", hire:"Key hire",
                  allocation:"Allocation change", target:"Stated target" },
-    coinvest:{ evidenced:"Co-invests (confirmed)", "not-found":"No co-investment found", unknown:"Could not determine" },
+    coinvest:{ evidenced:"Invests alongside fund managers", "not-found":"No co-investment found", unknown:"Could not determine" },
     channel:{ emailCorp:"Corporate email", phoneOffice:"Office phone", phoneMobile:"Mobile phone", linkedin:"LinkedIn profile" },
     channelInline:{ emailCorp:"corporate email", phoneOffice:"office phone", phoneMobile:"mobile phone", linkedin:"LinkedIn" },
     contactInline:{ complete:"a confirmed email address", usable:"an email from a data provider", named:"a name but an unconfirmed email", gap:"no usable contact" },
@@ -1071,10 +1071,10 @@
       { key:"region", label:"Headquarters",    kind:"region", opts:function(){ return opts("region", distinct(function(r){return r.regions;})); } },
       { key:"origin", label:"Source of wealth",kind:"origin", opts:function(){ return opts("origin", distinct(function(r){return [r.origin];})); } }
     ]},
-    { key:"mandate", label:"Mandate", note:"Filters describing what the office invests in and how. Co-investment is only marked as confirmed when we found a disclosed deal. Where we could not tell either way, the record says so.", facets:[
+    { key:"mandate", label:"Mandate", note:"Filters describing what the office invests in and how. Co-investment means the office put money into a specific deal alongside the fund manager leading it, rather than only committing to that manager's fund. We mark it confirmed only when we found a deal that was publicly disclosed.", facets:[
       { key:"sector",   label:"Sector focus",      kind:"sector",  opts:function(){ return distinct(function(r){return r.sectors;}).sort().map(function(v){return {v:v,t:v.charAt(0).toUpperCase()+v.slice(1)};}); } },
       { key:"vehicle",  label:"How they invest",   kind:"vehicle", opts:function(){ return opts("vehicle", distinct(function(r){return r.vehicles;})); } },
-      { key:"coinvest", label:"Co-investment",     kind:"coinvest",opts:function(){ return opts("coinvest", ["evidenced","not-found","unknown"]); } },
+      { key:"coinvest", label:"Invests alongside fund managers", kind:"coinvest",opts:function(){ return opts("coinvest", ["evidenced","not-found","unknown"]); } },
       { key:"geo",      label:"Where they deploy", kind:"geo",     opts:function(){ return opts("geo", distinct(function(r){return r.investGeo;})); } }
     ]},
     { key:"signal", label:"Signal", note:"Filters describing recent activity. Every item here is an event with a date that already happened. The Predictability Index is our own estimate, calculated from those events.", facets:[
@@ -1173,7 +1173,7 @@
     pharma:["pharmaceutical wealth","pharma wealth"],
     luxury:["luxury wealth","fashion wealth"]
   };
-  var COINVEST_WORDS = ["co-invest","coinvest","co invest","alongside","invest with managers","side-by-side","side by side"];
+  var COINVEST_WORDS = ["co-invest","coinvest","co invest","alongside","invest with managers","fund manager","fund managers","side-by-side","side by side"];
   var CHANNEL_WORDS = {
     phoneMobile:["mobile number","mobile phone","cell phone","cellphone","mobile"],
     phoneOffice:["office line","office phone","desk line","direct line","direct dial"],
@@ -1480,7 +1480,7 @@
     cons.forEach(function (c) {
       if (c.key === "sector") bits.push("active in " + c.value);
       else if (c.key === "vehicle") bits.push("investing through " + lab("vehicle", c.value).toLowerCase());
-      else if (c.key === "coinvest" && c.value === "evidenced") bits.push("with evidenced co-investment");
+      else if (c.key === "coinvest" && c.value === "evidenced") bits.push("that invest alongside fund managers");
       else if (c.key === "region") bits.push("headquartered in " + lab("region", c.value));
       else if (c.key === "geo") bits.push("deploying into " + lab("geo", c.value));
       else if (c.key === "origin") bits.push("built on " + lab("origin", c.value).toLowerCase() + " wealth");
@@ -1504,7 +1504,7 @@
       if (c.key === "type") bits.push("at " + lab("type", c.value).toLowerCase() + "s");
       else if (c.key === "sector") bits.push("at offices active in " + c.value);
       else if (c.key === "vehicle") bits.push("at offices investing through " + lab("vehicle", c.value).toLowerCase());
-      else if (c.key === "coinvest" && c.value === "evidenced") bits.push("at offices with a confirmed co-investment");
+      else if (c.key === "coinvest" && c.value === "evidenced") bits.push("at offices that invest alongside fund managers");
       else if (c.key === "region") bits.push("based in " + lab("region", c.value));
       else if (c.key === "geo") bits.push("at offices deploying into " + lab("geo", c.value));
       else if (c.key === "origin") bits.push("at offices built on " + lab("origin", c.value).toLowerCase() + " wealth");
@@ -1623,7 +1623,7 @@
       var ev = top.filter(function (h) { return h.r.coinvest.status === "evidenced"; });
       var nf = top.filter(function (h) { return h.r.coinvest.status === "not-found"; });
       var uk = top.filter(function (h) { return h.r.coinvest.status === "unknown"; });
-      var coParts = ["<b>" + ev.length + "</b> " + hasHave(ev.length) + " taken part in a co-investment that was publicly disclosed"];
+      var coParts = ["<b>" + ev.length + "</b> " + hasHave(ev.length) + " put money into a deal alongside the fund manager leading it, in a transaction that was publicly disclosed"];
       if (nf.length) coParts.push("<b>" + nf.length + "</b> " + wasWere(nf.length) + " checked and nothing was found");
       if (uk.length) coParts.push("we could not determine it either way for <b>" + uk.length + "</b>");
       var cp = "Co-investment, across the " + top.length + (top.length === 1 ? " firm" : " firms") + " shown: " + andList(coParts) +
@@ -1689,7 +1689,7 @@
     answer: ["Answer view", "A written answer using only the records that matched your search. Each claim carries a number linking to the record it came from. Use this when you want a conclusion and the reasoning behind it."],
     table:  ["Table view", "The same matching records shown as a sortable grid. Click a column heading to sort by it, or click a row to see how that record was checked. Use this when you want to compare records side by side."],
     firm:   ["Firm", "Filters describing the office itself: whether it serves one family or several, how much money it manages, where it is based, and how the family made its money."],
-    mandate:["Mandate", "Filters describing what the office invests in: which sectors, whether it invests directly or through funds, whether it invests alongside other managers, and which regions it puts money into."],
+    mandate:["Mandate", "Filters describing what the office invests in: which sectors, whether it invests directly or through funds, whether it puts money into individual deals alongside the fund manager running them, and which regions it invests in."],
     signal: ["Signal", "Filters describing recent activity: investments, fund commitments, hires and allocation changes, each with a date. This group also holds the Predictability Index, which is our estimate of how consistently a firm invests."],
     contact:["Contact", "Filters describing whether you can reach the decision maker: which contact methods we hold, how well each one is verified, the person's role, and when we last checked the record."]
   };
@@ -1723,7 +1723,7 @@
       sub:"You can ask about four things. Type a question in your own words, or click an example below.",
       cats:[
         { k:"Who the firm is", q:["Single-family offices under $1B", "Offices built on shipping wealth"] },
-        { k:"What they invest in", q:["Which single-family offices invest directly in healthcare?", "Which offices co-invest alongside managers?"] },
+        { k:"What they invest in", q:["Which single-family offices invest directly in healthcare?", "Which offices co-invest alongside fund managers?"] },
         { k:"Recent activity", q:["Who committed to funds in the last 6 months?", "Which offices made a key hire recently?"] },
         { k:"How to reach them", q:["Nordic offices under $1B with a verified email", "Which principals have a mobile number?"] }
       ]
@@ -1941,7 +1941,7 @@
       "</div>" +
       '<div class="rows">' +
       '<div class="row"><div class="row-key">Mandate</div><div class="row-val">' + esc(r.mandate) + "</div></div>" +
-      '<div class="row"><div class="row-key">Co-investment</div><div class="row-val">' + coBadge(r.coinvest.status) +
+      '<div class="row"><div class="row-key">Co-invests with</div><div class="row-val">' + coBadge(r.coinvest.status) +
         '<span class="basis">' + esc(r.coinvest.basis) + "</span></div></div>" +
       "</div>";
 
@@ -2060,7 +2060,7 @@
   function followups() {
     var have = {}; state.cons.forEach(function (c) { have[c.key] = 1; });
     var out = [];
-    if (!have.coinvest) out.push("Which offices co-invest alongside managers?");
+    if (!have.coinvest) out.push("Which offices co-invest alongside fund managers?");
     if (!have.signalType) out.push("Who made a key hire recently?");
     if (!have.contact) out.push("Show me only records I can contact today");
     if (!have.vehicle) out.push("Who commits to funds?");
@@ -2325,7 +2325,7 @@
 
   renderMode();
   renderFacets();
-  input.value = "Which single-family offices co-invest alongside managers?";
+  input.value = "Which single-family offices co-invest alongside fund managers?";
   run(input.value);
 })();
 </script>
