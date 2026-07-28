@@ -76,7 +76,7 @@
   .brand { display:flex; flex-direction:column; margin-right:auto; }
   .brand-name { font-family:var(--font-display); font-size:19px; letter-spacing:.01em; line-height:1.15; }
   .brand-sub { font-size:9.5px; text-transform:uppercase; letter-spacing:.14em; color:var(--text-3); font-weight:600; }
-  .demo-chip { font-size:10.5px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--caution); background:var(--caution-wash); border:1px solid currentColor; border-radius:999px; padding:4px 10px; white-space:nowrap; }
+  .sample-chip { font-size:10.5px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--caution); background:var(--caution-wash); border:1px solid currentColor; border-radius:999px; padding:4px 10px; white-space:nowrap; }
   .stat-strip { display:flex; gap:15px; font-family:var(--font-data); font-size:11px; color:var(--text-3); font-variant-numeric:tabular-nums; flex-wrap:wrap; }
   .stat-strip b { color:var(--text-2); font-weight:600; }
 
@@ -90,10 +90,27 @@
   .go { flex:none; border:0; border-radius:2px; background:var(--brass); color:var(--on-brass); font:inherit; font-size:13px; font-weight:650; letter-spacing:.02em; padding:10px 19px; cursor:pointer; transition:background .15s; }
   .go:hover { background:var(--brass-bright); }
 
-  .presets { display:flex; flex-wrap:wrap; gap:7px; margin-top:11px; align-items:center; }
-  .presets-lead { font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:var(--text-3); font-weight:650; }
-  .preset { font:inherit; font-size:12.5px; color:var(--text-2); background:var(--surface-2); border:1px solid var(--line-soft); border-radius:999px; padding:5px 12px; cursor:pointer; text-align:left; transition:color .15s,border-color .15s; }
-  .preset:hover { color:var(--text); border-color:var(--brass-line); }
+  /* ── what you can ask ── */
+  .asks { margin-top:14px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); overflow:hidden; }
+  .asks-head { padding:13px 16px 12px; border-bottom:1px solid var(--line-soft); display:flex; flex-wrap:wrap; align-items:baseline; gap:10px; }
+  .asks-title { font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; font-weight:700; color:var(--brass); }
+  .asks-sub { font-size:12px; color:var(--text-3); }
+  .asks-grid { display:grid; grid-template-columns:1fr; gap:0; }
+  @media (min-width:640px) { .asks-grid { grid-template-columns:1fr 1fr; } }
+  @media (min-width:1040px) { .asks-grid { grid-template-columns:repeat(4,1fr); } }
+  .ask-cat { display:flex; flex-direction:column; gap:5px; align-items:flex-start; padding:13px 15px; border-bottom:1px solid var(--line-soft); }
+  @media (min-width:640px) { .ask-cat { border-right:1px solid var(--line-soft); } .ask-cat:nth-child(2n) { border-right:0; } }
+  @media (min-width:1040px) { .ask-cat { border-right:1px solid var(--line-soft); border-bottom:0; } .ask-cat:nth-child(2n) { border-right:1px solid var(--line-soft); } .ask-cat:last-child { border-right:0; } }
+  .ask-cat-k { font-size:9.5px; text-transform:uppercase; letter-spacing:.1em; font-weight:700; color:var(--text-3); margin-bottom:2px; }
+
+  .preset { font:inherit; font-size:12.5px; line-height:1.4; color:var(--text-2); background:none; border:0; border-left:2px solid var(--line); padding:3px 0 3px 9px; cursor:pointer; text-align:left; transition:color .15s,border-color .15s; }
+  .preset:hover { color:var(--brass); border-left-color:var(--brass); }
+
+  .ask-limit { padding:13px 15px; background:var(--caution-wash); border-top:1px solid var(--line-soft); display:flex; flex-direction:column; align-items:flex-start; gap:5px; }
+  .ask-limit-k { font-size:9.5px; text-transform:uppercase; letter-spacing:.1em; font-weight:700; color:var(--caution); }
+  .preset.limit { color:var(--caution); border-left-color:var(--caution); opacity:.9; }
+  .preset.limit:hover { color:var(--caution); border-left-color:var(--caution); opacity:1; }
+  .ask-limit-note { font-size:11.5px; color:var(--text-2); line-height:1.5; margin:3px 0 0; max-width:74ch; }
 
   /* ── facet bar ── */
   .facetbar { display:flex; flex-wrap:wrap; gap:9px; align-items:center; margin-top:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
@@ -316,7 +333,7 @@
       <div class="brand-name">Meridian</div>
       <div class="brand-sub">Family Office Intelligence</div>
     </div>
-    <span class="demo-chip">Demo · fictional firms</span>
+    <span class="sample-chip">Sample records · no real firms or people</span>
     <div class="stat-strip" id="stats"></div>
   </header>
 
@@ -328,14 +345,42 @@
       <button class="go" type="submit">Ask</button>
     </form>
 
-    <div class="presets">
-      <span class="presets-lead">Try</span>
-      <button class="preset" type="button">Which single-family offices co-invest alongside managers?</button>
-      <button class="preset" type="button">Who committed to funds in the last 6 months?</button>
-      <button class="preset" type="button">Nordic offices under $1B with a verified email</button>
-      <button class="preset" type="button">Which offices made a key hire recently?</button>
-      <button class="preset" type="button">Which offices will increase crypto allocation next quarter?</button>
-    </div>
+    <section class="asks" aria-label="What you can ask">
+      <div class="asks-head">
+        <span class="asks-title">What you can ask</span>
+        <span class="asks-sub">Every answer is built from four kinds of evidence. Ask in plain English — click an example to run it.</span>
+      </div>
+
+      <div class="asks-grid">
+        <div class="ask-cat">
+          <div class="ask-cat-k">Who the firm is</div>
+          <button class="preset" type="button">Single-family offices under $1B</button>
+          <button class="preset" type="button">Offices built on shipping wealth</button>
+        </div>
+        <div class="ask-cat">
+          <div class="ask-cat-k">What they invest in</div>
+          <button class="preset" type="button">Which single-family offices invest directly in healthcare?</button>
+          <button class="preset" type="button">Which offices co-invest alongside managers?</button>
+        </div>
+        <div class="ask-cat">
+          <div class="ask-cat-k">Why they matter now</div>
+          <button class="preset" type="button">Who committed to funds in the last 6 months?</button>
+          <button class="preset" type="button">Which offices made a key hire recently?</button>
+        </div>
+        <div class="ask-cat">
+          <div class="ask-cat-k">How to reach them</div>
+          <button class="preset" type="button">Nordic offices under $1B with a verified email</button>
+          <button class="preset" type="button">Which principals have a mobile number?</button>
+        </div>
+      </div>
+
+      <div class="ask-limit">
+        <span class="ask-limit-k">What it will not answer</span>
+        <button class="preset limit" type="button">Which offices will increase crypto allocation next quarter?</button>
+        <p class="ask-limit-note">Records are dated events that already happened, so a question about future
+          intent is declined rather than guessed. Run it and the answer explains what the file does hold instead.</p>
+      </div>
+    </section>
 
     <div class="facetbar" id="facetbar">
       <div class="seg" role="group" aria-label="View">
@@ -378,11 +423,11 @@
   </div>
 
   <p class="foot">
-    <b>Interface prototype.</b> Every firm, person, email address and figure is invented for demonstration; no real
-    family office or individual is represented. Retrieval is real — the question is parsed into structured
-    constraints, filters are applied as predicates, and the answer is composed from whatever survives. Dates are
-    computed against a fixed reference of <span style="font-family:var(--font-data)">2026-07-27</span> so the demo
-    stays reproducible.
+    <b>Every firm, person, email address and figure on this page is invented.</b> No real family office or
+    individual is represented, and nothing here should be contacted or acted on. The retrieval is real — each
+    question is parsed into structured constraints, filters are applied as predicates, and the answer is composed
+    only from records that survive. Dates are computed against a fixed reference of
+    <span style="font-family:var(--font-data)">2026-07-27</span> so results stay reproducible.
   </p>
 </div>
 
@@ -401,7 +446,7 @@
 (function () {
   "use strict";
 
-  /* Fixed reference date keeps the demo reproducible. */
+  /* Fixed reference date keeps results reproducible. */
   var AS_OF = "2026-07-27", AS_OF_MONTH = "2026-07";
 
   /* ════════════════════════════════════════════════════════
@@ -785,7 +830,7 @@
         discovery:"Appeared in a conference attendee list. That is a discovery signal only — it proves attendance, not firm type.",
         extraction:"Almost nothing to extract; the firm publishes no structure.",
         enrichment:"No principal could be identified with confidence, so none was invented.",
-        validation:"Failed the firm-identity test. Retained in the demo to show what an unqualified record looks like — in a paid file it would not count toward the deliverable.",
+        validation:"Failed the firm-identity test. Retained to show what an unqualified record looks like — in a paid file it would not count toward the deliverable.",
         confidence:"Low. Type unconfirmed, which blocks the record from qualifying regardless of any other cell."
       }
     }
@@ -1195,7 +1240,7 @@
     }
     if (top.length === 1) {
       return { kind:"grounded", title:"Answer supported — but coverage is thin here",
-        body:"The single match is properly evidenced. This demo holds " + DATA.length + " offices in total, so one result describes the file, not the market." };
+        body:"The single match is properly evidenced. The file holds " + DATA.length + " records in total, so one result describes coverage, not the market." };
     }
     return { kind:"grounded", title:"Answer supported",
       body:"Every firm below carries affirmative evidence of its type, and each claim traces to a dated source. Contact strength varies by record — see the labels." };
@@ -1311,7 +1356,7 @@
 
     /* caveats */
     var cav = [];
-    if (top.length < 3) cav.push("this demo holds only " + DATA.length + " offices, so the count reflects the file rather than the market");
+    if (top.length < 3) cav.push("the file holds only " + DATA.length + " records, so the count reflects coverage rather than the market");
     if (top.some(function (h) { return h.r.type === "unk"; })) cav.push("one match has an unconfirmed firm type and would not ship in a paid file");
     var stale = top.filter(function (h) { return !h.r.signals.length || monthsSince(h.r.signals[0].d) > 6; });
     if (stale.length) cav.push(stale.length + " of these have no activity in the last six months, which limits how timely the intelligence is");
