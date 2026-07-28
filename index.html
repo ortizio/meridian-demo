@@ -237,6 +237,32 @@
   .monitor-row b { font-family:var(--font-data); color:var(--text-2); font-weight:600; }
   .monitor-note { font-size:10.5px; color:var(--text-3); line-height:1.5; margin-top:9px; padding-top:9px; border-top:1px solid var(--line-soft); }
   .monitor-note b { color:var(--caution); font-weight:600; }
+
+  /* ── CRM cluster: named, described, and openly not built yet ── */
+  .soon-tag { font-size:8.5px; letter-spacing:.08em; font-weight:700; color:var(--caution); border:1px solid currentColor; border-radius:2px; padding:1px 4px; margin-left:5px; vertical-align:1px; }
+  .crm-row { display:flex; gap:7px; flex-wrap:wrap; align-items:flex-end; }
+  .crm-item { position:relative; }
+  .crm-btn {
+    font:inherit; font-size:12.5px; color:var(--text-3);
+    background:none; border:1px dashed var(--line); border-radius:2px;
+    padding:8px 12px; cursor:pointer; white-space:nowrap;
+    transition:color .15s, border-color .15s;
+  }
+  .crm-btn:hover, .crm-btn[aria-expanded="true"] { color:var(--brass); border-color:var(--brass-line); border-style:solid; }
+  .crm-pop {
+    position:absolute; top:calc(100% + 7px); left:0; z-index:50; width:270px;
+    background:var(--surface); border:1px solid var(--brass-line); border-radius:var(--radius);
+    box-shadow:var(--shadow-lg); padding:11px 13px;
+  }
+  .crm-pop.up { top:auto; bottom:calc(100% + 7px); }
+  /* buttons near the end of the row would push a left-anchored popover off-screen */
+  .crm-pop.flip-left { left:auto; right:0; }
+  .crm-pop-k { font-size:9px; text-transform:uppercase; letter-spacing:.1em; font-weight:700; color:var(--brass); margin-bottom:5px; display:flex; justify-content:space-between; gap:8px; align-items:baseline; }
+  .crm-pop-k em { font-style:normal; color:var(--caution); font-size:8.5px; }
+  .crm-pop-v { font-size:12px; color:var(--text-2); line-height:1.55; }
+  @media (max-width:700px) {
+    .crm-pop, .crm-pop.up { position:fixed; left:12px; right:12px; width:auto; top:auto; bottom:12px; }
+  }
   .facet-grid { display:flex; flex-direction:column; gap:12px; }
   .facet-row { display:flex; flex-direction:column; gap:5px; }
   .facet-lab { font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-3); font-weight:650; }
@@ -517,6 +543,10 @@
         <span class="ctrl-label" id="filters-label">Filters</span>
         <div id="facet-groups" role="group" aria-labelledby="filters-label"
              style="display:flex;gap:9px;flex-wrap:wrap;align-items:flex-end"></div>
+      </div>
+      <div class="ctrl-group crm-group">
+        <span class="ctrl-label" id="crm-label">CRM <span class="soon-tag">Planned</span></span>
+        <div id="crm-row" class="crm-row" role="group" aria-labelledby="crm-label"></div>
       </div>
       <div class="spacer"></div>
       <button class="ghost" type="button" id="reset">Reset all</button>
@@ -1830,6 +1860,52 @@
     root.querySelectorAll(".help-pop").forEach(function (p) { p.addEventListener("click", function (e) { e.stopPropagation(); }); });
   }
 
+  /* ── CRM: the outreach half of the workflow, in the order it happens ── */
+  var CRM = [
+    ["Lists", "The saved collections of firms you build from search results. Every outreach effort starts with a list, so this is the object everything else hangs off."],
+    ["Contacts", "The principals you have pulled into your working set, kept separate from the raw dataset. This is where confirmed emails and phone numbers become your own book."],
+    ["Templates", "The outreach messages themselves. Fund managers and placement agents send near-identical introductions at volume, so templates are the feature they expect to find."],
+    ["Sequences", "The scheduled follow-up chains. A single email gets a low reply rate and the follow-ups do most of the work, so outreach is planned as a series rather than one message."],
+    ["Pipeline", "The tracking view: who was contacted, who replied, who took a meeting, and who committed. Everyone who would buy this already thinks in these terms."]
+  ];
+
+  function renderCRM() {
+    el("crm-row").innerHTML = CRM.map(function (c, i) {
+      return '<div class="crm-item">' +
+        '<button class="crm-btn" type="button" aria-expanded="false" data-crm="' + i + '">' + esc(c[0]) + "</button>" +
+        '<div class="crm-pop" hidden><div class="crm-pop-k"><span>' + esc(c[0]) + "</span><em>Not built yet</em></div>" +
+        '<div class="crm-pop-v">' + esc(c[1]) + "</div></div></div>";
+    }).join("");
+
+    el("crm-row").querySelectorAll("[data-crm]").forEach(function (b) {
+      b.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var open = b.getAttribute("aria-expanded") === "true";
+        closePanels(); closeHelp(); closeCRM();
+        if (!open) {
+          b.setAttribute("aria-expanded", "true");
+          var pop = b.parentNode.querySelector(".crm-pop");
+          pop.hidden = false;
+          if (window.innerWidth > 700) {
+            var hr = b.parentNode.getBoundingClientRect();
+            pop.classList.toggle("up", pop.scrollHeight > window.innerHeight - hr.bottom - 18);
+            /* measure after showing, then flip horizontally if it runs off the edge */
+            if (pop.getBoundingClientRect().right > window.innerWidth - 12) pop.classList.add("flip-left");
+          }
+        }
+      });
+    });
+    el("crm-row").querySelectorAll(".crm-pop").forEach(function (p) {
+      p.addEventListener("click", function (e) { e.stopPropagation(); });
+    });
+  }
+  function closeCRM() {
+    document.querySelectorAll(".crm-btn[aria-expanded='true']").forEach(function (b) { b.setAttribute("aria-expanded", "false"); });
+    document.querySelectorAll(".crm-pop").forEach(function (p) {
+      p.hidden = true; p.classList.remove("up"); p.classList.remove("flip-left");
+    });
+  }
+
   /* ── two search levels ── */
   var MODES = {
     firm: {
@@ -2021,8 +2097,8 @@
       p.hidden = true; p.classList.remove("up"); p.style.maxHeight = "";
     });
   }
-  document.addEventListener("click", function () { closePanels(); closeHelp(); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closePanels(); closeHelp(); } });
+  document.addEventListener("click", function () { closePanels(); closeHelp(); closeCRM(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closePanels(); closeHelp(); closeCRM(); } });
 
   /* ── active constraint chips ── */
   function renderActive() {
@@ -2406,16 +2482,26 @@
       "<h3>Why signals matter more than a list</h3>" +
       "<p>Most family office data is assembled once and sold as a snapshot. It is accurate the week it is built and " +
       "decays from there. People move, mandates shift, and the reason to call someone expires.</p>" +
-      "<p>Meridian keeps watching. A firm that committed capital to a fund last month, hired a head of direct " +
-      "investments in January, or published an allocation target is a firm with a reason to take your call now. That " +
-      "timing is the difference between a list of names and a list of openings, and it is the part you cannot " +
-      "recreate by buying a database.</p>" +
+      "<p>Meridian is built to update in real time. Signals land as they happen rather than waiting for the next " +
+      "release, and a firm that committed capital to a fund last month, hired a head of direct investments in " +
+      "January, or published an allocation target is a firm with a reason to take your call now. That timing is the " +
+      "difference between a list of names and a list of openings, and it is the part you cannot recreate by buying " +
+      "a database.</p>" +
+
+      "<h3>Validation runs continuously, not once</h3>" +
+      "<p>Contact details decay faster than anything else in this market. People change roles, domains change hands, " +
+      "and an address that resolved last quarter may not resolve today. Most datasets validate at build time and ship " +
+      "a status that ages from the moment it is printed.</p>" +
+      "<p>Meridian revalidates on the same continuous cycle that brings in new signals. The status on every contact " +
+      "reflects the last check rather than the day the file was assembled, and a status only ever moves toward less " +
+      "confidence when the evidence weakens. That is the part of this that is genuinely hard to copy: anyone can sell " +
+      "a list, and keeping one true is the actual work.</p>" +
 
       "<h3>How the monitoring works</h3>" +
       "<p>A watcher runs continuously across filings, press coverage, portfolio-company announcements and conference " +
       "programmes, and adds an event to a firm's record only when that event carries a date and a source. Each new " +
       "event also feeds the Predictability Index, so a firm's score moves as its behaviour does. <b>In this demo the " +
-      "dataset is a fixed snapshot, so the sweep date does not advance.</b></p>" +
+      "dataset is a fixed snapshot, so nothing is arriving and the sweep date does not advance.</b></p>" +
 
       "<h3>The four question types</h3>" +
       "<p>Meridian answers four kinds of question:</p><ol>" +
@@ -2547,6 +2633,7 @@
 
   renderMode();
   renderFacets();
+  renderCRM();
   input.value = "Which single-family offices co-invest alongside fund managers?";
   run(input.value);
 })();
