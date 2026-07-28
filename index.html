@@ -557,7 +557,7 @@
       family:"Third-generation energy and midstream wealth.",
       mandate:"Real assets and energy transition; opportunistic direct healthcare services since 2024.",
       sectors:["energy","healthcare","real assets"],
-      coinvest:{ status:"not-found", basis:"No co-investment disclosed in any located transaction; both known deals were sole or majority acquisitions. Searched, not assumed." },
+      coinvest:{ status:"not-found", basis:"We checked both transactions we could find. Both were sole or majority acquisitions with no partner disclosed." },
       principal:{
         name:"Marcus Oyelaran", title:"Head of Direct Investments", roleClass:"directs",
         titleBasis:"Conference speaker biography, April 2026; consistent with his profile.",
@@ -590,7 +590,7 @@
       family:"Serves 14 families. No single controlling family.",
       mandate:"Multi-asset discretionary with a growing private credit sleeve since 2023.",
       sectors:["credit","multi-asset"],
-      coinvest:{ status:"unknown", basis:"Not established. The discretionary multi-client structure means co-investment posture cannot be read from public sources, and no disclosed transaction settles it either way." },
+      coinvest:{ status:"unknown", basis:"We could not determine this. The firm invests on a discretionary basis for several families and does not disclose individual transactions, so nothing public shows whether it co-invests." },
       principal:{
         name:"Priya Ellsworth", title:"Partner, Private Credit", roleClass:"credit",
         titleBasis:"Firm team page, retrieved 2026-07-21.",
@@ -686,7 +686,7 @@
       family:"Luxury goods wealth, second generation.",
       mandate:"Italian real estate, luxury and consumer brands, opportunistic credit.",
       sectors:["real estate","consumer","luxury","credit"],
-      coinvest:{ status:"not-found", basis:"Both located transactions were sole acquisitions with no disclosed partner. Absence of evidence, recorded as such rather than as a negative finding." },
+      coinvest:{ status:"not-found", basis:"We checked both transactions we could find. Neither disclosed a partner. That means we found no evidence of co-investment, which is not the same as confirming the firm does not co-invest." },
       principal:{
         name:"Giulia Marchetti", title:"Head of Investments", roleClass:"directs",
         titleBasis:"Named in a 2026 trade-press interview and on the firm's contact page.",
@@ -719,7 +719,7 @@
       family:"Serves nine families across German-speaking Europe.",
       mandate:"Capital preservation, private credit, structured products.",
       sectors:["credit","multi-asset","structured"],
-      coinvest:{ status:"unknown", basis:"Not established from public sources; the firm discloses allocations but not transaction-level participation." },
+      coinvest:{ status:"unknown", basis:"We could not determine this. The firm publishes its overall allocations but not the individual transactions behind them." },
       principal:{
         name:"Tobias Reisch", title:"Head of Private Markets", roleClass:"directs",
         titleBasis:"Firm team page, retrieved 2026-07-20.",
@@ -816,7 +816,7 @@
       family:"Shipping wealth, now redeploying into renewables.",
       mandate:"Offshore wind, maritime decarbonisation, Nordic growth equity.",
       sectors:["renewables","shipping","industrials"],
-      coinvest:{ status:"not-found", basis:"The single located transaction discloses no partner. Too thin a record to conclude either way, so recorded as not found rather than as a no." },
+      coinvest:{ status:"not-found", basis:"We found only one transaction and it discloses no partner. That is too little to conclude either way, so we record it as not found." },
       principal:{
         name:"Henrik Brennholm", title:"Chief Executive", roleClass:"leadership",
         titleBasis:"Named as CEO in the 2025 annual filing.",
@@ -846,7 +846,7 @@
       family:"Serves 22 families. No controlling family.",
       mandate:"Discretionary multi-asset, alternatives sleeve via funds.",
       sectors:["multi-asset","alternatives"],
-      coinvest:{ status:"unknown", basis:"Fund-only access model; no transaction-level participation is disclosed, so co-investment posture cannot be established." },
+      coinvest:{ status:"unknown", basis:"We could not determine this. The firm invests only through funds and discloses no individual transactions." },
       principal:{
         name:"Alan Petrossian", title:"Director of Alternatives", roleClass:"directs",
         titleBasis:"Firm team page, retrieved 2026-07-18.",
@@ -876,7 +876,7 @@
       family:"Not established.",
       mandate:"Described only as wealth structuring and investment oversight.",
       sectors:[],
-      coinvest:{ status:"unknown", basis:"Nothing established. The firm discloses no transactions at all." },
+      coinvest:{ status:"unknown", basis:"We could not determine this. The firm discloses no transactions at all." },
       principal:{
         name:null, title:null, roleClass:null,
         titleBasis:"No named investment decision-maker found in public sources.",
@@ -1445,7 +1445,7 @@
     }
     if (askedCoinvest) {
       var unk = top.filter(function (h) { return h.r.coinvest.status === "unknown"; }).length;
-      if (unk) return { kind:"qualified", title:"Answer qualified — co-investment posture is not established everywhere",
+      if (unk) return { kind:"qualified", title:"We could not confirm co-investment for every firm here",
         body:"We could not determine whether " + unk + " of these " + top.length + " firms co-invest. Where we cannot find evidence either way we record it as unknown, which is not the same as confirming that a firm does not co-invest." };
     }
     if (askedContact && weak > 0) {
