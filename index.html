@@ -140,14 +140,18 @@
   .ask-pred-note b { color:var(--text); }
 
   /* ── facet bar ── */
-  .facetbar { display:flex; flex-wrap:wrap; gap:9px; align-items:center; margin-top:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
+  .facetbar { display:flex; flex-wrap:wrap; gap:9px; align-items:flex-end; margin-top:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
   .seg { display:flex; border:1px solid var(--line); border-radius:2px; overflow:hidden; flex:none; }
   .seg button { font:inherit; font-size:12.5px; border:0; background:var(--surface); color:var(--text-2); padding:8px 15px; cursor:pointer; transition:background .15s,color .15s; }
   .seg button + button { border-left:1px solid var(--line); }
   .seg button[aria-pressed="true"] { background:var(--brass); color:var(--on-brass); font-weight:600; }
 
   .facet-div { width:1px; align-self:stretch; background:var(--line); margin:0 3px; }
-  .facet { position:relative; display:flex; align-items:center; gap:5px; }
+  /* help markers sit on their own line above the control they describe */
+  .ctrl { display:flex; flex-direction:column; gap:4px; }
+  .ctrl-help { display:flex; gap:5px; min-height:15px; }
+  .seg-help { justify-content:space-around; }
+  .facet { position:relative; display:flex; flex-direction:column; gap:4px; align-items:flex-start; }
   .facet-btn {
     font:inherit; font-size:12.5px; color:var(--text-2); background:var(--surface);
     border:1px solid var(--line); border-radius:2px; padding:8px 12px; cursor:pointer;
@@ -394,11 +398,11 @@
     <div class="modes" role="group" aria-label="What you are searching for">
       <button class="mode" type="button" id="mode-firm" aria-pressed="true">
         <span class="mode-t">Family office firms</span>
-        <span class="mode-s">Find institutions — mandate, size, activity, co-investment</span>
+        <span class="mode-s">Find family office entities</span>
       </button>
       <button class="mode" type="button" id="mode-principal" aria-pressed="false">
         <span class="mode-t">Family office principals</span>
-        <span class="mode-s">Find decision-makers — role, channels, verified contact</span>
+        <span class="mode-s">Find family office decision makers — CEOs, Founders, CIOs, Partners</span>
       </button>
     </div>
 
@@ -420,30 +424,32 @@
       <div class="ask-pred">
         <div class="ask-pred-head">
           <span class="ask-pred-k">Predictability Index</span>
-          <span class="ask-pred-tag">Modelled, not stated</span>
+          <span class="ask-pred-tag">Estimated from past activity</span>
         </div>
         <div class="ask-pred-row">
           <button class="preset pred" type="button">Which offices are most likely to invest in healthcare again?</button>
           <button class="preset pred" type="button">Which offices deploy capital most consistently?</button>
           <button class="preset pred" type="button">Which offices routinely invest in private credit?</button>
         </div>
-        <p class="ask-pred-note">Every record carries an index scored from its own dated events — how much it
-          does, how recently, how repetitively, how regularly, and whether it published a target in its own
-          words. Each score shows the inputs behind it, and points to where the record leans. It is an
-          inference drawn from history, never something a firm has said.
-          <b>Where there is no track record, nothing is produced:</b> ask about crypto and the answer is that
-          the file holds nothing to model.</p>
+        <p class="ask-pred-note">Every firm has a score out of 100 that estimates how consistently it invests. We
+          calculate it from that firm's own recorded activity: how many investments it has made, how recently,
+          how often it returns to the same theme, how regular its pace is, and whether it has published a
+          target. Each score lists the figures we used and the areas the firm has invested in before. No firm
+          has told us what it will do next. <b>If a firm has no recorded activity in an area, we do not produce
+          a score.</b> Ask about crypto and the answer will tell you the dataset holds nothing to calculate from.</p>
       </div>
     </section>
 
     <div class="facetbar" id="facetbar">
-      <div class="seg" role="group" aria-label="View">
-        <button type="button" id="view-answer" aria-pressed="true">Answer</button>
-        <button type="button" id="view-table" aria-pressed="false">Table</button>
+      <div class="ctrl">
+        <div class="ctrl-help seg-help" id="view-help"></div>
+        <div class="seg" role="group" aria-label="View">
+          <button type="button" id="view-answer" aria-pressed="true">Answer</button>
+          <button type="button" id="view-table" aria-pressed="false">Table</button>
+        </div>
       </div>
-      <span id="view-help" style="display:flex;gap:5px"></span>
       <span class="facet-div" aria-hidden="true"></span>
-      <div id="facet-groups" style="display:flex;gap:9px;flex-wrap:wrap"></div>
+      <div id="facet-groups" style="display:flex;gap:9px;flex-wrap:wrap;align-items:flex-end"></div>
       <div class="spacer"></div>
       <button class="ghost" type="button" id="reset">Reset all</button>
     </div>
@@ -471,18 +477,18 @@
 
   <div id="empty" hidden>
     <div class="empty">
-      <h3>Nothing in the file matches every constraint.</h3>
+      <h3>No records match all of your filters.</h3>
       <p id="empty-why"></p>
-      <p>Remove a constraint above, or widen one of the filter groups.</p>
+      <p>Remove one of the filters above to see more results.</p>
     </div>
   </div>
 
   <p class="foot">
     <b>Every firm, person, email address and figure on this page is invented.</b> No real family office or
-    individual is represented, and nothing here should be contacted or acted on. The retrieval is real — each
-    question is parsed into structured constraints, filters are applied as predicates, and the answer is composed
-    only from records that survive. Dates are computed against a fixed reference of
-    <span style="font-family:var(--font-data)">2026-07-27</span> so results stay reproducible.
+    individual appears here, and nothing on this page should be contacted. The search itself is real: each
+    question is broken into filters, those filters are applied to the records, and the answer is written only
+    from the records that match. All dates are calculated against a fixed reference date of
+    <span style="font-family:var(--font-data)">2026-07-27</span> so that results stay the same each time.
   </p>
 </div>
 
@@ -913,11 +919,13 @@
            leadership:"Chief Executive / Managing Partner", family:"Family principal" },
     signalType:{ investment:"Investment made", "fund-commitment":"Fund commitment", hire:"Key hire",
                  allocation:"Allocation change", target:"Stated target" },
-    coinvest:{ evidenced:"Co-invests — evidenced", "not-found":"No co-investment found", unknown:"Not established" },
+    coinvest:{ evidenced:"Co-invests (confirmed)", "not-found":"No co-investment found", unknown:"Could not determine" },
     channel:{ emailCorp:"Corporate email", phoneOffice:"Office phone", phoneMobile:"Mobile phone", linkedin:"LinkedIn profile" },
-    predict:{ patterned:"Patterned", emerging:"Emerging pattern", sparse:"Sparse", minimal:"Minimal basis", none:"Not modellable" },
+    channelInline:{ emailCorp:"corporate email", phoneOffice:"office phone", phoneMobile:"mobile phone", linkedin:"LinkedIn" },
+    contactInline:{ complete:"a confirmed email address", usable:"an email from a data provider", named:"a name but an unconfirmed email", gap:"no usable contact" },
+    predict:{ patterned:"Highly consistent", emerging:"Some consistency", sparse:"Little activity", minimal:"Very little activity", none:"No activity recorded" },
     aum:{ lt500:"Under $500M", "500-1000":"$500M – $1B", "1000-3000":"$1B – $3B", gt3000:"Over $3B", undisclosed:"Undisclosed" },
-    contact:{ complete:"Verified email", usable:"Provider-returned or better", named:"Named principal only", gap:"Documented gaps" },
+    contact:{ complete:"Confirmed email address", usable:"Email from a data provider", named:"Name known, email unconfirmed", gap:"No usable contact" },
     signalAge:{ "3":"Last 3 months", "6":"Last 6 months", "12":"Last 12 months", "24":"Last 2 years" },
     freshness:{ "30":"Last 30 days", "90":"Last 90 days", "180":"Last 180 days" }
   };
@@ -954,11 +962,11 @@
      track record scores zero and is reported as not modellable rather than
      given a speculative number. */
   var PRED_BANDS = [
-    { min:70, key:"patterned", label:"Patterned" },
-    { min:45, key:"emerging",  label:"Emerging pattern" },
-    { min:20, key:"sparse",    label:"Sparse" },
-    { min:1,  key:"minimal",   label:"Minimal basis" },
-    { min:0,  key:"none",      label:"Not modellable" }
+    { min:70, key:"patterned", label:"Highly consistent" },
+    { min:45, key:"emerging",  label:"Some consistency" },
+    { min:20, key:"sparse",    label:"Little activity" },
+    { min:1,  key:"minimal",   label:"Very little activity" },
+    { min:0,  key:"none",      label:"No activity recorded" }
   ];
   function bandOf(score) {
     for (var i = 0; i < PRED_BANDS.length; i++) if (score >= PRED_BANDS[i].min) return PRED_BANDS[i];
@@ -969,18 +977,18 @@
     var sigs = r.signals;
     if (!sigs.length) {
       return { score:0, band:bandOf(0), drivers:[], areas:[],
-               why:"No dated events on file. There is nothing to extrapolate from, so no figure is produced." };
+               why:"This firm has no recorded activity, so we cannot calculate a score." };
     }
     var score = 0, drivers = [];
 
     var vol = Math.min(sigs.length, 4) * 8;
     score += vol;
-    drivers.push({ k:"Volume", v:sigs.length + " dated event" + (sigs.length === 1 ? "" : "s") + " on file", pts:vol });
+    drivers.push({ k:"Number of events", v:sigs.length + " recorded event" + (sigs.length === 1 ? "" : "s"), pts:vol });
 
     var age = monthsSince(sigs[0].d);
     var rec = age <= 3 ? 22 : age <= 6 ? 16 : age <= 12 ? 9 : 2;
     score += rec;
-    drivers.push({ k:"Recency", v:"Latest activity " + age + " month" + (age === 1 ? "" : "s") + " ago", pts:rec });
+    drivers.push({ k:"How recent", v:"Most recent activity was " + age + " month" + (age === 1 ? "" : "s") + " ago", pts:rec });
 
     var counts = {};
     sigs.forEach(function (s) { s.tags.forEach(function (t) { counts[t] = (counts[t] || 0) + 1; }); });
@@ -988,7 +996,7 @@
     if (repeated.length) {
       var rep = Math.min(repeated.length, 2) * 14;
       score += rep;
-      drivers.push({ k:"Repetition", v:"Recurring theme: " + repeated.join(", "), pts:rep });
+      drivers.push({ k:"Repeated theme", v:"Returns to " + repeated.join(" and "), pts:rep });
     }
 
     if (sigs.length >= 2) {
@@ -996,16 +1004,16 @@
       var gap = span / (sigs.length - 1);
       var cad = gap <= 4 ? 16 : gap <= 8 ? 10 : 4;
       score += cad;
-      drivers.push({ k:"Cadence", v:"About one event every " + gap.toFixed(1) + " months", pts:cad });
+      drivers.push({ k:"How regular", v:"About one event every " + gap.toFixed(1) + " months", pts:cad });
     }
 
     if (sigs.some(function (s) { return s.type === "hire"; })) {
       score += 10;
-      drivers.push({ k:"Capacity", v:"Hired into the investment function", pts:10 });
+      drivers.push({ k:"Team growth", v:"Has hired into its investment team", pts:10 });
     }
     if (sigs.some(function (s) { return s.type === "target"; })) {
       score += 18;
-      drivers.push({ k:"Published target", v:"The firm stated a forward target in its own words", pts:18 });
+      drivers.push({ k:"Published target", v:"The firm has published a target of its own", pts:18 });
     }
 
     score = Math.min(100, score);
@@ -1024,7 +1032,7 @@
       .sort(function (a, b) { return b.n - a.n || (a.last < b.last ? 1 : -1); });
 
     return { score:score, band:bandOf(score), drivers:drivers, areas:areas,
-             why:"Modelled from " + sigs.length + " dated event" + (sigs.length === 1 ? "" : "s") + " already on file." };
+             why:"Calculated from " + sigs.length + " recorded event" + (sigs.length === 1 ? "" : "s") + "." };
   }
 
   var CHANNELS = ["emailCorp", "phoneOffice", "phoneMobile", "linkedin"];
@@ -1057,26 +1065,26 @@
   function opts(kind, values) { return values.map(function (v) { return { v:v, t:lab(kind, v) }; }); }
 
   var GROUPS = [
-    { key:"firm", label:"Firm", note:"Who the firm is, and what kind of capital it is.", facets:[
+    { key:"firm", label:"Firm", note:"Filters describing the office itself: its type, its size, where it is based, and where the family wealth came from.", facets:[
       { key:"type",   label:"Office type",     kind:"type",   opts:function(){ return opts("type", ["sfo","mfo","unk"]); } },
       { key:"aum",    label:"Size (AUM)",      kind:"aum",    opts:function(){ return opts("aum", ["lt500","500-1000","1000-3000","gt3000","undisclosed"]); } },
       { key:"region", label:"Headquarters",    kind:"region", opts:function(){ return opts("region", distinct(function(r){return r.regions;})); } },
       { key:"origin", label:"Source of wealth",kind:"origin", opts:function(){ return opts("origin", distinct(function(r){return [r.origin];})); } }
     ]},
-    { key:"mandate", label:"Mandate", note:"What they buy and how they deploy. Co-investment posture requires evidence — an unestablished record says so.", facets:[
+    { key:"mandate", label:"Mandate", note:"Filters describing what the office invests in and how. Co-investment is only marked as confirmed when we found a disclosed deal. Where we could not tell either way, the record says so.", facets:[
       { key:"sector",   label:"Sector focus",      kind:"sector",  opts:function(){ return distinct(function(r){return r.sectors;}).sort().map(function(v){return {v:v,t:v.charAt(0).toUpperCase()+v.slice(1)};}); } },
       { key:"vehicle",  label:"How they invest",   kind:"vehicle", opts:function(){ return opts("vehicle", distinct(function(r){return r.vehicles;})); } },
       { key:"coinvest", label:"Co-investment",     kind:"coinvest",opts:function(){ return opts("coinvest", ["evidenced","not-found","unknown"]); } },
       { key:"geo",      label:"Where they deploy", kind:"geo",     opts:function(){ return opts("geo", distinct(function(r){return r.investGeo;})); } }
     ]},
-    { key:"signal", label:"Signal", note:"Why this record matters now. Activity is a dated event that already happened; the Predictability Index is modelled from those events and is an inference, not a statement by the firm.", facets:[
+    { key:"signal", label:"Signal", note:"Filters describing recent activity. Every item here is an event with a date that already happened. The Predictability Index is our own estimate, calculated from those events.", facets:[
       { key:"signalType", label:"Recent activity", kind:"signalType", opts:function(){ return opts("signalType", distinct(function(r){return r.signals.map(function(s){return s.type;});})); } },
       { key:"signalAge",  label:"Within",          kind:"signalAge",  opts:function(){ return opts("signalAge", ["3","6","12","24"]); } },
       { key:"predict",    label:"Predictability",  kind:"predict",
         opts:function(){ return PRED_BANDS.map(function (b) { return { v:b.key, t:b.label }; }); } }
     ]},
-    { key:"contact", label:"Contact", note:"Whether you can act on this today. A channel counts only at provider-grade or better — a catch-all address is a lead, not a route. Status is never upgraded by a delivery test.", facets:[
-      { key:"channel",   label:"Reachable via — must have every box you tick", kind:"channel", multi:true,
+    { key:"contact", label:"Contact", note:"Filters describing whether you can reach the decision maker. A contact method only counts here if a data provider supplied it or the firm published it. We never raise a contact's status just because an email did not bounce.", facets:[
+      { key:"channel",   label:"Contact methods available (results must have every box you tick)", kind:"channel", multi:true,
         opts:function(){ return opts("channel", CHANNELS); } },
       { key:"contact",   label:"Contact quality",  kind:"contact",   opts:function(){ return opts("contact", ["complete","usable","named","gap"]); } },
       { key:"role",      label:"Decision-maker",   kind:"role",      opts:function(){ return opts("role", distinct(function(r){return [r.principal.roleClass];})); } },
@@ -1300,6 +1308,22 @@
   }
   function fmtAum(m) { return m >= 1000 ? "$" + (m / 1000).toFixed(1).replace(/\.0$/, "") + "B" : "$" + m + "M"; }
 
+  /* small grammar helpers so counted sentences read correctly */
+  function isAre(n) { return n === 1 ? "is" : "are"; }
+  function hasHave(n) { return n === 1 ? "has" : "have"; }
+  function wasWere(n) { return n === 1 ? "was" : "were"; }
+  function andList(arr) {
+    if (!arr.length) return "";
+    if (arr.length === 1) return arr[0];
+    return arr.slice(0, -1).join(", ") + " and " + arr[arr.length - 1];
+  }
+  /* wealth origin written as a phrase that fits inside a sentence */
+  var ORIGIN_PHRASE = {
+    "tech-exit":"the sale of a technology company", energy:"energy", "real-estate":"real estate",
+    industrial:"industrial manufacturing", shipping:"shipping", pharma:"pharmaceuticals",
+    luxury:"luxury goods", "multi-client":"", unknown:""
+  };
+
   /* ════════════════════════════════════════════════════════
      RETRIEVER
      ════════════════════════════════════════════════════════ */
@@ -1386,27 +1410,27 @@
       var uncovered = subject.filter(function (t) { return !DATA.some(function (r) { return blob(r).indexOf(t) !== -1; }); });
       var anchored = cons.some(function (c) { return c.key === "sector" || c.key === "vehicle" || c.key === "signalType"; });
       if (uncovered.length && !anchored) {
-        return { kind:"declined", title:"Nothing in that direction to model",
-          body:"The file holds no history of " + uncovered.slice(0, 3).join(", ") +
-               ". The index extrapolates along dimensions a firm has already acted on; with no track record in that direction there is nothing to project, and a general ranking here would read as a prediction it cannot support." };
+        return { kind:"declined", title:"We have no history to base an estimate on",
+          body:"No firm in this dataset has any recorded activity in " + uncovered.slice(0, 3).join(", ") +
+               ". We only estimate future interest in areas where a firm has already invested, so there is nothing here for us to calculate from." };
       }
       var modellable = hits.filter(function (h) { return predictability(h.r).score >= 20; });
       if (!hits.length) {
-        return { kind:"declined", title:"Nothing to model",
-          body:"No record matches the constraints, so there is no track record to extrapolate from. The index is built from events already on file; where the file is empty it produces nothing rather than a guess." };
+        return { kind:"declined", title:"No firms matched your search",
+          body:"No firm met your filters, so there is no recorded activity for us to base an estimate on." };
       }
       if (!modellable.length) {
-        return { kind:"declined", title:"Too little history to model",
-          body:"Records matched, but none carries enough dated activity to support extrapolation. A number here would be invented rather than derived, so none is given." };
+        return { kind:"declined", title:"Not enough activity to calculate an estimate",
+          body:"Some firms matched your search, but none has enough recorded activity for us to estimate from. We would have to invent a number, so we are not showing one." };
       }
-      return { kind:"modelled", title:"This answer is a model, not a record",
-        body:"Every figure below is extrapolated from dated events already on file — volume, recency, repetition, cadence and any target the firm published itself. It is what the record makes likely, not anything a firm has stated. Each score shows the inputs that produced it." };
+      return { kind:"modelled", title:"These scores are estimates we calculated",
+        body:"We calculated each score from the firm's past activity: how many investments it has made, how recently, how often it repeats the same theme, how regularly it acts, and whether it has published a target of its own. No firm has told us what it will do next. Each score lists the figures we used." };
     }
     if (parsed.speculative) {
-      return { kind:"declined", title:"Not answered — the file cannot support this",
-        body:"This asks what firms intend to do in future. Every record here is built from dated events that already happened. Nothing in the file evidences forward intent, so no answer is given." };
+      return { kind:"declined", title:"We cannot answer this question",
+        body:"You have asked what these firms plan to do. Every record here describes something that already happened on a specific date. We hold no information about anyone's future plans, so we are not going to answer." };
     }
-    if (!hits.length) return { kind:"declined", title:"No qualifying records", body:"Nothing in the file met every constraint." };
+    if (!hits.length) return { kind:"declined", title:"No firms matched", body:"No firm in the dataset met all of your filters." };
 
     var top = hits.slice(0, 6);
     var unconfirmed = top.filter(function (h) { return h.r.type === "unk"; }).length;
@@ -1416,28 +1440,28 @@
     var staleTop = top.filter(function (h) { return !h.r.signals.length || monthsSince(h.r.signals[0].d) > 12; }).length;
 
     if (unconfirmed > 0) {
-      return { kind:"qualified", title:"Answer qualified — one match is not a confirmed family office",
-        body:"One record below has an unconfirmed firm type. It matched your constraints, but it would not count toward a delivered file until its type is established." };
+      return { kind:"qualified", title:"One firm below is not confirmed as a family office",
+        body:"We could not confirm what type of office one of these firms is. It matched your search, but we would not include it in a dataset we sold until its type is confirmed." };
     }
     if (askedCoinvest) {
       var unk = top.filter(function (h) { return h.r.coinvest.status === "unknown"; }).length;
       if (unk) return { kind:"qualified", title:"Answer qualified — co-investment posture is not established everywhere",
-        body:unk + " of the " + top.length + " matches have no established co-investment posture. Absence of evidence is recorded as unknown, never as a no." };
+        body:"We could not determine whether " + unk + " of these " + top.length + " firms co-invest. Where we cannot find evidence either way we record it as unknown, which is not the same as confirming that a firm does not co-invest." };
     }
     if (askedContact && weak > 0) {
-      return { kind:"qualified", title:"Answer qualified — some contact evidence is weaker than it looks",
-        body:"You asked about reaching people. " + weak + " of the " + top.length + " matches carry an email that is catch-all, unverified, or absent. Those are labelled on the records and are not confirmed." };
+      return { kind:"qualified", title:"Some contact details here are unconfirmed",
+        body:"You asked how to reach these people. For " + weak + " of the " + top.length + " results we could not confirm that the email address belongs to the person named. Each record shows what we could and could not verify." };
     }
     if (staleTop === top.length && top.length) {
-      return { kind:"qualified", title:"Answer supported — but the activity is not current",
-        body:"Every match is properly evidenced, yet none carries a signal from the last twelve months. Treat these as static firm records rather than timely intelligence." };
+      return { kind:"qualified", title:"Answer supported, but none of this activity is recent",
+        body:"Every firm below has evidence behind it, but none has any recorded activity in the last twelve months. Use these as background information rather than as a reason to make contact now." };
     }
     if (top.length === 1) {
-      return { kind:"grounded", title:"Answer supported — but coverage is thin here",
-        body:"The single match is properly evidenced. The file holds " + DATA.length + " records in total, so one result describes coverage, not the market." };
+      return { kind:"grounded", title:"Only one firm matched",
+        body:"That firm's record is well evidenced. This dataset holds " + DATA.length + " firms in total, so a single result tells you about the size of the dataset rather than about the wider market." };
     }
-    return { kind:"grounded", title:"Answer supported",
-      body:"Every firm below carries affirmative evidence of its type, and each claim traces to a dated source. Contact strength varies by record — see the labels." };
+    return { kind:"grounded", title:"Answer supported by the records",
+      body:"Each firm below has evidence confirming what type of office it is, and every claim links to a source with a date. Contact quality varies between records, so check the label on each one." };
   }
 
   /* ════════════════════════════════════════════════════════
@@ -1473,43 +1497,77 @@
     return head + (bits.length ? " " + bits.slice(0, 4).join(", ") : "");
   }
 
+  /* the same constraints read differently when the result is a person */
+  function describePeople(cons) {
+    var bits = [];
+    cons.forEach(function (c) {
+      if (c.key === "type") bits.push("at " + lab("type", c.value).toLowerCase() + "s");
+      else if (c.key === "sector") bits.push("at offices active in " + c.value);
+      else if (c.key === "vehicle") bits.push("at offices investing through " + lab("vehicle", c.value).toLowerCase());
+      else if (c.key === "coinvest" && c.value === "evidenced") bits.push("at offices with a confirmed co-investment");
+      else if (c.key === "region") bits.push("based in " + lab("region", c.value));
+      else if (c.key === "geo") bits.push("at offices deploying into " + lab("geo", c.value));
+      else if (c.key === "origin") bits.push("at offices built on " + lab("origin", c.value).toLowerCase() + " wealth");
+      else if (c.key === "aumMax") bits.push("at offices under " + fmtAum(c.value));
+      else if (c.key === "aumMin") bits.push("at offices above " + fmtAum(c.value));
+      else if (c.key === "aum") bits.push("at offices of " + lab("aum", c.value).toLowerCase());
+      else if (c.key === "signalType") bits.push("at offices with a " + lab("signalType", c.value).toLowerCase() + " on record");
+      else if (c.key === "signalAge") bits.push("at offices active in the " + lab("signalAge", c.value).toLowerCase());
+      else if (c.key === "role") bits.push("whose role is " + lab("role", c.value).toLowerCase());
+      else if (c.key === "contact") bits.push("with " + lab("contactInline", c.value));
+      else if (c.key === "channel") bits.push("reachable by " + lab("channelInline", c.value));
+      else if (c.key === "freshness") bits.push("re-checked in the " + lab("freshness", c.value).toLowerCase());
+    });
+    return bits.slice(0, 4).join(", ");
+  }
+
+  /* the only forward-looking statements we hold are ones a firm published itself */
+  function targetSentence() {
+    var withTarget = DATA.filter(function (r) { return r.signals.some(function (x) { return x.type === "target"; }); });
+    if (!withTarget.length) return "No firm in this dataset has published a target of its own.";
+    return withTarget.length === 1
+      ? "One firm has published a target of its own. " + esc(withTarget[0].name) + " " +
+        esc((function (x) { return x.charAt(0).toLowerCase() + x.slice(1); })(withTarget[0].signals.filter(function (y) { return y.type === "target"; })[0].t.replace(/.$/, ""))) +
+        ". We record that because the firm said it publicly."
+      : withTarget.length + " firms have published targets of their own, which we record because the firms stated them publicly.";
+  }
+
   function compose(parsed, cons, hits, g) {
     var paras = [], declined = g.kind === "declined";
     var top = hits.slice(0, declined ? 2 : 5);
 
     if (declined && parsed.speculative) {
-      paras.push("<b>Meridian cannot answer this.</b> Your question asks what firms will do, not what they have done. Records here are built from dated, evidenced events — investments made, funds committed, people hired, statements published. Inferring intent from past activity would be a guess presented as intelligence, so the system declines rather than obliges.");
+      paras.push("<b>Meridian cannot answer this question.</b> You have asked what these firms will do. Every record here describes something that already happened: an investment made, a fund commitment, a person hired, or a statement the firm published. If we guessed at future plans from past activity, we would be giving you a made-up answer that looks like research. We do not do that.");
       var subj = parsed.tokens.filter(function (t) { return t.length > 3; });
       var uncovered = subj.filter(function (t) { return !DATA.some(function (r) { return blob(r).indexOf(t) !== -1; }); });
       if (uncovered.length) {
-        paras.push("Separately, the file has no coverage of " + esc(uncovered.slice(0, 3).join(", ")) + " at all — not in a mandate, a signal, or a principal's remit. There is nothing here to partially answer, even setting the timing aside.");
+        paras.push("There is a second problem. No firm in this dataset has any recorded connection to " + esc(uncovered.slice(0, 3).join(", ")) + ". It does not appear in any stated mandate, any past activity, or any principal's responsibilities. So even setting aside the question of timing, we hold nothing that could answer this.");
       } else if (top.length) {
-        paras.push("The nearest material by wording is " + listNames(top, 2) + ". Both describe things that already happened, with dates attached. Neither establishes what comes next.");
+        paras.push("The closest records by wording are " + listNames(top, 2) + ". Both describe events that already happened, each with a date. Neither tells us what those firms will do next.");
       }
-      paras.push("Where a forward statement does exist, it is because a firm published one — Cedar &amp; Vane's £250M private credit target for 2027 is the only such case in this file. That is the firm's stated intention, recorded as theirs, not our prediction on their behalf.");
+      paras.push(targetSentence());
       return paras;
     }
     /* propensity: rank by how modellable the record is, and say plainly that it is modelled */
     if (g.kind === "modelled") {
       var ranked = top.map(function (h) { return { h:h, p:predictability(h.r) }; });
-      paras.push("Ranked by Predictability Index, the strongest pattern is <b>" + esc(ranked[0].h.r.name) +
-        "</b> {{" + ranked[0].h.r.id + "}} at <b>" + ranked[0].p.score + "/100</b> — " +
-        esc(ranked[0].p.band.label.toLowerCase()) + ". " + esc(ranked[0].p.why) +
-        " The score rises with how much a firm does, how recently, how repetitively, and whether it published a target in its own words.");
+      paras.push("<b>" + esc(ranked[0].h.r.name) + "</b> {{" + ranked[0].h.r.id + "}} has the highest Predictability Index at <b>" +
+        ranked[0].p.score + " out of 100</b>, which we describe as " + esc(ranked[0].p.band.label.toLowerCase()) + ". " +
+        esc(ranked[0].p.why) + " A score goes up when a firm invests more often, invests more recently, returns to the same theme, keeps a regular pace, or publishes a target of its own.");
 
       var withAreas = ranked.filter(function (x) { return x.p.areas.length; });
       if (withAreas.length) {
-        paras.push("Where the records point: " + withAreas.slice(0, 3).map(function (x) {
+        paras.push("Each firm has invested in these areas before: " + withAreas.slice(0, 3).map(function (x) {
           var a = x.p.areas[0];
-          return "<b>" + esc(x.h.r.name) + "</b> {{" + x.h.r.id + "}} toward " + esc(a.tag) +
-                 " (" + a.n + " event" + (a.n === 1 ? "" : "s") + ", latest " + esc(a.last) + ")";
-        }).join("; ") + ". These are extrapolations from what each firm has already done, and each card shows the events behind them.");
+          return "<b>" + esc(x.h.r.name) + "</b> {{" + x.h.r.id + "}} in " + esc(a.tag) +
+                 " (" + a.n + " event" + (a.n === 1 ? "" : "s") + ", most recent " + esc(a.last) + ")";
+        }).join("; ") + ". Each card below lists the events we used.");
       }
 
       var thin = ranked.filter(function (x) { return x.p.score < 45; });
-      paras.push("Read this as a prompt to look, not as a forecast. " +
-        (thin.length ? "<b>" + thin.length + "</b> of the " + ranked.length + " shown sit below an emerging pattern, meaning one or two events are carrying the score — thin ground for any conclusion. " : "") +
-        "No firm here has said what it will do next. If you need intent rather than pattern, the honest source is a published target, and only one firm in this file has one.");
+      paras.push("Use these scores to decide where to look first. They are not forecasts. Each one describes what a firm has already done. " +
+        (thin.length ? "<b>" + thin.length + "</b> of the " + ranked.length + " firms shown scored below 45, which means one or two events are driving the whole score and there is very little to go on. " : "") +
+        targetSentence());
       return paras;
     }
 
@@ -1525,24 +1583,38 @@
     if (cons.length) {
       lead = (total === 1 ? (people ? "One principal matches" : "One record matches")
                           : total + (people ? " principals match" : " records match")) +
-             ": " + (people ? "decision-makers at " : "") + describe(cons) + ".";
+             (people ? ", " + describePeople(cons) : ": " + describe(cons)) + ".";
     } else {
-      lead = "Nothing has been filtered, so all " + total + (people ? " identified principals" : " records") +
-             " are in scope, ranked by " + (people ? "how reachable they are" : "relevance") + ".";
+      lead = "You have not applied any filters, so all " + total + (people ? " people we could identify are included" : " records are included") +
+             ", ordered by " + (people ? "how easy they are to reach" : "how well they match") + ".";
     }
     lead += " In rank order that is " + names + ".";
-    if (shown < total) lead += " The strongest " + shown + " are shown below.";
+    if (shown < total) lead += " The top " + shown + " are shown below.";
     paras.push(lead);
 
     /* strongest record */
     var best = top[0].r, bs = best.signals[0];
-    var d = "<b>" + esc(best.name) + "</b> {{" + best.id + "}} ranks first — " +
-      esc(lab("origin", best.origin).toLowerCase()) + " wealth, deploying through " +
-      esc(best.vehicles.map(function (v) { return lab("vehicle", v).toLowerCase(); }).join(", ")) + ". ";
-    if (bs) d += "Its most recent activity is dated " + esc(bs.d) + ": " + esc(bs.t.charAt(0).toLowerCase() + bs.t.slice(1)) + " ";
-    d += best.principal.name
-      ? "The person to approach is <b>" + esc(best.principal.name) + "</b>, " + esc(best.principal.title) + "."
-      : "No principal has been identified here, which is why it is not a record you can act on yet.";
+    var originPhrase = ORIGIN_PHRASE[best.origin] || "";
+    var d;
+    if (people) {
+      d = "<b>" + esc(best.principal.name) + "</b> {{" + best.id + "}} ranks first. " +
+        esc(best.principal.title) + " at " + esc(best.name) + ", " + esc(best.city) + ". " +
+        "The office invests through " + esc(andList(best.vehicles.map(function (v) { return lab("vehicle", v).toLowerCase(); }))) + ". ";
+      var chsBest = channelsOf(best);
+      d += chsBest.length
+        ? "You can reach " + esc(best.principal.name.split(" ")[0]) + " by " +
+          esc(andList(chsBest.map(function (c) { return lab("channelInline", c); }))) + "."
+        : "We could not confirm any way to contact this person.";
+    } else {
+      d = "<b>" + esc(best.name) + "</b> {{" + best.id + "}} ranks first. " +
+        (originPhrase ? "The family wealth came from " + esc(originPhrase) + ", and the office invests through "
+                      : "The office invests through ") +
+        esc(andList(best.vehicles.map(function (v) { return lab("vehicle", v).toLowerCase(); }))) + ". ";
+      if (bs) d += "Its most recent activity was in " + esc(bs.d) + ", when it " + esc(bs.t.charAt(0).toLowerCase() + bs.t.slice(1)) + " ";
+      d += best.principal.name
+        ? "The person to contact is <b>" + esc(best.principal.name) + "</b>, " + esc(best.principal.title) + "."
+        : "We have not identified anyone at this firm, so you cannot act on this record yet.";
+    }
     paras.push(d);
 
     /* co-investment, when asked or when it differentiates */
@@ -1551,10 +1623,11 @@
       var ev = top.filter(function (h) { return h.r.coinvest.status === "evidenced"; });
       var nf = top.filter(function (h) { return h.r.coinvest.status === "not-found"; });
       var uk = top.filter(function (h) { return h.r.coinvest.status === "unknown"; });
-      var cp = "On co-investment: <b>" + ev.length + "</b> of the " + top.length + " have a disclosed co-investment behind them";
-      if (nf.length) cp += ", <b>" + nf.length + "</b> were searched with nothing found";
-      if (uk.length) cp += ", and <b>" + uk.length + "</b> could not be established either way";
-      cp += ". The distinction matters — a firm we could not read is not a firm that declines to co-invest, and the records keep those two apart.";
+      var coParts = ["<b>" + ev.length + "</b> " + hasHave(ev.length) + " taken part in a co-investment that was publicly disclosed"];
+      if (nf.length) coParts.push("<b>" + nf.length + "</b> " + wasWere(nf.length) + " checked and nothing was found");
+      if (uk.length) coParts.push("we could not determine it either way for <b>" + uk.length + "</b>");
+      var cp = "Co-investment, across the " + top.length + (top.length === 1 ? " firm" : " firms") + " shown: " + andList(coParts) +
+        ". We record \"could not determine\" separately from \"nothing found\", because failing to find evidence is not the same as confirming that a firm does not co-invest.";
       paras.push(cp);
     }
 
@@ -1562,14 +1635,18 @@
     var tiers = { complete:[], usable:[], named:[], gap:[] };
     top.forEach(function (h) { tiers[tierOf(h.r)].push(h.r); });
     var parts = [];
-    if (tiers.complete.length) parts.push("<b>" + tiers.complete.length + "</b> carry an email confirmed to the named individual");
-    if (tiers.usable.length) parts.push("<b>" + tiers.usable.length + "</b> carry a provider-returned address the firm never published");
-    if (tiers.named.length) parts.push("<b>" + tiers.named.length + "</b> have an address that is catch-all or unverified");
-    if (tiers.gap.length) parts.push("<b>" + tiers.gap.length + "</b> have no usable principal contact");
+    if (tiers.complete.length) parts.push("<b>" + tiers.complete.length + "</b> " + hasHave(tiers.complete.length) + " an email address we confirmed");
+    if (tiers.usable.length) parts.push("<b>" + tiers.usable.length + "</b> " + hasHave(tiers.usable.length) + " an address from a data provider that the firm has never published");
+    if (tiers.named.length) parts.push("<b>" + tiers.named.length + "</b> " + hasHave(tiers.named.length) + " an address we could not tie to the person");
+    if (tiers.gap.length) parts.push("<b>" + tiers.gap.length + "</b> " + hasHave(tiers.gap.length) + " no usable contact at all");
     if (parts.length) {
-      paras.push("On reachability, of the " + top.length + " shown: " + parts.join("; ") + ". " +
-        (tiers.complete.length ? "Start with the confirmed ones — the rest are leads, not contacts."
-                               : "Nothing here is confirmed to an individual, so treat every address below as a lead and verify before you use it."));
+      var others = top.length - tiers.complete.length;
+      paras.push("Contact quality, across the " + top.length + " shown: " + andList(parts) + ". " +
+        (!tiers.complete.length
+          ? "We could not confirm that any of these addresses belongs to the person named, so check each one before you use it."
+          : others === 0
+            ? "Every address here has been confirmed against the named individual, so you can use them directly."
+            : "Start with the confirmed addresses. Treat the other " + others + " as starting points that still need checking."));
     }
 
     /* channels: what routes actually exist, and the preference caveat */
@@ -1577,23 +1654,24 @@
     var liOnly = top.filter(function (h) { var c = channelsOf(h.r); return c.length === 1 && c[0] === "linkedin"; });
     var prefs = top.filter(function (h) { return h.r.principal.preferred; });
     var chParts = [];
-    if (mob.length) chParts.push("<b>" + mob.length + "</b> " + (mob.length === 1 ? "has" : "have") + " a mobile number, which is the rarest channel in this market");
-    if (liOnly.length) chParts.push("<b>" + liOnly.length + "</b> " + (liOnly.length === 1 ? "is" : "are") + " reachable only through LinkedIn");
+    if (mob.length) chParts.push("<b>" + mob.length + "</b> " + hasHave(mob.length) + " a mobile number, which is the hardest contact detail to find for this group");
+    if (liOnly.length) chParts.push("<b>" + liOnly.length + "</b> can only be reached through LinkedIn");
     if (chParts.length || prefs.length) {
-      var cs = "On channels: " + (chParts.length ? chParts.join(", and ") + ". " : "");
+      var cs = "Contact methods: " + (chParts.length ? chParts.join(", and ") + ". " : "");
       cs += prefs.length
-        ? "<b>" + prefs.length + "</b> of these " + (prefs.length === 1 ? "has" : "have") + " a stated preference — meaning the person or the firm published one. Where no preference is shown, none was found; we do not infer what someone prefers from which channels happen to exist."
-        : "None has a stated channel preference on file. What you see is which routes exist, not which one the person would choose — those are different claims and only the first is evidenced here.";
+        ? "<b>" + prefs.length + "</b> of these people " + hasHave(prefs.length) + " publicly said how they prefer to be contacted. Where no preference is shown, we did not find one. We do not guess at a preference from whichever contact methods happen to exist."
+        : "None of these people has said how they prefer to be contacted. The methods listed are simply the ones we were able to verify.";
       paras.push(cs);
     }
 
     /* caveats */
     var cav = [];
-    if (top.length < 3) cav.push("the file holds only " + DATA.length + " records, so the count reflects coverage rather than the market");
-    if (top.some(function (h) { return h.r.type === "unk"; })) cav.push("one match has an unconfirmed firm type and would not ship in a paid file");
+    if (top.length < 3) cav.push("this dataset holds only " + DATA.length + " records, so the number of results tells you about the size of the dataset rather than about the market");
+    if (top.some(function (h) { return h.r.type === "unk"; })) cav.push("we could not confirm the office type for one of these firms, so we would not include it in a dataset we sold");
     var stale = top.filter(function (h) { return !h.r.signals.length || monthsSince(h.r.signals[0].d) > 6; });
-    if (stale.length) cav.push(stale.length + " of these have no activity in the last six months, which limits how timely the intelligence is");
-    if (cav.length) paras.push("Two things to hold lightly: " + cav.join("; ") + ". Ranking is relevance, not a quality judgement — the labels on each record are the thing to read.");
+    if (stale.length) cav.push(stale.length + " of these firms have no recorded activity in the last six months, so the information may be out of date");
+    if (cav.length) paras.push((cav.length === 1 ? "One limitation worth noting: " : "Limitations worth noting: ") +
+      andList(cav) + ". The order above reflects how well each firm matches your search. It is not a ranking of quality, so read the label on each record.");
 
     return paras;
   }
@@ -1608,12 +1686,12 @@
 
   /* ── inline help, in the customer's language rather than the pipeline's ── */
   var HELP = {
-    answer: ["Answer view", "A written answer built only from records that survive your constraints, with a numbered citation to every record behind it. Use this when you want the conclusion and the reasoning."],
-    table:  ["Table view", "The same matching records as a sortable grid — click any column header to sort, click a row to open its full validation chain. Use this when you want to scan and compare rather than read."],
-    firm:   ["Firm", "Filters on what the office is, rather than what it does: single- or multi-family, size by assets, where it is headquartered, and the wealth that created it."],
-    mandate:["Mandate", "Filters on what they buy and how they buy it: sector focus, whether they go direct or through funds, whether they co-invest alongside managers, and which regions they deploy into."],
-    signal: ["Signal", "Filters on dated activity — investments made, fund commitments, key hires, allocation changes — and on the Predictability Index modelled from those events. Everything here already happened; the index is the only inference."],
-    contact:["Contact", "Filters on whether you can act on the record today: which channels exist for the decision-maker, how strongly each is verified, their role, and when the record was last re-checked."]
+    answer: ["Answer view", "A written answer using only the records that matched your search. Each claim carries a number linking to the record it came from. Use this when you want a conclusion and the reasoning behind it."],
+    table:  ["Table view", "The same matching records shown as a sortable grid. Click a column heading to sort by it, or click a row to see how that record was checked. Use this when you want to compare records side by side."],
+    firm:   ["Firm", "Filters describing the office itself: whether it serves one family or several, how much money it manages, where it is based, and how the family made its money."],
+    mandate:["Mandate", "Filters describing what the office invests in: which sectors, whether it invests directly or through funds, whether it invests alongside other managers, and which regions it puts money into."],
+    signal: ["Signal", "Filters describing recent activity: investments, fund commitments, hires and allocation changes, each with a date. This group also holds the Predictability Index, which is our estimate of how consistently a firm invests."],
+    contact:["Contact", "Filters describing whether you can reach the decision maker: which contact methods we hold, how well each one is verified, the person's role, and when we last checked the record."]
   };
   function helpHTML(key) {
     return '<span class="help-wrap"><button class="help" type="button" data-help="' + key +
@@ -1641,23 +1719,23 @@
   var MODES = {
     firm: {
       noun:"office", nounPlural:"offices",
-      placeholder:"Ask about the firms — what they invest in, how they deploy, and how consistently",
-      sub:"Every answer is built from four kinds of evidence. Ask in plain English — click an example to run it.",
+      placeholder:"Ask about the firms — what they invest in and how often",
+      sub:"You can ask about four things. Type a question in your own words, or click an example below.",
       cats:[
         { k:"Who the firm is", q:["Single-family offices under $1B", "Offices built on shipping wealth"] },
         { k:"What they invest in", q:["Which single-family offices invest directly in healthcare?", "Which offices co-invest alongside managers?"] },
-        { k:"Why they matter now", q:["Who committed to funds in the last 6 months?", "Which offices made a key hire recently?"] },
+        { k:"Recent activity", q:["Who committed to funds in the last 6 months?", "Which offices made a key hire recently?"] },
         { k:"How to reach them", q:["Nordic offices under $1B with a verified email", "Which principals have a mobile number?"] }
       ]
     },
     principal: {
       noun:"principal", nounPlural:"principals",
-      placeholder:"Ask about the people — who runs what, and how to reach them",
-      sub:"Results are people, not firms. Records with no identified decision-maker are excluded automatically.",
+      placeholder:"Ask about the people — what they are responsible for and how to reach them",
+      sub:"Results are people. Firms where we could not identify a decision maker are left out.",
       cats:[
-        { k:"Who they are", q:["Chief investment officers at single-family offices", "Who leads private markets?"] },
-        { k:"What they cover", q:["Who runs private credit in Europe?", "Who leads healthcare at a single-family office?"] },
-        { k:"Why now", q:["Principals at offices that invested recently", "Who committed to funds in the last 6 months?"] },
+        { k:"Who the person is", q:["Chief investment officers at single-family offices", "Who leads private markets?"] },
+        { k:"What they are responsible for", q:["Who runs private credit in Europe?", "Who leads healthcare at a single-family office?"] },
+        { k:"Recent activity at their firm", q:["Principals at offices that invested recently", "Who committed to funds in the last 6 months?"] },
         { k:"How to reach them", q:["Which principals have a verified email?", "Which principals have a mobile number?"] }
       ]
     }
@@ -1740,9 +1818,10 @@
     el("facet-groups").innerHTML = GROUPS.map(function (g) {
       var n = g.facets.filter(facetActive).length;
       return '<div class="facet" data-group="' + g.key + '">' +
+        '<div class="ctrl-help">' + helpHTML(g.key) + "</div>" +
         '<button class="facet-btn' + (n ? " on" : "") + '" type="button" aria-expanded="false" data-toggle="' + g.key + '">' +
           esc(g.label) + (n ? '<span class="facet-n">' + n + "</span>" : "") + IC_CARET +
-        "</button>" + helpHTML(g.key) +
+        "</button>" +
         '<div class="facet-panel" hidden>' +
           '<div class="facet-panel-h">' + esc(g.label) + "</div>" +
           '<div class="facet-grid">' + g.facets.map(function (f) {
@@ -1809,8 +1888,8 @@
     });
     if (state.parsed.speculative) chips.push('<span class="con blocked">speculative intent — blocked</span>');
     activeEl.innerHTML = '<span class="active-lead">Constraints</span>' +
-      (chips.length ? chips.join("") + '<span class="active-key">Q = read from your question · F = filter you set</span>'
-                    : '<span class="active-none">None — every record ranked by relevance.</span>');
+      (chips.length ? chips.join("") + '<span class="active-key">Q = taken from your question.  F = filter you selected.</span>'
+                    : '<span class="active-none">No filters applied. All records are included.</span>');
     activeEl.querySelectorAll("[data-drop]").forEach(function (b) {
       b.addEventListener("click", function () {
         var con = state.cons[+b.getAttribute("data-drop")];
@@ -1862,7 +1941,7 @@
       "</div>" +
       '<div class="rows">' +
       '<div class="row"><div class="row-key">Mandate</div><div class="row-val">' + esc(r.mandate) + "</div></div>" +
-      '<div class="row"><div class="row-key">Co-invest</div><div class="row-val">' + coBadge(r.coinvest.status) +
+      '<div class="row"><div class="row-key">Co-investment</div><div class="row-val">' + coBadge(r.coinvest.status) +
         '<span class="basis">' + esc(r.coinvest.basis) + "</span></div></div>" +
       "</div>";
 
@@ -1875,7 +1954,7 @@
                 : '<span class="muted">None identified</span>' + badge("none")) +
         '<span class="basis">' + esc(p.titleBasis) + "</span></div></div>";
     } else {
-      contactBlock += '<div class="row"><div class="row-key">Role basis</div><div class="row-val">' +
+      contactBlock += '<div class="row"><div class="row-key">Role confirmed by</div><div class="row-val">' +
         '<span class="basis" style="margin-top:0">' + esc(p.titleBasis) + "</span></div></div>";
     }
     contactBlock += '<div class="row"><div class="row-key">LinkedIn</div><div class="row-val">' +
@@ -1892,10 +1971,10 @@
       '<span class="basis">' + esc(p.phoneMobileBasis) + "</span></div></div>" +
       '<div class="row"><div class="row-key">Reachable via</div><div class="row-val">' +
       (chs.length ? chs.map(function (ch) { return '<span class="chan">' + esc(lab("channel", ch)) + "</span>"; }).join("")
-                  : '<span class="muted">No channel at provider grade or better</span>') +
-      '<span class="basis">' + (chs.length ? "Channels held at provider grade or better. Weaker cells are shown above but do not count as a route to this person."
-                                           : "Every channel is catch-all, unverified, or absent. Nothing here is a confirmed route.") + "</span>" +
-      (p.preferred ? '<span class="pref">Stated preference: ' + esc(lab("channel", p.preferred.channel)) + "</span>" +
+                  : '<span class="muted">No confirmed contact method</span>') +
+      '<span class="basis">' + (chs.length ? "These are the contact methods a data provider supplied or the firm published. The rows above show details we found but could not confirm belong to this person."
+                                           : "We could not confirm any contact method for this person.") + "</span>" +
+      (p.preferred ? '<span class="pref">This person asks to be contacted by: ' + esc(lab("channel", p.preferred.channel)) + "</span>" +
                      '<span class="basis">' + esc(p.preferred.basis) + "</span>" : "") +
       "</div></div></div>";
 
@@ -1916,18 +1995,18 @@
          '<span class="pred-score">' + pv.score + '<span class="pred-of">/100</span></span>' +
          '<span class="pred-band">' + esc(pv.band.label) + "</span></div>";
     s += '<div class="pred-bar"><span style="width:' + pv.score + '%"></span></div>';
-    s += '<div class="pred-why">' + esc(pv.why) + " Derived from the record — not stated by the firm.</div>";
+    s += '<div class="pred-why">' + esc(pv.why) + " This is our estimate. The firm has not stated it.</div>";
     if (pv.areas.length) {
-      s += '<div class="pred-areas"><span class="pred-sub">Where the record points</span>' +
+      s += '<div class="pred-areas"><span class="pred-sub">Areas this firm has invested in before</span>' +
         pv.areas.map(function (a) {
           return '<div class="pred-area"><b>' + esc(a.tag.charAt(0).toUpperCase() + a.tag.slice(1)) + "</b> — " +
             a.n + " event" + (a.n === 1 ? "" : "s") + ", latest " + esc(a.last) +
             (a.via.length ? ", via " + esc(a.via.join(" and ")) : "") +
-            (a.strength === "single" ? ' <span class="pred-weak">single instance — weak basis</span>' : "") + "</div>";
+            (a.strength === "single" ? ' <span class="pred-weak">only one event, so this is weak evidence</span>' : "") + "</div>";
         }).join("") + "</div>";
     }
     if (pv.drivers.length) {
-      s += '<div class="pred-drivers"><span class="pred-sub">What produced this score</span>' +
+      s += '<div class="pred-drivers"><span class="pred-sub">Figures used in this score</span>' +
         pv.drivers.map(function (d) {
           return '<span class="pred-driver">' + esc(d.k) + ": " + esc(d.v) + ' <b>+' + d.pts + "</b></span>";
         }).join("") + "</div>";
@@ -1963,11 +2042,11 @@
     }).join("");
 
     evidenceEl.innerHTML = '<div class="ev-head"><span class="ev-title">' +
-      (declined ? "Nearest material — not an answer"
+      (declined ? "Closest records we hold"
                 : state.mode === "principal" ? "Principals behind this answer" : "Records behind this answer") + "</span>" +
       '<span class="ev-count">' + top.length + " shown · " +
       (declined ? DATA.length + " in file" : state.hits.length + " matched · " + DATA.length + " in file") + "</span></div>" +
-      (declined ? '<p style="font-size:12.5px;color:var(--text-3);margin:0 0 13px;line-height:1.5">These are the closest records by wording. They do not support the question you asked, and are shown only so you can see what the file does hold.</p>' : "") +
+      (declined ? '<p style="font-size:12.5px;color:var(--text-3);margin:0 0 13px;line-height:1.5">These records are the closest match by wording. They do not answer your question. We show them so you can see what the dataset does contain.</p>' : "") +
       '<div class="cards">' + top.map(function (h, i) { return renderCard(h, i + 1); }).join("") + "</div>";
 
     var fus = followups();
@@ -2106,7 +2185,7 @@
       "email","email_status","email_basis","phone_office","phone_office_status","phone_mobile","phone_mobile_status",
       "phone_mobile_basis","reachable_via","stated_preference","stated_preference_basis",
       "latest_signal_date","latest_signal_type","latest_signal","record_verified_at",
-      "predictability_index_MODELLED","predictability_band","predictability_inputs","predictability_points_to"];
+      "predictability_index_estimated","predictability_band","predictability_inputs","predictability_areas"];
     function q(v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; }
     var lines = [head.join(",")];
     state.shortlist.forEach(function (id) {
@@ -2141,11 +2220,11 @@
   }
   function openChain(id) {
     var r = BY_ID[id], ch = r.chain;
-    var steps = [["Discovery", ch.discovery], ["Extraction", ch.extraction], ["Enrichment", ch.enrichment],
-                 ["Validation", ch.validation], ["Confidence", ch.confidence],
-                 ["Co-investment", r.coinvest.basis]];
+    var steps = [["How we found this firm", ch.discovery], ["How we read the data", ch.extraction],
+                 ["How we added detail", ch.enrichment], ["How we checked it", ch.validation],
+                 ["How confident we are", ch.confidence], ["Co-investment evidence", r.coinvest.basis]];
     showModal('<div class="modal-head"><div><div class="modal-title">' + esc(r.name) + "</div>" +
-      '<div class="modal-sub">Validation chain · ' + esc(r.city) + " · " + esc(r.aumLabel) + " · verified " + esc(r.verifiedAt) + "</div></div>" +
+      '<div class="modal-sub">How this record was built · ' + esc(r.city) + " · " + esc(r.aumLabel) + " · verified " + esc(r.verifiedAt) + "</div></div>" +
       '<button class="ghost" type="button" data-close>Close</button></div><div class="modal-body">' +
       steps.map(function (s, i) {
         return '<div class="chain-step"><div class="chain-rail"><span class="chain-dot"></span>' +
@@ -2156,7 +2235,8 @@
   function openExport() {
     var csv = toCSV();
     showModal('<div class="modal-head"><div><div class="modal-title">Export shortlist</div>' +
-      '<div class="modal-sub">' + state.shortlist.length + " records · 26 columns · every cell ships beside its verification status</div></div>" +
+      '<div class="modal-sub">' + state.shortlist.length + " records, " + csv.split("\n")[0].split(",").length +
+        " columns. Each contact detail is exported next to its verification status.</div></div>" +
       '<button class="ghost" type="button" data-close>Close</button></div><div class="modal-body">' +
       '<textarea class="csv" id="csvbox" readonly></textarea>' +
       '<div style="display:flex;gap:8px;margin-top:12px"><button class="go" type="button" id="copycsv">Copy to clipboard</button>' +
@@ -2186,12 +2266,11 @@
       results.hidden = true; empty.hidden = false;
       /* constraints are applied in order, so report the cascade rather than a bare tally */
       var steps = state.cons.filter(function (c) { return state.dropped[c.key]; }).map(function (c) {
-        return state.dropped[c.key] + " ruled out by " + (FACET_LABEL[c.key] || c.key) +
-               " — not " + conLabel(c);
+        return state.dropped[c.key] + " were removed because they are not " + conLabel(c).toLowerCase() + " (" + (FACET_LABEL[c.key] || c.key).toLowerCase() + ")";
       });
       el("empty-why").textContent = steps.length
-        ? "Starting from " + DATA.length + " records: " + steps.join(", then ") + "."
-        : "No record met the constraints.";
+        ? "We started with " + DATA.length + " records. " + steps.join(". Then ") + "."
+        : "No record met your filters.";
       return;
     }
     empty.hidden = true; results.hidden = false; paint();
