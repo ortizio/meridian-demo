@@ -213,9 +213,30 @@
   .facet-panel {
     position:absolute; top:calc(100% + 7px); left:0; z-index:40; min-width:300px;
     background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
-    box-shadow:var(--shadow-lg); padding:15px 16px 16px;
+    box-shadow:var(--shadow-lg); padding:15px 16px 16px; overflow-y:auto;
   }
+  /* flipped above the button when there is not enough room below it */
+  .facet-panel.up { top:auto; bottom:calc(100% + 7px); }
   .facet-panel-h { font-size:9.5px; text-transform:uppercase; letter-spacing:.12em; font-weight:700; color:var(--brass); margin-bottom:12px; }
+
+  /* the monitored group is the one that changes on its own, so it carries weight */
+  .facet-btn.live { border-color:var(--brass); background:var(--brass-wash); color:var(--brass); font-weight:600; box-shadow:0 0 0 1px var(--brass-line); }
+  .facet-btn.live:hover { border-color:var(--brass-bright); }
+  .live-dot { width:6px; height:6px; border-radius:50%; background:var(--good); flex:none; box-shadow:0 0 0 3px var(--good-wash); animation:pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.35; } }
+  @media (prefers-reduced-motion: reduce) { .live-dot { animation:none; } }
+
+  .monitor { border:1px solid var(--brass-line); background:var(--brass-wash); border-radius:2px; padding:11px 12px; margin-bottom:14px; }
+  .monitor-head { display:flex; align-items:center; gap:7px; margin-bottom:10px; }
+  .monitor-k { font-size:9px; text-transform:uppercase; letter-spacing:.11em; font-weight:700; color:var(--brass); }
+  .monitor-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 12px; margin-bottom:10px; }
+  .monitor-grid > div { display:flex; flex-direction:column; }
+  .monitor-n { font-family:var(--font-data); font-size:17px; font-weight:700; color:var(--brass); line-height:1.1; font-variant-numeric:tabular-nums; }
+  .monitor-l { font-size:10px; color:var(--text-3); margin-top:1px; }
+  .monitor-row { display:flex; justify-content:space-between; gap:10px; font-size:11px; color:var(--text-3); padding:3px 0; border-top:1px solid var(--line-soft); }
+  .monitor-row b { font-family:var(--font-data); color:var(--text-2); font-weight:600; }
+  .monitor-note { font-size:10.5px; color:var(--text-3); line-height:1.5; margin-top:9px; padding-top:9px; border-top:1px solid var(--line-soft); }
+  .monitor-note b { color:var(--caution); font-weight:600; }
   .facet-grid { display:flex; flex-direction:column; gap:12px; }
   .facet-row { display:flex; flex-direction:column; gap:5px; }
   .facet-lab { font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-3); font-weight:650; }
@@ -228,7 +249,7 @@
 
   /* narrow viewports get a bottom sheet — a floating popover has nowhere safe to land */
   @media (max-width:720px) {
-    .facet-panel {
+    .facet-panel, .facet-panel.up {
       position:fixed; top:auto; bottom:0; left:0; right:0; min-width:0;
       max-height:76vh; overflow-y:auto; border-radius:6px 6px 0 0;
       border-left:0; border-right:0; border-bottom:0; padding-bottom:22px;
@@ -1111,6 +1132,38 @@
   }
   function opts(kind, values) { return values.map(function (v) { return { v:v, t:lab(kind, v) }; }); }
 
+  /* The monitoring panel reports what the watcher covers and what it last found.
+     Every number is computed from the dataset, so the panel cannot claim a sweep
+     that did not happen. */
+  function monitorPanel() {
+    var withSignals = DATA.filter(function (r) { return r.signals.length; });
+    var total = DATA.reduce(function (n, r) { return n + r.signals.length; }, 0);
+    var newest = DATA.reduce(function (d, r) {
+      return r.signals.length && r.signals[0].d > d ? r.signals[0].d : d;
+    }, "");
+    var last90 = DATA.reduce(function (n, r) {
+      return n + r.signals.filter(function (s) { return monthsSince(s.d) <= 3; }).length;
+    }, 0);
+    var kinds = {};
+    DATA.forEach(function (r) { r.signals.forEach(function (s) { kinds[s.type] = 1; }); });
+
+    return '<div class="monitor">' +
+      '<div class="monitor-head"><span class="live-dot" aria-hidden="true"></span>' +
+      '<span class="monitor-k">Continuous monitoring</span></div>' +
+      '<div class="monitor-grid">' +
+        '<div><span class="monitor-n">' + total + '</span><span class="monitor-l">events tracked</span></div>' +
+        '<div><span class="monitor-n">' + withSignals.length + '</span><span class="monitor-l">firms with activity</span></div>' +
+        '<div><span class="monitor-n">' + last90 + '</span><span class="monitor-l">in the last 3 months</span></div>' +
+        '<div><span class="monitor-n">' + Object.keys(kinds).length + '</span><span class="monitor-l">kinds of event</span></div>' +
+      "</div>" +
+      '<div class="monitor-row"><span>Last sweep</span><b>' + AS_OF + "</b></div>" +
+      '<div class="monitor-row"><span>Newest event found</span><b>' + newest + "</b></div>" +
+      '<div class="monitor-note">The watcher checks filings, press coverage, portfolio-company announcements and ' +
+      'conference programmes, and adds an event only when it carries a date and a source. ' +
+      '<b>In this demo the dataset is a fixed snapshot, so the sweep date does not advance.</b></div>' +
+      "</div>";
+  }
+
   var GROUPS = [
     { key:"firm", label:"Firm", note:"Filters describing the office itself: its type, its size, where it is based, and where the family wealth came from.", facets:[
       { key:"type",   label:"Office type",     kind:"type",   opts:function(){ return opts("type", ["sfo","mfo","unk"]); } },
@@ -1124,7 +1177,8 @@
       { key:"coinvest", label:"Invests alongside fund managers", kind:"coinvest",opts:function(){ return opts("coinvest", ["evidenced","not-found","unknown"]); } },
       { key:"geo",      label:"Where the firm invests", kind:"geo",     opts:function(){ return opts("geo", distinct(function(r){return r.investGeo;})); } }
     ]},
-    { key:"signal", label:"Signal", note:"Filters describing recent activity. Every item here is an event with a date that already happened. The Predictability Index is our own estimate, calculated from those events.", facets:[
+    { key:"signal", label:"Signals", live:true, panelTop:monitorPanel,
+      note:"A watcher keeps this group current. Every item is an event with a date and a source, and the Predictability Index is recalculated as new events land.", facets:[
       { key:"signalType", label:"Recent activity", kind:"signalType", opts:function(){ return opts("signalType", distinct(function(r){return r.signals.map(function(s){return s.type;});})); } },
       { key:"signalAge",  label:"Within",          kind:"signalAge",  opts:function(){ return opts("signalAge", ["3","6","12","24"]); } },
       { key:"predict",    label:"Predictability",  kind:"predict",
@@ -1750,7 +1804,7 @@
     table:  ["Table view", "The same matching records shown as a sortable grid. Click a column heading to sort by it, or click a row to see how that record was checked. Use this when you want to compare records side by side."],
     firm:   ["Firm", "Filters describing the office itself: whether it serves one family or several, how much money it manages, where it is based, and how the family made its money."],
     mandate:["Mandate", "Filters describing what the office invests in: which sectors, whether it invests directly or through funds, whether it puts money into individual deals alongside the fund manager running them, and which regions it invests in."],
-    signal: ["Signal", "Filters describing recent activity: investments, fund commitments, hires and allocation changes, each with a date. This group also holds the Predictability Index, which is our estimate of how consistently a firm invests."],
+    signal: ["Signals", "This is the group that changes on its own. A watcher runs continuously across filings, press coverage, portfolio-company announcements and conference programmes, and adds an event to a firm's record only when that event carries a date and a source. Filter by what kind of activity happened and how recently. This group also holds the Predictability Index, which is our estimate of how consistently a firm invests, recalculated as new events arrive. In this demo the dataset is a fixed snapshot, so nothing is arriving."],
     contact:["Contact", "Filters describing whether you can reach the decision maker: which contact methods we hold, how well each one is verified, the person's role, and when we last checked the record."],
     predict:["Predictability Index", "Every firm has a score out of 100 that estimates how consistently it invests. We calculate it from that firm's own recorded activity: how many investments it has made, how recently, how often it returns to the same theme, how regular its pace is, whether it has hired into its investment team, and whether it has published a target. Each score lists the figures we used and the areas the firm has invested in before. No firm has told us what it will do next. If a firm has no recorded activity in an area, we do not produce a score — ask about crypto and the answer will tell you the dataset holds nothing to calculate from."]
   };
@@ -1880,11 +1934,14 @@
       var n = g.facets.filter(facetActive).length;
       return '<div class="facet" data-group="' + g.key + '">' +
         '<div class="ctrl-help">' + helpHTML(g.key) + "</div>" +
-        '<button class="facet-btn' + (n ? " on" : "") + '" type="button" aria-expanded="false" data-toggle="' + g.key + '">' +
+        '<button class="facet-btn' + (n ? " on" : "") + (g.live ? " live" : "") +
+          '" type="button" aria-expanded="false" data-toggle="' + g.key + '">' +
+          (g.live ? '<span class="live-dot" aria-hidden="true"></span>' : "") +
           esc(g.label) + (n ? '<span class="facet-n">' + n + "</span>" : "") + IC_CARET +
         "</button>" +
         '<div class="facet-panel" hidden>' +
           '<div class="facet-panel-h">' + esc(g.label) + "</div>" +
+          (g.panelTop ? g.panelTop() : "") +
           '<div class="facet-grid">' + g.facets.map(function (f) {
             var os = f.opts();
             if (f.multi) {
@@ -1910,8 +1967,13 @@
       b.addEventListener("click", function (e) {
         e.stopPropagation();
         var open = b.getAttribute("aria-expanded") === "true";
-        closePanels();
-        if (!open) { b.setAttribute("aria-expanded", "true"); b.parentNode.querySelector(".facet-panel").hidden = false; }
+        closePanels(); closeHelp();
+        if (!open) {
+          b.setAttribute("aria-expanded", "true");
+          var panel = b.parentNode.querySelector(".facet-panel");
+          panel.hidden = false;
+          placePanel(b, panel);
+        }
       });
     });
     el("facet-groups").querySelectorAll("[data-facet]").forEach(function (s) {
@@ -1933,9 +1995,31 @@
     });
     wireHelp(el("facet-groups"));
   }
+  /* Open downward if the panel fits, upward if it does not, and cap the height
+     to whatever space is actually available so the controls stay reachable. */
+  function placePanel(btn, panel) {
+    panel.classList.remove("up");
+    panel.style.maxHeight = "";
+    if (window.innerWidth <= 720) return;   /* bottom sheet handles this */
+    /* measure against the positioning context, not the button: the panel is
+       offset from the .facet box, which starts above the button */
+    var hr = panel.parentNode.getBoundingClientRect();
+    var below = window.innerHeight - hr.bottom - 18;
+    var above = hr.top - 18;
+    var needed = panel.scrollHeight;
+    if (needed > below && above > below) {
+      panel.classList.add("up");
+      panel.style.maxHeight = Math.max(220, Math.min(needed, above)) + "px";
+    } else {
+      panel.style.maxHeight = Math.max(220, Math.min(needed, below)) + "px";
+    }
+  }
+
   function closePanels() {
     document.querySelectorAll(".facet-btn[aria-expanded='true']").forEach(function (b) { b.setAttribute("aria-expanded", "false"); });
-    document.querySelectorAll(".facet-panel").forEach(function (p) { p.hidden = true; });
+    document.querySelectorAll(".facet-panel").forEach(function (p) {
+      p.hidden = true; p.classList.remove("up"); p.style.maxHeight = "";
+    });
   }
   document.addEventListener("click", function () { closePanels(); closeHelp(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closePanels(); closeHelp(); } });
@@ -2312,6 +2396,16 @@
       "<p>The result is speed with evidence. Instead of days spent assembling a target list from scattered databases, " +
       "news searches and manual research, Meridian delivers a filtered list of reachable decision makers in seconds, " +
       "with every figure traceable to recorded activity rather than marketing copy.</p>" +
+
+      "<h3>How the signals stay current</h3>" +
+      "<p>The activity on each record is not assembled once and left to age. A watcher runs continuously across " +
+      "filings, press coverage, portfolio-company announcements and conference programmes, and adds an event to a " +
+      "firm's record only when that event carries a date and a source. Each new event also feeds the Predictability " +
+      "Index, so a firm's score moves as its behaviour does.</p>" +
+      "<p>That is what makes the difference between a list and a feed. A target list assembled by hand is accurate " +
+      "the week it is built. A monitored record tells you that a firm hired a head of direct investments last month, " +
+      "which is the reason to call this week rather than next quarter. <b>In this demo the dataset is a fixed " +
+      "snapshot, so the sweep date does not advance.</b></p>" +
 
       "<h3>The four question types</h3>" +
       "<p>Meridian answers four kinds of question:</p><ol>" +
