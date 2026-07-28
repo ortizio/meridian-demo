@@ -1184,7 +1184,7 @@
       { key:"predict",    label:"Predictability",  kind:"predict",
         opts:function(){ return PRED_BANDS.map(function (b) { return { v:b.key, t:b.label }; }); } }
     ]},
-    { key:"contact", label:"Contact", note:"Filters describing whether you can reach the decision maker. A contact method only counts here if a data provider supplied it or the firm published it. We never raise a contact's status just because an email did not bounce.", facets:[
+    { key:"contact", label:"Connect", note:"Filters describing whether you can reach the decision maker. A contact method only counts here if a data provider supplied it or the firm published it. We never raise a contact's status just because an email did not bounce.", facets:[
       { key:"channel",   label:"Contact methods available (results must have every box you tick)", kind:"channel", multi:true,
         opts:function(){ return opts("channel", CHANNELS); } },
       { key:"contact",   label:"Contact quality",  kind:"contact",   opts:function(){ return opts("contact", ["complete","usable","named","gap"]); } },
@@ -1805,7 +1805,7 @@
     firm:   ["Firm", "Filters describing the office itself: whether it serves one family or several, how much money it manages, where it is based, and how the family made its money."],
     mandate:["Mandate", "Filters describing what the office invests in: which sectors, whether it invests directly or through funds, whether it puts money into individual deals alongside the fund manager running them, and which regions it invests in."],
     signal: ["Signals", "This is the group that changes on its own. A watcher runs continuously across filings, press coverage, portfolio-company announcements and conference programmes, and adds an event to a firm's record only when that event carries a date and a source. Filter by what kind of activity happened and how recently. This group also holds the Predictability Index, which is our estimate of how consistently a firm invests, recalculated as new events arrive. In this demo the dataset is a fixed snapshot, so nothing is arriving."],
-    contact:["Contact", "Filters describing whether you can reach the decision maker: which contact methods we hold, how well each one is verified, the person's role, and when we last checked the record."],
+    contact:["Connect", "Filters describing whether you can reach the decision maker: which contact methods we hold, how well each one is verified, the person's role, and when we last checked the record."],
     predict:["Predictability Index", "Every firm has a score out of 100 that estimates how consistently it invests. We calculate it from that firm's own recorded activity: how many investments it has made, how recently, how often it returns to the same theme, how regular its pace is, whether it has hired into its investment team, and whether it has published a target. Each score lists the figures we used and the areas the firm has invested in before. No firm has told us what it will do next. If a firm has no recorded activity in an area, we do not produce a score — ask about crypto and the answer will tell you the dataset holds nothing to calculate from."]
   };
   function helpHTML(key) {
@@ -2392,20 +2392,30 @@
       "<p>You can search at two levels. <b>Family office firms</b> returns institutions. <b>Family office principals</b> " +
       "returns the people who make the decisions, and leaves out any firm where we could not identify one.</p>" +
 
-      "<h3>Why it matters</h3>" +
-      "<p>The result is speed with evidence. Instead of days spent assembling a target list from scattered databases, " +
-      "news searches and manual research, Meridian delivers a filtered list of reachable decision makers in seconds, " +
-      "with every figure traceable to recorded activity rather than marketing copy.</p>" +
+      "<h3>Who Meridian is for</h3>" +
+      "<p>Meridian is built for people who need to reach family offices, and for family offices looking for partners.</p>" +
+      "<ul>" +
+      "<li><b>Fund managers</b> looking for offices that commit capital to funds in their strategy.</li>" +
+      "<li><b>Direct-deal sponsors</b> looking for offices that write equity checks into individual transactions.</li>" +
+      "<li><b>Funds and family offices</b> looking for co-investment partners on a live deal.</li>" +
+      "<li><b>Placement agents and bankers</b> building a separate target list for each mandate they represent.</li>" +
+      "</ul>" +
+      "<p>The need is the same in every case: identify the right firms, confirm how those firms actually invest, and " +
+      "reach the decision maker without weeks of manual research.</p>" +
 
-      "<h3>How the signals stay current</h3>" +
-      "<p>The activity on each record is not assembled once and left to age. A watcher runs continuously across " +
-      "filings, press coverage, portfolio-company announcements and conference programmes, and adds an event to a " +
-      "firm's record only when that event carries a date and a source. Each new event also feeds the Predictability " +
-      "Index, so a firm's score moves as its behaviour does.</p>" +
-      "<p>That is what makes the difference between a list and a feed. A target list assembled by hand is accurate " +
-      "the week it is built. A monitored record tells you that a firm hired a head of direct investments last month, " +
-      "which is the reason to call this week rather than next quarter. <b>In this demo the dataset is a fixed " +
-      "snapshot, so the sweep date does not advance.</b></p>" +
+      "<h3>Why signals matter more than a list</h3>" +
+      "<p>Most family office data is assembled once and sold as a snapshot. It is accurate the week it is built and " +
+      "decays from there. People move, mandates shift, and the reason to call someone expires.</p>" +
+      "<p>Meridian keeps watching. A firm that committed capital to a fund last month, hired a head of direct " +
+      "investments in January, or published an allocation target is a firm with a reason to take your call now. That " +
+      "timing is the difference between a list of names and a list of openings, and it is the part you cannot " +
+      "recreate by buying a database.</p>" +
+
+      "<h3>How the monitoring works</h3>" +
+      "<p>A watcher runs continuously across filings, press coverage, portfolio-company announcements and conference " +
+      "programmes, and adds an event to a firm's record only when that event carries a date and a source. Each new " +
+      "event also feeds the Predictability Index, so a firm's score moves as its behaviour does. <b>In this demo the " +
+      "dataset is a fixed snapshot, so the sweep date does not advance.</b></p>" +
 
       "<h3>The four question types</h3>" +
       "<p>Meridian answers four kinds of question:</p><ol>" +
