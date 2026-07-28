@@ -1121,7 +1121,7 @@
      ════════════════════════════════════════════════════════ */
   var SECTOR_WORDS = {
     healthcare:["healthcare","health care","medical","clinical","dialysis","diagnostics","pharma","life science","life sciences"],
-    technology:["technology"," tech ","software","saas","deep tech","automation"],
+    technology:["technology","tech","software","saas","deep tech","automation"],
     energy:["energy","oil","gas","midstream"],
     renewables:["renewable","renewables","wind","offshore wind","decarbon","clean energy"],
     "real estate":["real estate","property","development"],
@@ -1135,16 +1135,16 @@
     equities:["equities","listed","public markets"]
   };
   var REGION_WORDS = {
-    "north america":["north america"," us ","u.s.","usa","united states","american","canada","canadian","texas","toronto","dallas","greenwich"],
+    "north america":["north america","us","u.s.","usa","united states","american","canada","canadian","texas","toronto","dallas","greenwich"],
     nordic:["nordic","nordics","scandinavia","scandinavian","sweden","swedish","norway","norwegian","stockholm","oslo","denmark"],
-    uk:[" uk ","u.k.","britain","british","england","london"],
+    uk:["uk","u.k.","britain","british","england","london"],
     europe:["europe","european","italy","italian","austria","austrian","switzerland","swiss","milan","vienna","zurich","liechtenstein","german"],
     asia:["asia","asian","apac","singapore","japan","japanese","asia-pacific","asia pacific"],
     "middle east":["middle east","gulf","uae","dubai","emirates","gcc"]
   };
   var VEHICLE_WORDS = {
     direct:["direct deal","directly","direct investment","direct stake","minority stake"],
-    funds:["fund commitment","commit to funds","committed to funds","fund investor","lp ","anchor"],
+    funds:["fund commitment","commit to funds","commits to funds","committed to funds","capital to funds","fund investor","lp","anchor"],
     venture:["venture","vc ","series a","series b","early stage"],
     credit:["private credit","credit","direct lending"],
     "real-assets":["real assets","infrastructure","property"],
@@ -1152,7 +1152,7 @@
   };
   var SIGNAL_WORDS = {
     investment:["invested","investment","made an investment","deployed","acquired","backed","bought"],
-    "fund-commitment":["fund commitment","committed to a fund","committed to funds","anchored","commitment"],
+    "fund-commitment":["fund commitment","committed capital to funds","committed capital to a fund","commit capital to funds","committing capital to funds","committed to a fund","committed to funds","commits to funds","anchored","commitment"],
     hire:["hire","hired","hiring","key hire","recruited","new team","added a team"],
     allocation:["allocation change","increased allocation","raised allocation","rebalanc","expanded the"],
     target:["stated target","announced a target","allocation target","public target"]
@@ -1161,7 +1161,7 @@
     cio:["cio","chief investment officer"],
     directs:["head of direct","direct investments lead","private markets","investment director","head of investments","director of alternatives"],
     credit:["credit lead","head of credit","private credit partner"],
-    leadership:["ceo","chief executive","managing partner","managing director"," md "],
+    leadership:["ceo","chief executive","managing partner","managing director","md"],
     family:["family principal","family member","the family"]
   };
   var ORIGIN_WORDS = {
@@ -1181,7 +1181,8 @@
     emailCorp:["corporate email","work email","company email"]
   };
   var CONTACT_WORDS = {
-    complete:["verified email","verified contact","confirmed email","reachable today","complete contact"],
+    gap:["no usable contact","no contact","without a contact","cannot be reached","no way to reach","contact gap","documented gap"],
+    complete:["verified email","verified contact","confirmed email address","confirmed email","reachable today","complete contact"],
     usable:["with an email","with email","email address","contactable","reachable","can i reach","how do i reach","who do i contact","who to call"],
     named:["named principal","named contact","named decision","who runs","who leads","who heads","decision-maker","decision maker"]
   };
@@ -1192,12 +1193,24 @@
                     "track record","tend to","typically","consistent","consistently","routinely","routine",
                     "regularly","steadily","rhythm","habitually","reliably"];
 
+  /* Vocabulary is matched on whole words. Substring matching once let "usa" fire
+     inside "usable", turning "no usable contact" into a North America filter. */
+  var _phraseRe = {};
+  function containsPhrase(t, w) {
+    var re = _phraseRe[w];
+    if (!re) {
+      re = new RegExp("(^|[^a-z0-9])" + w.trim().replace(/[.*+?^${}()|[]\]/g, "\$&") + "([^a-z0-9]|$)");
+      _phraseRe[w] = re;
+    }
+    return re.test(t);
+  }
+
   /* longest phrase wins, and the winning phrase is reported so the caller can consume it */
   function longestMatch(map, t) {
     var best = null;
     Object.keys(map).forEach(function (k) {
       map[k].forEach(function (w) {
-        if (t.indexOf(w) !== -1 && (!best || w.length > best.phrase.length)) best = { key:k, phrase:w };
+        if (containsPhrase(t, w) && (!best || w.length > best.phrase.length)) best = { key:k, phrase:w };
       });
     });
     return best;
@@ -1216,7 +1229,7 @@
     else if (/multi[- ]family|\bmfo\b/.test(t)) add("type", "mfo");
 
     Object.keys(REGION_WORDS).forEach(function (k) {
-      if (REGION_WORDS[k].some(function (w) { return t.indexOf(w) !== -1; })) add("region", k);
+      if (REGION_WORDS[k].some(function (w) { return containsPhrase(t, w); })) add("region", k);
     });
     /* nordic and uk are more specific than europe — drop the broader one */
     var regs = c.list.filter(function (x) { return x.key === "region"; }).map(function (x) { return x.value; });
@@ -1229,7 +1242,7 @@
     var m2 = t.match(/(over|above|more than|larger than|at least)\s*[€$£]?\s*([\d.]+)\s*(b|bn|billion|m|mm|million)/);
     if (m2) add("aumMin", parseFloat(m2[2]) * (/^m/.test(m2[3]) ? 1 : 1000));
 
-    if (COINVEST_WORDS.some(function (w) { return t.indexOf(w) !== -1; })) add("coinvest", "evidenced");
+    if (COINVEST_WORDS.some(function (w) { return containsPhrase(t, w); })) add("coinvest", "evidenced");
 
     /* Specific vocabularies run first and consume their phrase, so a phrase like
        "shipping wealth" cannot also register as a sector. Sectors match last, on
@@ -1251,7 +1264,7 @@
     });
 
     Object.keys(SECTOR_WORDS).forEach(function (k) {
-      if (SECTOR_WORDS[k].some(function (w) { return t.indexOf(w) !== -1; })) add("sector", k);
+      if (SECTOR_WORDS[k].some(function (w) { return containsPhrase(t, w); })) add("sector", k);
     });
 
     var age = t.match(/last\s+(\d+)\s+month/);
@@ -1260,15 +1273,15 @@
     else if (/recent|recently|lately/.test(t)) add("signalAge", "12");
 
     var con = null;
-    ["complete","usable","named"].forEach(function (k) {
-      if (!con && CONTACT_WORDS[k].some(function (w) { return t.indexOf(w) !== -1; })) con = k;
+    ["gap","complete","usable","named"].forEach(function (k) {
+      if (!con && CONTACT_WORDS[k].some(function (w) { return containsPhrase(t, w); })) con = k;
     });
     if (con) add("contact", con);
 
-    c.propensity = PROPENSITY.some(function (w) { return t0.indexOf(w) !== -1; });
+    c.propensity = PROPENSITY.some(function (w) { return containsPhrase(t0, w); });
     /* propensity wins: "likely to invest in healthcare again" is modellable,
        even though it also trips a forward-looking word */
-    c.speculative = !c.propensity && SPECULATIVE.some(function (w) { return t0.indexOf(w) !== -1; });
+    c.speculative = !c.propensity && SPECULATIVE.some(function (w) { return containsPhrase(t0, w); });
 
     var stop = ("which what who where when how are is the a an of in to for with and or do does me show list all their them that this on by from has have had can i " +
       "offices office family single multi will plan plans planning intend intends intention going forecast predict expect expects likely about upcoming future " +
@@ -1724,8 +1737,8 @@
       cats:[
         { k:"Who the firm is", q:["Single-family offices under $1B", "Offices built on shipping wealth"] },
         { k:"What they invest in", q:["Which single-family offices invest directly in healthcare?", "Which offices co-invest alongside fund managers?"] },
-        { k:"Recent activity", q:["Who committed to funds in the last 6 months?", "Which offices made a key hire recently?"] },
-        { k:"How to reach them", q:["Nordic offices under $1B with a verified email", "Which principals have a mobile number?"] }
+        { k:"Recent activity", q:["Which offices committed capital to funds within the last 6 months?", "Which offices made a key hire recently?"] },
+        { k:"How to reach them", q:["Nordic offices under $1B with a confirmed email address", "Which principals have a mobile number?"] }
       ]
     },
     principal: {
@@ -1735,8 +1748,8 @@
       cats:[
         { k:"Who the person is", q:["Chief investment officers at single-family offices", "Who leads private markets?"] },
         { k:"What they are responsible for", q:["Who runs private credit in Europe?", "Who leads healthcare at a single-family office?"] },
-        { k:"Recent activity at their firm", q:["Principals at offices that invested recently", "Who committed to funds in the last 6 months?"] },
-        { k:"How to reach them", q:["Which principals have a verified email?", "Which principals have a mobile number?"] }
+        { k:"Recent activity at their firm", q:["Principals at offices that invested recently", "Principals at offices that committed capital to funds"] },
+        { k:"How to reach them", q:["Which principals have a confirmed email address?", "Which principals have a mobile number?"] }
       ]
     }
   };
@@ -1787,7 +1800,7 @@
       var withMob = pool.filter(function (r) { return hasChannel(r, "phoneMobile"); }).length;
       var complete = pool.filter(function (r) { return tierOf(r) === "complete"; }).length;
       out = "<span><b>" + pool.length + "</b> principals</span>" +
-            "<span><b>" + complete + "</b> verified email</span>" +
+            "<span><b>" + complete + "</b> confirmed email</span>" +
             "<span><b>" + withEmail + "</b> reachable by email</span>" +
             "<span><b>" + withMob + "</b> with a mobile</span>" +
             "<span><b>" + (DATA.length - pool.length) + "</b> firms with none identified</span>";
@@ -1798,7 +1811,7 @@
       var fresh = DATA.filter(function (r) { return r.signals.length && monthsSince(r.signals[0].d) <= 6; }).length;
       var pat = DATA.filter(function (r) { return predictability(r).score >= 70; }).length;
       out = "<span><b>" + DATA.length + "</b> records</span><span><b>" + sfo + "</b> single-family</span>" +
-            "<span><b>" + comp + "</b> verified contact</span><span><b>" + co + "</b> co-investors</span>" +
+            "<span><b>" + comp + "</b> confirmed email</span><span><b>" + co + "</b> co-invest with fund managers</span>" +
             "<span><b>" + fresh + "</b> active &lt;6mo</span><span><b>" + pat + "</b> patterned</span>";
     }
     el("stats").innerHTML = out;
@@ -2061,10 +2074,10 @@
     var have = {}; state.cons.forEach(function (c) { have[c.key] = 1; });
     var out = [];
     if (!have.coinvest) out.push("Which offices co-invest alongside fund managers?");
-    if (!have.signalType) out.push("Who made a key hire recently?");
-    if (!have.contact) out.push("Show me only records I can contact today");
-    if (!have.vehicle) out.push("Who commits to funds?");
-    out.push("Which records have documented contact gaps?");
+    if (!have.signalType) out.push("Which offices made a key hire recently?");
+    if (!have.contact) out.push("Which offices have a confirmed email address?");
+    if (!have.vehicle) out.push("Which offices commit capital to funds?");
+    out.push("Which offices have no usable contact?");
     return out.slice(0, 3);
   }
 
