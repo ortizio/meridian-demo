@@ -127,6 +127,10 @@
   .facet-row { display:flex; flex-direction:column; gap:5px; }
   .facet-lab { font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-3); font-weight:650; }
   .facet-sel { font:inherit; font-size:13px; color:var(--text); background:var(--surface-2); border:1px solid var(--line); border-radius:2px; padding:7px 9px; cursor:pointer; width:100%; }
+  .checks { display:flex; flex-direction:column; gap:2px; }
+  .check { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text); cursor:pointer; padding:4px 6px; border-radius:2px; }
+  .check:hover { background:var(--surface-2); }
+  .check input { accent-color:var(--brass); width:14px; height:14px; margin:0; cursor:pointer; flex:none; }
   .facet-note { font-size:10.5px; color:var(--text-3); margin-top:11px; padding-top:10px; border-top:1px solid var(--line-soft); line-height:1.45; }
 
   /* narrow viewports get a bottom sheet — a floating popover has nowhere safe to land */
@@ -238,6 +242,8 @@
   .badge.catchall { color:var(--caution); background:var(--caution-wash); border:1px solid currentColor; }
   .badge.unverified { color:var(--null); background:none; border:1px solid currentColor; }
   .badge.none { color:var(--null); background:var(--null-wash); border:1px dashed currentColor; }
+  .chan { display:inline-block; font-size:10px; font-weight:650; letter-spacing:.03em; color:var(--good); background:var(--good-wash); border:1px solid currentColor; border-radius:2px; padding:2px 6px; margin:0 4px 3px 0; }
+  .pref { display:block; font-size:11.5px; font-weight:650; color:var(--brass); margin-top:7px; }
   .badge.evidenced { color:var(--good); background:var(--good-wash); border:1px solid currentColor; margin-left:0; }
   .badge.notfound { color:var(--caution); background:none; border:1px solid currentColor; margin-left:0; }
   .badge.unknown { color:var(--null); background:var(--null-wash); border:1px dashed currentColor; margin-left:0; }
@@ -419,7 +425,9 @@
         liBasis:"Profile names Harrowgate as current employer with the same title.",
         email:"d.reisinger@harrowgateventures.com", emailStatus:"verified",
         emailBasis:"Returned by enrichment provider from its own data; confirmed deliverable to this named mailbox on a non-catch-all domain.",
-        phone:"+1 203 555 0164", phoneStatus:"provider", phoneBasis:"Direct line returned by provider; not independently confirmed."
+        phone:"+1 203 555 0164", phoneStatus:"provider", phoneBasis:"Direct line returned by provider; not independently confirmed.",
+        phoneMobile:null, phoneMobileStatus:"none", phoneMobileBasis:"No mobile returned by any of the providers queried. Personal mobile numbers are rarely obtainable for this population and were not pursued beyond provider lookup.",
+        preferred:null
       },
       signals:[
         {d:"2026-06", type:"investment", t:"Led a $12M Series A in a clinical-workflow software company.", tags:["healthcare","direct"]},
@@ -451,7 +459,9 @@
         liBasis:"Profile lists Ostrander Holdings, current, same title.",
         email:"moyelaran@ostranderholdings.com", emailStatus:"provider",
         emailBasis:"Provider returned this from its own dataset. Mailbox exists; never published by the firm, so not upgraded to verified.",
-        phone:null, phoneStatus:"none", phoneBasis:"Switchboard only. Four providers queried, none returned a direct line."
+        phone:null, phoneStatus:"none", phoneBasis:"Switchboard only. Four providers queried, none returned a direct line.",
+        phoneMobile:null, phoneMobileStatus:"none", phoneMobileBasis:"No mobile found. Four providers queried, none returned one.",
+        preferred:null
       },
       signals:[
         {d:"2026-05", type:"investment", t:"Acquired a majority stake in a regional dialysis operator.", tags:["healthcare","direct"]},
@@ -482,7 +492,9 @@
         liBasis:"Profile matches firm, title and tenure shown on the team page.",
         email:"p.ellsworth@cedarvane.co.uk", emailStatus:"catchall",
         emailBasis:"Domain accepts all addresses, so delivery proves nothing about this mailbox. Format matches two published partner addresses. Shipped labelled, not as verified.",
-        phone:"+44 20 7555 0198", phoneStatus:"provider", phoneBasis:"Desk line returned by provider."
+        phone:"+44 20 7555 0198", phoneStatus:"provider", phoneBasis:"Desk line returned by provider.",
+        phoneMobile:null, phoneMobileStatus:"none", phoneMobileBasis:"No mobile found; the firm routes all contact through the desk line.",
+        preferred:{ channel:"linkedin", basis:"Her own profile headline asks for introductions through LinkedIn rather than cold email. A stated preference, recorded as hers." }
       },
       signals:[
         {d:"2026-07", type:"target", t:"Announced a £250M private credit allocation target for 2027.", tags:["credit","target"]},
@@ -513,7 +525,9 @@
         liBasis:"Profile lists the office as current employer, same title.",
         email:"annika@lindqvistfk.se", emailStatus:"verified",
         emailBasis:"Published by the office on its own contact page alongside her name and title.",
-        phone:"+46 8 555 0142", phoneStatus:"verified", phoneBasis:"Published on the same contact page."
+        phone:"+46 8 555 0142", phoneStatus:"verified", phoneBasis:"Published on the same contact page.",
+        phoneMobile:null, phoneMobileStatus:"none", phoneMobileBasis:"No mobile published or returned. The office publishes a desk line only.",
+        preferred:{ channel:"emailCorp", basis:"The office contact page names email as the route for investment enquiries." }
       },
       signals:[
         {d:"2026-04", type:"fund-commitment", t:"Anchored a €90M Nordic industrial-technology fund.", tags:["industrials","funds"]},
@@ -544,7 +558,9 @@
         liBasis:"Profile confirms current role at the office.",
         email:null, emailStatus:"none",
         emailBasis:"Five providers queried, none returned an address. Domain rejects unknown mailboxes, so no pattern address was shipped. Left blank rather than guessed.",
-        phone:null, phoneStatus:"none", phoneBasis:"No direct line found through any provider."
+        phone:null, phoneStatus:"none", phoneBasis:"No direct line found through any provider.",
+        phoneMobile:null, phoneMobileStatus:"none", phoneMobileBasis:"No mobile found. On current evidence this principal is reachable only through LinkedIn.",
+        preferred:null
       },
       signals:[ {d:"2026-06", type:"investment", t:"Backed a Series B in a port-automation company.", tags:["technology","direct"]} ],
       chain:{
@@ -572,7 +588,9 @@
         liBasis:"Profile matches firm and title.",
         email:"g.marchetti@marchettiquaranta.it", emailStatus:"verified",
         emailBasis:"Published on the firm's contact page next to her name.",
-        phone:"+39 02 5550 0117", phoneStatus:"verified", phoneBasis:"Published on the same page."
+        phone:"+39 02 5550 0117", phoneStatus:"verified", phoneBasis:"Published on the same page.",
+        phoneMobile:null, phoneMobileStatus:"none", phoneMobileBasis:"No mobile published or returned by any provider.",
+        preferred:null
       },
       signals:[
         {d:"2026-05", type:"investment", t:"Bought a Milan mixed-use development site for a reported €48M.", tags:["real estate","direct"]},
@@ -603,7 +621,9 @@
         liBasis:"Profile confirms firm and title.",
         email:"t.reisch@kepleranstalt.li", emailStatus:"catchall",
         emailBasis:"Catch-all domain. Format matches the firm's published convention but cannot be attributed to him specifically.",
-        phone:"+423 555 0173", phoneStatus:"provider", phoneBasis:"Returned by provider."
+        phone:"+423 555 0173", phoneStatus:"provider", phoneBasis:"Returned by provider.",
+        phoneMobile:null, phoneMobileStatus:"none", phoneMobileBasis:"No mobile returned by any provider queried.",
+        preferred:null
       },
       signals:[ {d:"2026-06", type:"allocation", t:"Increased private credit allocation to 18% of assets.", tags:["credit","allocation"]} ],
       chain:{
@@ -631,7 +651,9 @@
         liBasis:"Profile confirms current role.",
         email:"k.wachter@tessarowachter.at", emailStatus:"provider",
         emailBasis:"Returned by one provider from its own data; not published by the firm.",
-        phone:null, phoneStatus:"none", phoneBasis:"No direct line returned by any provider queried."
+        phone:null, phoneStatus:"none", phoneBasis:"No direct line returned by any provider queried.",
+        phoneMobile:null, phoneMobileStatus:"none", phoneMobileBasis:"No mobile found through any provider.",
+        preferred:null
       },
       signals:[
         {d:"2026-07", type:"investment", t:"Co-led a €14M Series A in a diagnostics company.", tags:["healthcare","direct","venture"]},
@@ -662,7 +684,9 @@
         liBasis:"Profile confirms firm and title.",
         email:"n.alhamadi@alhamadibureau.ae", emailStatus:"verified",
         emailBasis:"Provider returned it from its own data; domain is not catch-all and the mailbox confirmed deliverable.",
-        phone:"+971 4 555 0129", phoneStatus:"provider", phoneBasis:"Direct line returned by provider."
+        phone:"+971 4 555 0129", phoneStatus:"provider", phoneBasis:"Direct line returned by provider.",
+        phoneMobile:"+971 50 555 0143", phoneMobileStatus:"verified", phoneMobileBasis:"Published by the individual herself in a 2026 conference delegate directory, in a business context. Retained on that basis and flagged for removal on request.",
+        preferred:null
       },
       signals:[
         {d:"2026-06", type:"investment", t:"Committed $120M to a regional logistics-property platform.", tags:["real estate","direct"]},
@@ -694,7 +718,9 @@
         liBasis:"Profile confirms current role at the office.",
         email:"hb@brennholmkapital.no", emailStatus:"provider",
         emailBasis:"Returned by two providers independently; not published by the firm.",
-        phone:"+47 22 555 0188", phoneStatus:"provider", phoneBasis:"Returned by provider."
+        phone:"+47 22 555 0188", phoneStatus:"provider", phoneBasis:"Returned by provider.",
+        phoneMobile:null, phoneMobileStatus:"none", phoneMobileBasis:"No mobile returned by either provider that held the desk line.",
+        preferred:null
       },
       signals:[ {d:"2026-03", type:"investment", t:"Took a stake in an offshore wind service vessel operator.", tags:["renewables","direct"]} ],
       chain:{
@@ -722,7 +748,9 @@
         liBasis:"Profile confirms firm and title.",
         email:"apetrossian@westcliffpeak.ca", emailStatus:"unverified",
         emailBasis:"Constructed from the firm's published convention and never confirmed by any provider. Kept only because it is labelled unverified — it is a lead, not a contact.",
-        phone:null, phoneStatus:"none", phoneBasis:"Switchboard only."
+        phone:null, phoneStatus:"none", phoneBasis:"Switchboard only.",
+        phoneMobile:null, phoneMobileStatus:"none", phoneMobileBasis:"No mobile found; switchboard only.",
+        preferred:null
       },
       signals:[ {d:"2026-01", type:"allocation", t:"Expanded the alternatives sleeve to 15% of client assets.", tags:["allocation"]} ],
       chain:{
@@ -748,7 +776,9 @@
         titleBasis:"No named investment decision-maker found in public sources.",
         li:null, liStatus:"none", liBasis:"No individual profile could be tied to the firm with confidence.",
         email:null, emailStatus:"none", emailBasis:"Only a general enquiries address exists, which does not qualify as a principal contact.",
-        phone:null, phoneStatus:"none", phoneBasis:"Switchboard only."
+        phone:null, phoneStatus:"none", phoneBasis:"Switchboard only.",
+        phoneMobile:null, phoneMobileStatus:"none", phoneMobileBasis:"No principal identified, so no channel exists to establish.",
+        preferred:null
       },
       signals:[],
       chain:{
@@ -784,6 +814,7 @@
     signalType:{ investment:"Investment made", "fund-commitment":"Fund commitment", hire:"Key hire",
                  allocation:"Allocation change", target:"Stated target" },
     coinvest:{ evidenced:"Co-invests — evidenced", "not-found":"No co-investment found", unknown:"Not established" },
+    channel:{ emailCorp:"Corporate email", phoneOffice:"Office phone", phoneMobile:"Mobile phone", linkedin:"LinkedIn profile" },
     aum:{ lt500:"Under $500M", "500-1000":"$500M – $1B", "1000-3000":"$1B – $3B", gt3000:"Over $3B", undisclosed:"Undisclosed" },
     contact:{ complete:"Verified email", usable:"Provider-returned or better", named:"Named principal only", gap:"Documented gaps" },
     signalAge:{ "3":"Last 3 months", "6":"Last 6 months", "12":"Last 12 months", "24":"Last 2 years" },
@@ -814,6 +845,20 @@
     return "gap";
   }
   function sectorHit(r, s) { return r.sectors.indexOf(s) !== -1 || r.signals.some(function (g) { return g.tags.indexOf(s) !== -1; }); }
+
+  var CHANNELS = ["emailCorp", "phoneOffice", "phoneMobile", "linkedin"];
+  function chan(r, ch) {
+    var p = r.principal;
+    if (ch === "emailCorp")   return { v:p.email,       s:p.emailStatus,       b:p.emailBasis };
+    if (ch === "phoneOffice") return { v:p.phone,       s:p.phoneStatus,       b:p.phoneBasis };
+    if (ch === "phoneMobile") return { v:p.phoneMobile, s:p.phoneMobileStatus, b:p.phoneMobileBasis };
+    if (ch === "linkedin")    return { v:p.li,          s:p.liStatus,          b:p.liBasis };
+    return { v:null, s:"none", b:"" };
+  }
+  /* A channel counts as reachable only at provider-grade or better. A catch-all or
+     pattern-derived address is a lead, not a route to the person. */
+  function hasChannel(r, ch) { var c = chan(r, ch); return !!c.v && STATUS_RANK[c.s] >= STATUS_RANK.provider; }
+  function channelsOf(r) { return CHANNELS.filter(function (ch) { return hasChannel(r, ch); }); }
   function blob(r) {
     return [r.name, r.city, r.country, r.mandate, r.family, r.typeLabel, r.sectors.join(" "),
             r.vehicles.join(" "), r.principal.name || "", r.principal.title || "",
@@ -847,7 +892,9 @@
       { key:"signalType", label:"Recent activity", kind:"signalType", opts:function(){ return opts("signalType", distinct(function(r){return r.signals.map(function(s){return s.type;});})); } },
       { key:"signalAge",  label:"Within",          kind:"signalAge",  opts:function(){ return opts("signalAge", ["3","6","12","24"]); } }
     ]},
-    { key:"contact", label:"Contact", note:"Whether you can act on this today. Status is never upgraded by a delivery test.", facets:[
+    { key:"contact", label:"Contact", note:"Whether you can act on this today. A channel counts only at provider-grade or better — a catch-all address is a lead, not a route. Status is never upgraded by a delivery test.", facets:[
+      { key:"channel",   label:"Reachable via — must have every box you tick", kind:"channel", multi:true,
+        opts:function(){ return opts("channel", CHANNELS); } },
       { key:"contact",   label:"Contact quality",  kind:"contact",   opts:function(){ return opts("contact", ["complete","usable","named","gap"]); } },
       { key:"role",      label:"Decision-maker",   kind:"role",      opts:function(){ return opts("role", distinct(function(r){return [r.principal.roleClass];})); } },
       { key:"freshness", label:"Last verified",    kind:"freshness", opts:function(){ return opts("freshness", ["30","90","180"]); } }
@@ -873,7 +920,8 @@
     signalAge: function (r, v) { return r.signals.some(function (s) { return monthsSince(s.d) <= +v; }); },
     contact:   function (r, v) { return v === "gap" ? tierOf(r) === "gap" : TIER_RANK[tierOf(r)] >= TIER_RANK[v]; },
     role:      function (r, v) { return r.principal.roleClass === v; },
-    freshness: function (r, v) { return daysSince(r.verifiedAt) <= +v; }
+    freshness: function (r, v) { return daysSince(r.verifiedAt) <= +v; },
+    channel:   function (r, v) { return hasChannel(r, v); }
   };
 
   /* ════════════════════════════════════════════════════════
@@ -934,6 +982,12 @@
     luxury:["luxury wealth","fashion wealth"]
   };
   var COINVEST_WORDS = ["co-invest","coinvest","co invest","alongside","invest with managers","side-by-side","side by side"];
+  var CHANNEL_WORDS = {
+    phoneMobile:["mobile number","mobile phone","cell phone","cellphone","mobile"],
+    phoneOffice:["office line","office phone","desk line","direct line","direct dial"],
+    linkedin:["linkedin profile","linkedin address","linkedin"],
+    emailCorp:["corporate email","work email","company email"]
+  };
   var CONTACT_WORDS = {
     complete:["verified email","verified contact","confirmed email","reachable today","complete contact"],
     usable:["with an email","with email","email address","contactable","reachable","can i reach","how do i reach","who do i contact","who to call"],
@@ -991,6 +1045,7 @@
       return hit;
     }
 
+    take(CHANNEL_WORDS, "channel");
     take(ORIGIN_WORDS, "origin");
     take(ROLE_WORDS, "role");
     var sig = take(SIGNAL_WORDS, "signalType");
@@ -1027,7 +1082,12 @@
   function activeConstraints(parsed, filters) {
     var out = [], manualKeys = {};
     Object.keys(filters).forEach(function (k) {
-      if (filters[k]) { out.push({ key:k, value:filters[k], origin:"filter" }); manualKeys[k] = 1; }
+      var v = filters[k];
+      if (Array.isArray(v)) {
+        /* multi-select emits one constraint per selection, so each is removable on its own */
+        v.forEach(function (x) { out.push({ key:k, value:x, origin:"filter" }); });
+        if (v.length) manualKeys[k] = 1;
+      } else if (v) { out.push({ key:k, value:v, origin:"filter" }); manualKeys[k] = 1; }
     });
     parsed.list.forEach(function (x) {
       var blocking = x.key === "aumMax" || x.key === "aumMin" ? "aum" : x.key;
@@ -1168,6 +1228,7 @@
       else if (c.key === "signalAge") bits.push("active in the " + lab("signalAge", c.value).toLowerCase());
       else if (c.key === "role") bits.push("led by a " + lab("role", c.value).toLowerCase());
       else if (c.key === "contact") bits.push("carrying a " + lab("contact", c.value).toLowerCase());
+      else if (c.key === "channel") bits.push("reachable by " + lab("channel", c.value).toLowerCase());
       else if (c.key === "freshness") bits.push("re-verified in the " + lab("freshness", c.value).toLowerCase());
     });
     return head + (bits.length ? " " + bits.slice(0, 4).join(", ") : "");
@@ -1233,6 +1294,21 @@
                                : "Nothing here is confirmed to an individual, so treat every address below as a lead and verify before you use it."));
     }
 
+    /* channels: what routes actually exist, and the preference caveat */
+    var mob = top.filter(function (h) { return hasChannel(h.r, "phoneMobile"); });
+    var liOnly = top.filter(function (h) { var c = channelsOf(h.r); return c.length === 1 && c[0] === "linkedin"; });
+    var prefs = top.filter(function (h) { return h.r.principal.preferred; });
+    var chParts = [];
+    if (mob.length) chParts.push("<b>" + mob.length + "</b> " + (mob.length === 1 ? "has" : "have") + " a mobile number, which is the rarest channel in this market");
+    if (liOnly.length) chParts.push("<b>" + liOnly.length + "</b> " + (liOnly.length === 1 ? "is" : "are") + " reachable only through LinkedIn");
+    if (chParts.length || prefs.length) {
+      var cs = "On channels: " + (chParts.length ? chParts.join(", and ") + ". " : "");
+      cs += prefs.length
+        ? "<b>" + prefs.length + "</b> of these " + (prefs.length === 1 ? "has" : "have") + " a stated preference — meaning the person or the firm published one. Where no preference is shown, none was found; we do not infer what someone prefers from which channels happen to exist."
+        : "None has a stated channel preference on file. What you see is which routes exist, not which one the person would choose — those are different claims and only the first is evidenced here.";
+      paras.push(cs);
+    }
+
     /* caveats */
     var cav = [];
     if (top.length < 3) cav.push("this demo holds only " + DATA.length + " offices, so the count reflects the file rather than the market");
@@ -1253,7 +1329,7 @@
       activeEl = el("active"), tablewrap = el("tablewrap"), tableEl = el("table"), modalRoot = el("modal-root"), tray = el("tray");
 
   var filters = {};
-  GROUPS.forEach(function (g) { g.facets.forEach(function (f) { filters[f.key] = ""; }); });
+  GROUPS.forEach(function (g) { g.facets.forEach(function (f) { filters[f.key] = f.multi ? [] : ""; }); });
 
   var state = { parsed:parseQuery(""), cons:[], hits:[], g:null, view:"answer", sort:{ k:"score", dir:-1 }, shortlist:[], dropped:{} };
 
@@ -1273,9 +1349,11 @@
   }
 
   /* ── facet bar ── */
+  function facetActive(f) { return Array.isArray(filters[f.key]) ? filters[f.key].length > 0 : !!filters[f.key]; }
+
   function renderFacets() {
     el("facet-groups").innerHTML = GROUPS.map(function (g) {
-      var n = g.facets.filter(function (f) { return filters[f.key]; }).length;
+      var n = g.facets.filter(facetActive).length;
       return '<div class="facet" data-group="' + g.key + '">' +
         '<button class="facet-btn' + (n ? " on" : "") + '" type="button" aria-expanded="false" data-toggle="' + g.key + '">' +
           esc(g.label) + (n ? '<span class="facet-n">' + n + "</span>" : "") + IC_CARET +
@@ -1284,6 +1362,14 @@
           '<div class="facet-panel-h">' + esc(g.label) + "</div>" +
           '<div class="facet-grid">' + g.facets.map(function (f) {
             var os = f.opts();
+            if (f.multi) {
+              return '<div class="facet-row"><span class="facet-lab">' + esc(f.label) + "</span>" +
+                '<div class="checks">' + os.map(function (o) {
+                  var on = filters[f.key].indexOf(o.v) !== -1;
+                  return '<label class="check"><input type="checkbox" data-multi="' + f.key + '" value="' + esc(o.v) + '"' +
+                    (on ? " checked" : "") + "><span>" + esc(o.t) + "</span></label>";
+                }).join("") + "</div></div>";
+            }
             return '<div class="facet-row"><label class="facet-lab" for="f-' + f.key + '">' + esc(f.label) + "</label>" +
               '<select class="facet-sel" id="f-' + f.key + '" data-facet="' + f.key + '">' +
               '<option value="">Any</option>' +
@@ -1306,6 +1392,16 @@
     el("facet-groups").querySelectorAll("[data-facet]").forEach(function (s) {
       s.addEventListener("change", function () { filters[s.getAttribute("data-facet")] = s.value; rerun(); });
       s.addEventListener("click", function (e) { e.stopPropagation(); });
+    });
+    el("facet-groups").querySelectorAll("[data-multi]").forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        var k = cb.getAttribute("data-multi"), v = cb.value, arr = filters[k];
+        var i = arr.indexOf(v);
+        if (cb.checked && i === -1) arr.push(v);
+        if (!cb.checked && i !== -1) arr.splice(i, 1);
+        rerun();
+      });
+      cb.addEventListener("click", function (e) { e.stopPropagation(); });
     });
     el("facet-groups").querySelectorAll(".facet-panel").forEach(function (p) {
       p.addEventListener("click", function (e) { e.stopPropagation(); });
@@ -1333,7 +1429,11 @@
       b.addEventListener("click", function () {
         var con = state.cons[+b.getAttribute("data-drop")];
         if (!con) return;
-        if (con.origin === "filter") { filters[con.key] = ""; renderFacets(); }
+        if (con.origin === "filter") {
+          if (Array.isArray(filters[con.key])) filters[con.key] = filters[con.key].filter(function (x) { return x !== con.value; });
+          else filters[con.key] = "";
+          renderFacets();
+        }
         else state.parsed.list = state.parsed.list.filter(function (x) { return !(x.key === con.key && x.value === con.value); });
         rerun();
       });
@@ -1384,9 +1484,26 @@
     s += (p.email ? '<span class="mono">' + esc(p.email) + "</span>" : '<span class="muted">—</span>') + badge(p.emailStatus);
     s += '<span class="basis">' + esc(p.emailBasis) + "</span></div></div>";
 
-    s += '<div class="row"><div class="row-key">Direct line</div><div class="row-val">';
+    s += '<div class="row"><div class="row-key">Office line</div><div class="row-val">';
     s += (p.phone ? '<span class="mono">' + esc(p.phone) + "</span>" : '<span class="muted">—</span>') + badge(p.phoneStatus);
     s += '<span class="basis">' + esc(p.phoneBasis) + "</span></div></div>";
+
+    s += '<div class="row"><div class="row-key">Mobile</div><div class="row-val">';
+    s += (p.phoneMobile ? '<span class="mono">' + esc(p.phoneMobile) + "</span>" : '<span class="muted">—</span>') + badge(p.phoneMobileStatus);
+    s += '<span class="basis">' + esc(p.phoneMobileBasis) + "</span></div></div>";
+
+    s += '<div class="row"><div class="row-key">Reachable via</div><div class="row-val">';
+    var chs = channelsOf(r);
+    s += chs.length
+      ? chs.map(function (ch) { return '<span class="chan">' + esc(lab("channel", ch)) + "</span>"; }).join("")
+      : '<span class="muted">No channel at provider grade or better</span>';
+    s += '<span class="basis">' + (chs.length ? "Channels held at provider grade or better. Weaker cells are shown above but do not count as a route to this person."
+                                              : "Every channel is catch-all, unverified, or absent. Nothing here is a confirmed route.") + "</span>";
+    if (p.preferred) {
+      s += '<span class="pref">Stated preference: ' + esc(lab("channel", p.preferred.channel)) + "</span>" +
+           '<span class="basis">' + esc(p.preferred.basis) + "</span>";
+    }
+    s += "</div></div>";
     s += "</div>";
 
     if (r.signals.length) {
@@ -1464,6 +1581,11 @@
       { k:"coinvest", t:"Co-invest", g:function (h) { return coBadge(h.r.coinvest.status); } },
       { k:"principal", t:"Principal", g:function (h) { return h.r.principal.name ? esc(h.r.principal.name) + '<br><span style="color:var(--text-3);font-size:11px">' + esc(h.r.principal.title) + "</span>" : '<span style="color:var(--text-3)">—</span>'; } },
       { k:"email", t:"Email", g:function (h) { return (h.r.principal.email ? '<span class="mono">' + esc(h.r.principal.email) + "</span>" : '<span style="color:var(--text-3)">—</span>') + "<br>" + badge(h.r.principal.emailStatus); } },
+      { k:"channels", t:"Reachable via", g:function (h) {
+          var chs = channelsOf(h.r);
+          return chs.length ? chs.map(function (c) { return '<span class="chan">' + esc(lab("channel", c)) + "</span>"; }).join("")
+                            : '<span style="color:var(--text-3)">None at provider grade</span>';
+        } },
       { k:"signal", t:"Latest signal", g:function (h) { return h.r.signals.length ? '<span class="mono" style="color:var(--brass)">' + esc(h.r.signals[0].d) + "</span> " + esc(h.r.signals[0].t) : '<span style="color:var(--text-3)">None on file</span>'; } },
       { k:"verified", t:"Verified", g:function (h) { return esc(h.r.verifiedAt); }, cls:"num" },
       { k:"score", t:"Relevance", g:function (h) { return h.score.toFixed(1); }, cls:"num" }
@@ -1477,6 +1599,7 @@
         else if (sk === "coinvest") { va = a.r.coinvest.status; vb = b.r.coinvest.status; }
         else if (sk === "signal") { va = a.r.signals.length ? a.r.signals[0].d : ""; vb = b.r.signals.length ? b.r.signals[0].d : ""; }
         else if (sk === "verified") { va = a.r.verifiedAt; vb = b.r.verifiedAt; }
+        else if (sk === "channels") { va = channelsOf(a.r).length; vb = channelsOf(b.r).length; }
         else if (sk === "principal") { va = a.r.principal.name || "zzz"; vb = b.r.principal.name || "zzz"; }
         else if (sk === "origin") { va = a.r.origin; vb = b.r.origin; }
         else if (sk === "vehicle") { va = a.r.vehicles.join(); vb = b.r.vehicles.join(); }
@@ -1553,8 +1676,9 @@
   function toCSV() {
     var head = ["firm","type","type_evidence","city","country","aum","wealth_origin","vehicles","deploys_into",
       "coinvest_status","coinvest_basis","mandate","principal","title","role_class","linkedin","linkedin_status",
-      "email","email_status","email_basis","phone","phone_status","latest_signal_date","latest_signal_type",
-      "latest_signal","record_verified_at"];
+      "email","email_status","email_basis","phone_office","phone_office_status","phone_mobile","phone_mobile_status",
+      "phone_mobile_basis","reachable_via","stated_preference","stated_preference_basis",
+      "latest_signal_date","latest_signal_type","latest_signal","record_verified_at"];
     function q(v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; }
     var lines = [head.join(",")];
     state.shortlist.forEach(function (id) {
@@ -1564,7 +1688,12 @@
         r.investGeo.map(function (v) { return lab("geo", v); }).join("; "),
         lab("coinvest", r.coinvest.status), r.coinvest.basis, r.mandate,
         p.name, p.title, p.roleClass, p.li, STATUS_LABEL[p.liStatus],
-        p.email, STATUS_LABEL[p.emailStatus], p.emailBasis, p.phone, STATUS_LABEL[p.phoneStatus],
+        p.email, STATUS_LABEL[p.emailStatus], p.emailBasis,
+        p.phone, STATUS_LABEL[p.phoneStatus],
+        p.phoneMobile, STATUS_LABEL[p.phoneMobileStatus], p.phoneMobileBasis,
+        channelsOf(r).map(function (ch) { return lab("channel", ch); }).join("; "),
+        p.preferred ? lab("channel", p.preferred.channel) : "",
+        p.preferred ? p.preferred.basis : "",
         s ? s.d : "", s ? lab("signalType", s.type) : "", s ? s.t : "", r.verifiedAt].map(q).join(","));
     });
     return lines.join("\n");
@@ -1665,7 +1794,7 @@
     state.view = "table"; el("view-table").setAttribute("aria-pressed", "true"); el("view-answer").setAttribute("aria-pressed", "false"); rerun();
   });
   el("reset").addEventListener("click", function () {
-    Object.keys(filters).forEach(function (k) { filters[k] = ""; });
+    Object.keys(filters).forEach(function (k) { filters[k] = Array.isArray(filters[k]) ? [] : ""; });
     input.value = ""; run("");
   });
   el("tray-clear").addEventListener("click", function () {
