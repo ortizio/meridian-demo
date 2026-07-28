@@ -80,6 +80,28 @@
   .stat-strip { display:flex; gap:15px; font-family:var(--font-data); font-size:11px; color:var(--text-3); font-variant-numeric:tabular-nums; flex-wrap:wrap; }
   .stat-strip b { color:var(--text-2); font-weight:600; }
 
+  /* ── search level ── */
+  .modes { display:grid; grid-template-columns:1fr; gap:0; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; margin-bottom:14px; }
+  @media (min-width:700px) { .modes { grid-template-columns:1fr 1fr; } }
+  .mode { font:inherit; text-align:left; background:var(--surface); border:0; cursor:pointer; padding:13px 17px; display:flex; flex-direction:column; gap:3px; transition:background .15s,color .15s; }
+  .mode + .mode { border-top:1px solid var(--line); }
+  @media (min-width:700px) { .mode + .mode { border-top:0; border-left:1px solid var(--line); } }
+  .mode-t { font-size:15px; font-weight:650; color:var(--text-2); letter-spacing:-.01em; }
+  .mode-s { font-size:11.5px; color:var(--text-3); line-height:1.4; }
+  .mode:hover .mode-t { color:var(--text); }
+  .mode[aria-pressed="true"] { background:var(--brass); }
+  .mode[aria-pressed="true"] .mode-t { color:var(--on-brass); }
+  .mode[aria-pressed="true"] .mode-s { color:var(--on-brass); opacity:.78; }
+
+  /* ── inline help ── */
+  .help { border:1px solid var(--line); background:var(--surface-2); color:var(--text-3); border-radius:50%; width:15px; height:15px; font-size:9.5px; font-weight:700; line-height:1; padding:0; cursor:pointer; flex:none; display:inline-flex; align-items:center; justify-content:center; transition:color .15s,border-color .15s; }
+  .help:hover, .help[aria-expanded="true"] { color:var(--brass); border-color:var(--brass-line); background:var(--brass-wash); }
+  .help-wrap { position:relative; display:inline-flex; align-items:center; }
+  .help-pop { position:absolute; top:calc(100% + 7px); left:50%; transform:translateX(-50%); z-index:50; width:250px; background:var(--surface); border:1px solid var(--brass-line); border-radius:var(--radius); box-shadow:var(--shadow-lg); padding:11px 13px; }
+  .help-pop-k { font-size:9px; text-transform:uppercase; letter-spacing:.1em; font-weight:700; color:var(--brass); margin-bottom:5px; }
+  .help-pop-v { font-size:12px; color:var(--text-2); line-height:1.55; }
+  @media (max-width:700px) { .help-pop { position:fixed; left:12px; right:12px; width:auto; transform:none; top:auto; bottom:12px; } }
+
   /* ── search ── */
   .searchbar { padding:22px 0 0; }
   .field { display:flex; gap:9px; align-items:center; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:5px 5px 5px 15px; box-shadow:var(--shadow); transition:border-color .18s; }
@@ -125,7 +147,7 @@
   .seg button[aria-pressed="true"] { background:var(--brass); color:var(--on-brass); font-weight:600; }
 
   .facet-div { width:1px; align-self:stretch; background:var(--line); margin:0 3px; }
-  .facet { position:relative; }
+  .facet { position:relative; display:flex; align-items:center; gap:5px; }
   .facet-btn {
     font:inherit; font-size:12.5px; color:var(--text-2); background:var(--surface);
     border:1px solid var(--line); border-radius:2px; padding:8px 12px; cursor:pointer;
@@ -255,6 +277,7 @@
   .card-num { flex:none; font-size:10px; font-weight:700; font-variant-numeric:tabular-nums; color:var(--brass); border:1px solid var(--brass-line); background:var(--brass-wash); border-radius:2px; padding:2px 5px; margin-top:3px; }
   .card-id { flex:1 1 auto; min-width:0; }
   .card-name { font-size:15.5px; font-weight:650; letter-spacing:-.01em; line-height:1.3; }
+  .card-role { font-size:12.5px; color:var(--brass); font-weight:600; margin-top:1px; }
   .card-meta { font-family:var(--font-data); font-size:11px; color:var(--text-3); margin-top:2px; font-variant-numeric:tabular-nums; }
   .card-actions { display:flex; gap:5px; flex:none; }
   .icon-btn { border:1px solid var(--line); background:var(--surface-2); color:var(--text-3); border-radius:2px; width:26px; height:26px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; transition:color .15s,border-color .15s; }
@@ -363,11 +386,22 @@
       <div class="brand-name">Meridian</div>
       <div class="brand-sub">Family Office Intelligence</div>
     </div>
-    <span class="sample-chip">Sample records · no real firms or people</span>
     <div class="stat-strip" id="stats"></div>
   </header>
 
   <section class="searchbar">
+
+    <div class="modes" role="group" aria-label="What you are searching for">
+      <button class="mode" type="button" id="mode-firm" aria-pressed="true">
+        <span class="mode-t">Family office firms</span>
+        <span class="mode-s">Find institutions — mandate, size, activity, co-investment</span>
+      </button>
+      <button class="mode" type="button" id="mode-principal" aria-pressed="false">
+        <span class="mode-t">Family office principals</span>
+        <span class="mode-s">Find decision-makers — role, channels, verified contact</span>
+      </button>
+    </div>
+
     <form class="field" id="form">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/></svg>
       <label class="sr" for="q">Your question</label>
@@ -378,31 +412,10 @@
     <section class="asks" aria-label="What you can ask">
       <div class="asks-head">
         <span class="asks-title">What you can ask</span>
-        <span class="asks-sub">Every answer is built from four kinds of evidence. Ask in plain English — click an example to run it.</span>
+        <span class="asks-sub" id="asks-sub"></span>
       </div>
 
-      <div class="asks-grid">
-        <div class="ask-cat">
-          <div class="ask-cat-k">Who the firm is</div>
-          <button class="preset" type="button">Single-family offices under $1B</button>
-          <button class="preset" type="button">Offices built on shipping wealth</button>
-        </div>
-        <div class="ask-cat">
-          <div class="ask-cat-k">What they invest in</div>
-          <button class="preset" type="button">Which single-family offices invest directly in healthcare?</button>
-          <button class="preset" type="button">Which offices co-invest alongside managers?</button>
-        </div>
-        <div class="ask-cat">
-          <div class="ask-cat-k">Why they matter now</div>
-          <button class="preset" type="button">Who committed to funds in the last 6 months?</button>
-          <button class="preset" type="button">Which offices made a key hire recently?</button>
-        </div>
-        <div class="ask-cat">
-          <div class="ask-cat-k">How to reach them</div>
-          <button class="preset" type="button">Nordic offices under $1B with a verified email</button>
-          <button class="preset" type="button">Which principals have a mobile number?</button>
-        </div>
-      </div>
+      <div class="asks-grid" id="asks-grid"></div>
 
       <div class="ask-pred">
         <div class="ask-pred-head">
@@ -411,8 +424,8 @@
         </div>
         <div class="ask-pred-row">
           <button class="preset pred" type="button">Which offices are most likely to invest in healthcare again?</button>
-          <button class="preset pred" type="button">Show me the most predictable offices</button>
-          <button class="preset pred" type="button">Which offices have a repeat pattern in private credit?</button>
+          <button class="preset pred" type="button">Which offices deploy capital most consistently?</button>
+          <button class="preset pred" type="button">Which offices routinely invest in private credit?</button>
         </div>
         <p class="ask-pred-note">Every record carries an index scored from its own dated events — how much it
           does, how recently, how repetitively, how regularly, and whether it published a target in its own
@@ -428,6 +441,7 @@
         <button type="button" id="view-answer" aria-pressed="true">Answer</button>
         <button type="button" id="view-table" aria-pressed="false">Table</button>
       </div>
+      <span id="view-help" style="display:flex;gap:5px"></span>
       <span class="facet-div" aria-hidden="true"></span>
       <div id="facet-groups" style="display:flex;gap:9px;flex-wrap:wrap"></div>
       <div class="spacer"></div>
@@ -1166,7 +1180,9 @@
   /* Asking what a firm INTENDS is refused. Asking what its record makes LIKELY is
      modelled — different questions, and only the second has evidence behind it. */
   var SPECULATIVE = ["will ","will they","going to","plan to","plans to","planning","intend","intends","intention","next quarter","next year","forecast","expect","expects","about to","upcoming","projected","anticipate"];
-  var PROPENSITY = ["likely","likelihood","propensity","predictab","most predictable","again","repeat","more of the same","pattern","track record","tend to","typically"];
+  var PROPENSITY = ["likely","likelihood","propensity","predictab","again","repeat","more of the same","pattern",
+                    "track record","tend to","typically","consistent","consistently","routinely","routine",
+                    "regularly","steadily","rhythm","habitually","reliably"];
 
   /* longest phrase wins, and the winning phrase is reported so the caller can consume it */
   function longestMatch(map, t) {
@@ -1251,7 +1267,8 @@
       "projected anticipate next quarter year month soon later now today currently " +
       /* propensity vocabulary drives the index; none of it is a subject the file could cover */
       "likely likelihood propensity predictable predictability again repeat repeated pattern patterns " +
-      "track tend tends typically most more same into move moving toward towards invest investing invests").split(" ");
+      "track tend tends typically most more same into move moving toward towards invest investing invests " +
+      "consistent consistently routinely routine regularly steadily rhythm deploy deploys deploying capital").split(" ");
     var stopSet = {}; stop.forEach(function (w) { stopSet[w] = 1; });
     c.tokens = t0.trim().split(" ").filter(function (w) { return w.length > 2 && !stopSet[w]; });
     return c;
@@ -1307,9 +1324,13 @@
     return tests;
   }
 
-  function retrieve(cons, parsed) {
+  function retrieve(cons, parsed, mode) {
     var kept = [], dropped = {}, tests = buildTests(cons);
+    var people = mode === "principal";
     DATA.forEach(function (r) {
+      /* a principal-level search returns people; a record with no identified
+         decision-maker has no person to return, so it is not a result here */
+      if (people && !r.principal.name) { dropped.principal = (dropped.principal || 0) + 1; return; }
       for (var i = 0; i < tests.length; i++) {
         if (!tests[i].fn(r)) {
           dropped[tests[i].key] = (dropped[tests[i].key] || 0) + 1;
@@ -1335,7 +1356,9 @@
         score += pv.score * 0.25;
         reasons.unshift({ t:"index " + pv.score + " · " + pv.band.label.toLowerCase(), hit:pv.score >= 45 });
       }
-      score += TIER_RANK[tierOf(r)] * 0.6;
+      /* reachability is the point of a principal search, so it weighs far more there */
+      score += TIER_RANK[tierOf(r)] * (people ? 4 : 0.6);
+      if (people) score += channelsOf(r).length * 1.6;
       if (r.signals.length) score += Math.min(r.signals.length, 3) * 0.4;
       if (r.signals.length && monthsSince(r.signals[0].d) <= 3) score += 1.2;
       if (r.type === "unk") score -= 2;
@@ -1492,9 +1515,24 @@
 
     if (!top.length) return paras;
 
-    /* lead */
-    paras.push((top.length === 1 ? "One record matches" : top.length + " records match") + ": " +
-      describe(cons) + ". In rank order that is " + listNames(top, Math.min(top.length, 4)) + ".");
+    /* lead — the count must be how many MATCHED, not how many fit on screen */
+    var people = state.mode === "principal";
+    var total = hits.length, shown = top.length;
+    var names = people
+      ? top.slice(0, 4).map(function (h) { return "<b>" + esc(h.r.principal.name) + "</b> {{" + h.r.id + "}} at " + esc(h.r.name); }).join(", ")
+      : listNames(top, Math.min(shown, 4));
+    var lead;
+    if (cons.length) {
+      lead = (total === 1 ? (people ? "One principal matches" : "One record matches")
+                          : total + (people ? " principals match" : " records match")) +
+             ": " + (people ? "decision-makers at " : "") + describe(cons) + ".";
+    } else {
+      lead = "Nothing has been filtered, so all " + total + (people ? " identified principals" : " records") +
+             " are in scope, ranked by " + (people ? "how reachable they are" : "relevance") + ".";
+    }
+    lead += " In rank order that is " + names + ".";
+    if (shown < total) lead += " The strongest " + shown + " are shown below.";
+    paras.push(lead);
 
     /* strongest record */
     var best = top[0].r, bs = best.signals[0];
@@ -1568,10 +1606,68 @@
       verdictEl = el("verdict"), answerEl = el("answer"), evidenceEl = el("evidence"), followEl = el("followups"),
       activeEl = el("active"), tablewrap = el("tablewrap"), tableEl = el("table"), modalRoot = el("modal-root"), tray = el("tray");
 
+  /* ── inline help, in the customer's language rather than the pipeline's ── */
+  var HELP = {
+    answer: ["Answer view", "A written answer built only from records that survive your constraints, with a numbered citation to every record behind it. Use this when you want the conclusion and the reasoning."],
+    table:  ["Table view", "The same matching records as a sortable grid — click any column header to sort, click a row to open its full validation chain. Use this when you want to scan and compare rather than read."],
+    firm:   ["Firm", "Filters on what the office is, rather than what it does: single- or multi-family, size by assets, where it is headquartered, and the wealth that created it."],
+    mandate:["Mandate", "Filters on what they buy and how they buy it: sector focus, whether they go direct or through funds, whether they co-invest alongside managers, and which regions they deploy into."],
+    signal: ["Signal", "Filters on dated activity — investments made, fund commitments, key hires, allocation changes — and on the Predictability Index modelled from those events. Everything here already happened; the index is the only inference."],
+    contact:["Contact", "Filters on whether you can act on the record today: which channels exist for the decision-maker, how strongly each is verified, their role, and when the record was last re-checked."]
+  };
+  function helpHTML(key) {
+    return '<span class="help-wrap"><button class="help" type="button" data-help="' + key +
+      '" aria-expanded="false" aria-label="What is ' + esc(HELP[key][0]) + '?">?</button>' +
+      '<div class="help-pop" hidden><div class="help-pop-k">' + esc(HELP[key][0]) + "</div>" +
+      '<div class="help-pop-v">' + esc(HELP[key][1]) + "</div></div></span>";
+  }
+  function closeHelp() {
+    document.querySelectorAll(".help[aria-expanded='true']").forEach(function (b) { b.setAttribute("aria-expanded", "false"); });
+    document.querySelectorAll(".help-pop").forEach(function (p) { p.hidden = true; });
+  }
+  function wireHelp(root) {
+    root.querySelectorAll("[data-help]").forEach(function (b) {
+      b.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var open = b.getAttribute("aria-expanded") === "true";
+        closeHelp(); closePanels();
+        if (!open) { b.setAttribute("aria-expanded", "true"); b.parentNode.querySelector(".help-pop").hidden = false; }
+      });
+    });
+    root.querySelectorAll(".help-pop").forEach(function (p) { p.addEventListener("click", function (e) { e.stopPropagation(); }); });
+  }
+
+  /* ── two search levels ── */
+  var MODES = {
+    firm: {
+      noun:"office", nounPlural:"offices",
+      placeholder:"Ask about the firms — what they invest in, how they deploy, and how consistently",
+      sub:"Every answer is built from four kinds of evidence. Ask in plain English — click an example to run it.",
+      cats:[
+        { k:"Who the firm is", q:["Single-family offices under $1B", "Offices built on shipping wealth"] },
+        { k:"What they invest in", q:["Which single-family offices invest directly in healthcare?", "Which offices co-invest alongside managers?"] },
+        { k:"Why they matter now", q:["Who committed to funds in the last 6 months?", "Which offices made a key hire recently?"] },
+        { k:"How to reach them", q:["Nordic offices under $1B with a verified email", "Which principals have a mobile number?"] }
+      ]
+    },
+    principal: {
+      noun:"principal", nounPlural:"principals",
+      placeholder:"Ask about the people — who runs what, and how to reach them",
+      sub:"Results are people, not firms. Records with no identified decision-maker are excluded automatically.",
+      cats:[
+        { k:"Who they are", q:["Chief investment officers at single-family offices", "Who leads private markets?"] },
+        { k:"What they cover", q:["Who runs private credit in Europe?", "Who leads healthcare at a single-family office?"] },
+        { k:"Why now", q:["Principals at offices that invested recently", "Who committed to funds in the last 6 months?"] },
+        { k:"How to reach them", q:["Which principals have a verified email?", "Which principals have a mobile number?"] }
+      ]
+    }
+  };
+
   var filters = {};
   GROUPS.forEach(function (g) { g.facets.forEach(function (f) { filters[f.key] = f.multi ? [] : ""; }); });
 
-  var state = { parsed:parseQuery(""), cons:[], hits:[], g:null, view:"answer", sort:{ k:"score", dir:-1 }, shortlist:[], dropped:{} };
+  var state = { parsed:parseQuery(""), cons:[], hits:[], g:null, view:"answer", mode:"firm",
+                sort:{ k:"score", dir:-1 }, shortlist:[], dropped:{} };
 
   var ICONS = {
     grounded:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 8.4l3.6 3.6L13.5 4.6"/></svg>',
@@ -1590,6 +1686,54 @@
   }
 
   /* ── facet bar ── */
+  function renderMode() {
+    var m = MODES[state.mode];
+    el("mode-firm").setAttribute("aria-pressed", String(state.mode === "firm"));
+    el("mode-principal").setAttribute("aria-pressed", String(state.mode === "principal"));
+    input.placeholder = m.placeholder;
+    el("asks-sub").textContent = m.sub;
+    el("asks-grid").innerHTML = m.cats.map(function (c) {
+      return '<div class="ask-cat"><div class="ask-cat-k">' + esc(c.k) + "</div>" +
+        c.q.map(function (q) { return '<button class="preset" type="button">' + esc(q) + "</button>"; }).join("") + "</div>";
+    }).join("");
+    wirePresets();
+    renderStats();
+  }
+
+  function renderStats() {
+    var people = state.mode === "principal";
+    var pool = people ? DATA.filter(function (r) { return r.principal.name; }) : DATA;
+    var out;
+    if (people) {
+      var withEmail = pool.filter(function (r) { return hasChannel(r, "emailCorp"); }).length;
+      var withMob = pool.filter(function (r) { return hasChannel(r, "phoneMobile"); }).length;
+      var complete = pool.filter(function (r) { return tierOf(r) === "complete"; }).length;
+      out = "<span><b>" + pool.length + "</b> principals</span>" +
+            "<span><b>" + complete + "</b> verified email</span>" +
+            "<span><b>" + withEmail + "</b> reachable by email</span>" +
+            "<span><b>" + withMob + "</b> with a mobile</span>" +
+            "<span><b>" + (DATA.length - pool.length) + "</b> firms with none identified</span>";
+    } else {
+      var sfo = DATA.filter(function (r) { return r.type === "sfo"; }).length;
+      var comp = DATA.filter(function (r) { return tierOf(r) === "complete"; }).length;
+      var co = DATA.filter(function (r) { return r.coinvest.status === "evidenced"; }).length;
+      var fresh = DATA.filter(function (r) { return r.signals.length && monthsSince(r.signals[0].d) <= 6; }).length;
+      var pat = DATA.filter(function (r) { return predictability(r).score >= 70; }).length;
+      out = "<span><b>" + DATA.length + "</b> records</span><span><b>" + sfo + "</b> single-family</span>" +
+            "<span><b>" + comp + "</b> verified contact</span><span><b>" + co + "</b> co-investors</span>" +
+            "<span><b>" + fresh + "</b> active &lt;6mo</span><span><b>" + pat + "</b> patterned</span>";
+    }
+    el("stats").innerHTML = out;
+  }
+
+  function wirePresets() {
+    document.querySelectorAll(".preset").forEach(function (p) {
+      if (p.dataset.wired) return;
+      p.dataset.wired = "1";
+      p.addEventListener("click", function () { input.value = p.textContent.trim(); run(input.value); });
+    });
+  }
+
   function facetActive(f) { return Array.isArray(filters[f.key]) ? filters[f.key].length > 0 : !!filters[f.key]; }
 
   function renderFacets() {
@@ -1598,7 +1742,7 @@
       return '<div class="facet" data-group="' + g.key + '">' +
         '<button class="facet-btn' + (n ? " on" : "") + '" type="button" aria-expanded="false" data-toggle="' + g.key + '">' +
           esc(g.label) + (n ? '<span class="facet-n">' + n + "</span>" : "") + IC_CARET +
-        "</button>" +
+        "</button>" + helpHTML(g.key) +
         '<div class="facet-panel" hidden>' +
           '<div class="facet-panel-h">' + esc(g.label) + "</div>" +
           '<div class="facet-grid">' + g.facets.map(function (f) {
@@ -1647,13 +1791,14 @@
     el("facet-groups").querySelectorAll(".facet-panel").forEach(function (p) {
       p.addEventListener("click", function (e) { e.stopPropagation(); });
     });
+    wireHelp(el("facet-groups"));
   }
   function closePanels() {
     document.querySelectorAll(".facet-btn[aria-expanded='true']").forEach(function (b) { b.setAttribute("aria-expanded", "false"); });
     document.querySelectorAll(".facet-panel").forEach(function (p) { p.hidden = true; });
   }
-  document.addEventListener("click", closePanels);
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closePanels(); });
+  document.addEventListener("click", function () { closePanels(); closeHelp(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closePanels(); closeHelp(); } });
 
   /* ── active constraint chips ── */
   function renderActive() {
@@ -1687,9 +1832,16 @@
     var starred = state.shortlist.indexOf(r.id) !== -1;
 
     s += '<article class="card" data-rec="' + r.id + '">';
+    var people = state.mode === "principal";
     s += '<div class="card-top"><span class="card-num">' + n + '</span><div class="card-id">';
-    s += '<div class="card-name">' + esc(r.name) + "</div>";
-    s += '<div class="card-meta">' + esc(r.city) + " · " + esc(r.country) + " · " + esc(r.aumLabel) + "</div>";
+    if (people) {
+      s += '<div class="card-name">' + esc(p.name) + "</div>";
+      s += '<div class="card-role">' + esc(p.title) + "</div>";
+      s += '<div class="card-meta">' + esc(r.name) + " · " + esc(r.city) + " · " + esc(r.aumLabel) + "</div>";
+    } else {
+      s += '<div class="card-name">' + esc(r.name) + "</div>";
+      s += '<div class="card-meta">' + esc(r.city) + " · " + esc(r.country) + " · " + esc(r.aumLabel) + "</div>";
+    }
     s += '</div><div class="card-actions">';
     s += '<button class="icon-btn" type="button" data-star="' + r.id + '" aria-pressed="' + starred + '" title="Add to shortlist">' + IC_STAR + "</button>";
     s += '<button class="icon-btn" type="button" data-chain="' + r.id + '" title="Validation chain">' + IC_CHAIN + "</button>";
@@ -1699,53 +1851,55 @@
       return '<span class="why-chip' + (x.hit ? " hit" : "") + '">' + esc(x.t) + "</span>";
     }).join("") + "</div>";
 
-    s += '<span class="type-tag ' + r.type + '">' + esc(r.typeLabel) + "</span>";
-    s += '<span class="basis">' + esc(r.typeBasis) + "</span>";
+    /* firm context and contact detail are the same cells in both modes — what
+       changes is which one the reader meets first */
+    var firmBlock = '<span class="type-tag ' + r.type + '">' + esc(r.typeLabel) + "</span>" +
+      '<span class="basis">' + esc(r.typeBasis) + "</span>" +
+      '<div class="attrs">' +
+      '<div><div class="attr-k">Source of wealth</div><div class="attr-v">' + esc(lab("origin", r.origin)) + "</div></div>" +
+      '<div><div class="attr-k">How they invest</div><div class="attr-v">' + (r.vehicles.length ? esc(r.vehicles.map(function (v) { return lab("vehicle", v); }).join(" · ")) : '<span class="muted">Not established</span>') + "</div></div>" +
+      '<div><div class="attr-k">Where they deploy</div><div class="attr-v">' + (r.investGeo.length ? esc(r.investGeo.map(function (v) { return lab("geo", v); }).join(" · ")) : '<span class="muted">Not established</span>') + "</div></div>" +
+      "</div>" +
+      '<div class="rows">' +
+      '<div class="row"><div class="row-key">Mandate</div><div class="row-val">' + esc(r.mandate) + "</div></div>" +
+      '<div class="row"><div class="row-key">Co-invest</div><div class="row-val">' + coBadge(r.coinvest.status) +
+        '<span class="basis">' + esc(r.coinvest.basis) + "</span></div></div>" +
+      "</div>";
 
-    s += '<div class="attrs">';
-    s += '<div><div class="attr-k">Source of wealth</div><div class="attr-v">' + esc(lab("origin", r.origin)) + "</div></div>";
-    s += '<div><div class="attr-k">How they invest</div><div class="attr-v">' + (r.vehicles.length ? esc(r.vehicles.map(function (v) { return lab("vehicle", v); }).join(" · ")) : '<span class="muted">Not established</span>') + "</div></div>";
-    s += '<div><div class="attr-k">Where they deploy</div><div class="attr-v">' + (r.investGeo.length ? esc(r.investGeo.map(function (v) { return lab("geo", v); }).join(" · ")) : '<span class="muted">Not established</span>') + "</div></div>";
-    s += "</div>";
-
-    s += '<div class="rows">';
-    s += '<div class="row"><div class="row-key">Mandate</div><div class="row-val">' + esc(r.mandate) + "</div></div>";
-    s += '<div class="row"><div class="row-key">Co-invest</div><div class="row-val">' + coBadge(r.coinvest.status) +
-         '<span class="basis">' + esc(r.coinvest.basis) + "</span></div></div>";
-
-    s += '<div class="row"><div class="row-key">Principal</div><div class="row-val">';
-    s += p.name ? esc(p.name) + ' · <span class="muted">' + esc(p.title) + "</span>" : '<span class="muted">None identified</span>' + badge("none");
-    s += '<span class="basis">' + esc(p.titleBasis) + "</span></div></div>";
-
-    s += '<div class="row"><div class="row-key">LinkedIn</div><div class="row-val">';
-    s += (p.li ? '<span class="mono">' + esc(p.li) + "</span>" : '<span class="muted">—</span>') + badge(p.liStatus);
-    s += '<span class="basis">' + esc(p.liBasis) + "</span></div></div>";
-
-    s += '<div class="row"><div class="row-key">Email</div><div class="row-val">';
-    s += (p.email ? '<span class="mono">' + esc(p.email) + "</span>" : '<span class="muted">—</span>') + badge(p.emailStatus);
-    s += '<span class="basis">' + esc(p.emailBasis) + "</span></div></div>";
-
-    s += '<div class="row"><div class="row-key">Office line</div><div class="row-val">';
-    s += (p.phone ? '<span class="mono">' + esc(p.phone) + "</span>" : '<span class="muted">—</span>') + badge(p.phoneStatus);
-    s += '<span class="basis">' + esc(p.phoneBasis) + "</span></div></div>";
-
-    s += '<div class="row"><div class="row-key">Mobile</div><div class="row-val">';
-    s += (p.phoneMobile ? '<span class="mono">' + esc(p.phoneMobile) + "</span>" : '<span class="muted">—</span>') + badge(p.phoneMobileStatus);
-    s += '<span class="basis">' + esc(p.phoneMobileBasis) + "</span></div></div>";
-
-    s += '<div class="row"><div class="row-key">Reachable via</div><div class="row-val">';
     var chs = channelsOf(r);
-    s += chs.length
-      ? chs.map(function (ch) { return '<span class="chan">' + esc(lab("channel", ch)) + "</span>"; }).join("")
-      : '<span class="muted">No channel at provider grade or better</span>';
-    s += '<span class="basis">' + (chs.length ? "Channels held at provider grade or better. Weaker cells are shown above but do not count as a route to this person."
-                                              : "Every channel is catch-all, unverified, or absent. Nothing here is a confirmed route.") + "</span>";
-    if (p.preferred) {
-      s += '<span class="pref">Stated preference: ' + esc(lab("channel", p.preferred.channel)) + "</span>" +
-           '<span class="basis">' + esc(p.preferred.basis) + "</span>";
+    var contactBlock = '<div class="rows">';
+    /* in principal mode the name and title are already the card heading */
+    if (!people) {
+      contactBlock += '<div class="row"><div class="row-key">Principal</div><div class="row-val">' +
+        (p.name ? esc(p.name) + ' · <span class="muted">' + esc(p.title) + "</span>"
+                : '<span class="muted">None identified</span>' + badge("none")) +
+        '<span class="basis">' + esc(p.titleBasis) + "</span></div></div>";
+    } else {
+      contactBlock += '<div class="row"><div class="row-key">Role basis</div><div class="row-val">' +
+        '<span class="basis" style="margin-top:0">' + esc(p.titleBasis) + "</span></div></div>";
     }
-    s += "</div></div>";
-    s += "</div>";
+    contactBlock += '<div class="row"><div class="row-key">LinkedIn</div><div class="row-val">' +
+      (p.li ? '<span class="mono">' + esc(p.li) + "</span>" : '<span class="muted">—</span>') + badge(p.liStatus) +
+      '<span class="basis">' + esc(p.liBasis) + "</span></div></div>" +
+      '<div class="row"><div class="row-key">Email</div><div class="row-val">' +
+      (p.email ? '<span class="mono">' + esc(p.email) + "</span>" : '<span class="muted">—</span>') + badge(p.emailStatus) +
+      '<span class="basis">' + esc(p.emailBasis) + "</span></div></div>" +
+      '<div class="row"><div class="row-key">Office line</div><div class="row-val">' +
+      (p.phone ? '<span class="mono">' + esc(p.phone) + "</span>" : '<span class="muted">—</span>') + badge(p.phoneStatus) +
+      '<span class="basis">' + esc(p.phoneBasis) + "</span></div></div>" +
+      '<div class="row"><div class="row-key">Mobile</div><div class="row-val">' +
+      (p.phoneMobile ? '<span class="mono">' + esc(p.phoneMobile) + "</span>" : '<span class="muted">—</span>') + badge(p.phoneMobileStatus) +
+      '<span class="basis">' + esc(p.phoneMobileBasis) + "</span></div></div>" +
+      '<div class="row"><div class="row-key">Reachable via</div><div class="row-val">' +
+      (chs.length ? chs.map(function (ch) { return '<span class="chan">' + esc(lab("channel", ch)) + "</span>"; }).join("")
+                  : '<span class="muted">No channel at provider grade or better</span>') +
+      '<span class="basis">' + (chs.length ? "Channels held at provider grade or better. Weaker cells are shown above but do not count as a route to this person."
+                                           : "Every channel is catch-all, unverified, or absent. Nothing here is a confirmed route.") + "</span>" +
+      (p.preferred ? '<span class="pref">Stated preference: ' + esc(lab("channel", p.preferred.channel)) + "</span>" +
+                     '<span class="basis">' + esc(p.preferred.basis) + "</span>" : "") +
+      "</div></div></div>";
+
+    s += people ? contactBlock + firmBlock : firmBlock + contactBlock;
 
     if (r.signals.length) {
       s += '<div class="signals">' + r.signals.map(function (g) {
@@ -1809,7 +1963,8 @@
     }).join("");
 
     evidenceEl.innerHTML = '<div class="ev-head"><span class="ev-title">' +
-      (declined ? "Nearest material — not an answer" : "Records behind this answer") + "</span>" +
+      (declined ? "Nearest material — not an answer"
+                : state.mode === "principal" ? "Principals behind this answer" : "Records behind this answer") + "</span>" +
       '<span class="ev-count">' + top.length + " shown · " +
       (declined ? DATA.length + " in file" : state.hits.length + " matched · " + DATA.length + " in file") + "</span></div>" +
       (declined ? '<p style="font-size:12.5px;color:var(--text-3);margin:0 0 13px;line-height:1.5">These are the closest records by wording. They do not support the question you asked, and are shown only so you can see what the file does hold.</p>' : "") +
@@ -2020,7 +2175,7 @@
   var timers = [];
   function rerun() {
     state.cons = activeConstraints(state.parsed, filters);
-    var out = retrieve(state.cons, state.parsed);
+    var out = retrieve(state.cons, state.parsed, state.mode);
     state.hits = out.hits; state.dropped = out.dropped;
     state.g = gate(state.parsed, state.cons, state.hits);
     renderFacets(); renderActive();
@@ -2060,8 +2215,17 @@
 
   /* ── events ── */
   form.addEventListener("submit", function (e) { e.preventDefault(); run(input.value); });
-  document.querySelectorAll(".preset").forEach(function (p) {
-    p.addEventListener("click", function () { input.value = p.textContent.trim(); run(input.value); });
+
+  el("view-help").innerHTML = helpHTML("answer") + helpHTML("table");
+  wireHelp(el("view-help"));
+
+  el("mode-firm").addEventListener("click", function () {
+    if (state.mode === "firm") return;
+    state.mode = "firm"; renderMode(); input.value = ""; run("");
+  });
+  el("mode-principal").addEventListener("click", function () {
+    if (state.mode === "principal") return;
+    state.mode = "principal"; renderMode(); input.value = ""; run("");
   });
   el("view-answer").addEventListener("click", function () {
     state.view = "answer"; el("view-answer").setAttribute("aria-pressed", "true"); el("view-table").setAttribute("aria-pressed", "false"); rerun();
@@ -2080,19 +2244,7 @@
   });
   el("tray-export").addEventListener("click", openExport);
 
-  /* ── file stats ── */
-  (function () {
-    var sfo = DATA.filter(function (r) { return r.type === "sfo"; }).length;
-    var comp = DATA.filter(function (r) { return tierOf(r) === "complete"; }).length;
-    var co = DATA.filter(function (r) { return r.coinvest.status === "evidenced"; }).length;
-    var fresh = DATA.filter(function (r) { return r.signals.length && monthsSince(r.signals[0].d) <= 6; }).length;
-    var pat = DATA.filter(function (r) { return predictability(r).score >= 70; }).length;
-    el("stats").innerHTML =
-      "<span><b>" + DATA.length + "</b> records</span><span><b>" + sfo + "</b> single-family</span>" +
-      "<span><b>" + comp + "</b> verified contact</span><span><b>" + co + "</b> co-investors</span>" +
-      "<span><b>" + fresh + "</b> active &lt;6mo</span><span><b>" + pat + "</b> patterned</span>";
-  })();
-
+  renderMode();
   renderFacets();
   input.value = "Which single-family offices co-invest alongside managers?";
   run(input.value);
