@@ -77,6 +77,31 @@
   .brand-name { font-family:var(--font-display); font-size:19px; letter-spacing:.01em; line-height:1.15; }
   .brand-sub { font-size:9.5px; text-transform:uppercase; letter-spacing:.14em; color:var(--text-3); font-weight:600; }
   .sample-chip { font-size:10.5px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--caution); background:var(--caution-wash); border:1px solid currentColor; border-radius:999px; padding:4px 10px; white-space:nowrap; }
+  .about-btn {
+    font:inherit; font-size:13px; font-weight:650; letter-spacing:.01em;
+    color:var(--on-brass); background:var(--brass); border:0; border-radius:999px;
+    padding:8px 17px; cursor:pointer; white-space:nowrap; transition:background .15s;
+    display:inline-flex; align-items:center; gap:7px;
+  }
+  .about-btn:hover { background:var(--brass-bright); }
+  .about-btn::before {
+    content:"?"; display:inline-flex; align-items:center; justify-content:center;
+    width:15px; height:15px; border-radius:50%; font-size:10px; font-weight:800;
+    background:var(--on-brass); color:var(--brass);
+  }
+
+  /* ── about panel ── */
+  .about h3 { font-family:var(--font-ui); font-size:11px; text-transform:uppercase; letter-spacing:.11em; font-weight:700; color:var(--brass); margin:26px 0 8px; }
+  .about h3:first-child { margin-top:0; }
+  .about p { font-family:var(--font-display); font-size:15.5px; line-height:1.62; color:var(--text-2); margin:0 0 12px; }
+  .about p:last-child { margin-bottom:0; }
+  .about ol, .about ul { margin:0 0 12px; padding-left:20px; }
+  .about li { font-family:var(--font-display); font-size:15px; line-height:1.55; color:var(--text-2); margin-bottom:6px; }
+  .about li::marker { color:var(--brass); }
+  .about .lead { font-size:16.5px; color:var(--text); }
+  .about .rule { height:1px; background:var(--line); margin:24px 0 0; }
+  .about code { font-family:var(--font-data); font-size:13px; color:var(--text); background:var(--surface-2); padding:1px 5px; border-radius:2px; }
+
   .stat-strip { display:flex; gap:15px; font-family:var(--font-data); font-size:11px; color:var(--text-3); font-variant-numeric:tabular-nums; flex-wrap:wrap; }
   .stat-strip b { color:var(--text-2); font-weight:600; }
 
@@ -390,6 +415,7 @@
       <div class="brand-name">Meridian</div>
       <div class="brand-sub">Family Office Intelligence</div>
     </div>
+    <button class="about-btn" type="button" id="about-btn">What is Meridian?</button>
     <div class="stat-strip" id="stats"></div>
   </header>
 
@@ -2245,6 +2271,60 @@
           '<div class="chain-body"><div class="chain-k">' + esc(s[0]) + '</div><div class="chain-v">' + esc(s[1]) + "</div></div></div>";
       }).join("") + "</div>");
   }
+  function openAbout() {
+    showModal(
+      '<div class="modal-head"><div><div class="modal-title">What is Meridian?</div>' +
+      '<div class="modal-sub">What it does, and how to read what it gives you</div></div>' +
+      '<button class="ghost" type="button" data-close>Close</button></div>' +
+      '<div class="modal-body about">' +
+
+      "<h3>What Meridian is</h3>" +
+      '<p class="lead">Meridian is a search tool for family office intelligence. Ask a question in plain English, ' +
+      'such as <code>Which single-family offices co-invest alongside fund managers?</code>, and Meridian returns the ' +
+      'matching firms from its dataset. You can read the result as a written answer with every claim linked to the ' +
+      'record it came from, or switch to a sortable table.</p>' +
+      "<p>You can search at two levels. <b>Family office firms</b> returns institutions. <b>Family office principals</b> " +
+      "returns the people who make the decisions, and leaves out any firm where we could not identify one.</p>" +
+
+      "<h3>Why it matters</h3>" +
+      "<p>The result is speed with evidence. Instead of days spent assembling a target list from scattered databases, " +
+      "news searches and manual research, Meridian delivers a filtered list of reachable decision makers in seconds, " +
+      "with every figure traceable to recorded activity rather than marketing copy.</p>" +
+
+      "<h3>The four question types</h3>" +
+      "<p>Meridian answers four kinds of question:</p><ol>" +
+      "<li>Who a firm is</li><li>What the firm invests in</li>" +
+      "<li>What the firm has done recently</li><li>How to reach the firm's principals</li></ol>" +
+
+      "<h3>What each result shows</h3>" +
+      "<p>Every firm in the results includes:</p><ol>" +
+      "<li>Firm type, location, and assets under management</li>" +
+      "<li>Source of wealth</li>" +
+      "<li>Investment style and how the firm deploys capital</li>" +
+      "<li>The principal decision maker and their title</li>" +
+      "<li>Contact channels, including confirmed email addresses where the dataset has verified them</li></ol>" +
+
+      "<h3>The Predictability Index</h3>" +
+      "<p>Meridian calculates a Predictability Index for each firm: a score out of 100 that estimates how consistently " +
+      "that firm invests in a given area. The score is built only from the firm's own recorded activity.</p><ul>" +
+      "<li>Number of investments made</li>" +
+      "<li>How recent that activity is</li>" +
+      "<li>Repetition of investment themes</li>" +
+      "<li>Pace and regularity of deployment</li>" +
+      "<li>Hiring into the investment team</li>" +
+      "<li>Published targets, where they exist</li></ul>" +
+      "<p>Where a firm has no recorded activity in an area, Meridian produces no score rather than a guess.</p>" +
+
+      '<div class="rule"></div>' +
+      "<h3>About this dataset</h3>" +
+      "<p>Every firm, person, email address and figure shown here is invented. No real family office or individual " +
+      "appears in this dataset, and nothing on this page should be contacted. The search itself is real: your question " +
+      "is broken into filters, those filters are applied to the records, and the answer is written only from the records " +
+      "that match.</p>" +
+      "</div>"
+    );
+  }
+
   function openExport() {
     var csv = toCSV();
     showModal('<div class="modal-head"><div><div class="modal-title">Export shortlist</div>' +
@@ -2335,6 +2415,7 @@
     renderTray();
   });
   el("tray-export").addEventListener("click", openExport);
+  el("about-btn").addEventListener("click", function (e) { e.stopPropagation(); openAbout(); });
 
   renderMode();
   renderFacets();
