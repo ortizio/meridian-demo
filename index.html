@@ -169,16 +169,27 @@
   }
 
   /* ── facet bar ── */
-  .facetbar { display:flex; flex-wrap:wrap; gap:9px; align-items:flex-end; margin-top:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
+  .facetbar { display:flex; flex-wrap:wrap; gap:18px; align-items:stretch; margin-top:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
+  .facetbar .ghost { align-self:center; }
   .seg { display:flex; border:1px solid var(--line); border-radius:2px; overflow:hidden; flex:none; }
   .seg button { font:inherit; font-size:12.5px; border:0; background:var(--surface); color:var(--text-2); padding:8px 15px; cursor:pointer; transition:background .15s,color .15s; }
   .seg button + button { border-left:1px solid var(--line); }
   .seg button[aria-pressed="true"] { background:var(--brass); color:var(--on-brass); font-weight:600; }
 
   .facet-div { width:1px; align-self:stretch; background:var(--line); margin:0 3px; }
-  /* each cluster is labelled, with help markers on their own line above the controls */
-  .ctrl-group { display:flex; flex-direction:column; gap:5px; }
-  .ctrl-label { font-size:9.5px; text-transform:uppercase; letter-spacing:.13em; font-weight:700; color:var(--text-3); }
+  /* Each cluster sits in its own panel so the two jobs read as separate:
+     the left one changes how results are displayed, the right one changes which results you get. */
+  .ctrl-group {
+    display:flex; flex-direction:column; gap:7px;
+    padding:9px 14px 11px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+  }
+  .ctrl-label {
+    font-size:9.5px; text-transform:uppercase; letter-spacing:.13em;
+    font-weight:700; color:var(--text-3); text-align:center;
+  }
   .ctrl { display:flex; flex-direction:column; gap:4px; }
   .ctrl-help { display:flex; gap:5px; min-height:15px; }
   .seg-help { justify-content:space-around; }
@@ -478,7 +489,6 @@
           </div>
         </div>
       </div>
-      <span class="facet-div" aria-hidden="true"></span>
       <div class="ctrl-group">
         <span class="ctrl-label" id="filters-label">Filters</span>
         <div id="facet-groups" role="group" aria-labelledby="filters-label"
