@@ -172,7 +172,8 @@
   .facetbar { display:flex; flex-wrap:wrap; gap:18px; align-items:stretch; margin-top:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
   .facetbar .ghost { align-self:center; }
   .seg { display:flex; border:1px solid var(--line); border-radius:2px; overflow:hidden; flex:none; }
-  .seg button { font:inherit; font-size:12.5px; border:0; background:var(--surface); color:var(--text-2); padding:8px 15px; cursor:pointer; transition:background .15s,color .15s; }
+  /* equal-width halves, so the two help markers above them centre correctly */
+  .seg button { font:inherit; font-size:12.5px; border:0; background:var(--surface); color:var(--text-2); padding:8px 15px; min-width:78px; text-align:center; cursor:pointer; transition:background .15s,color .15s; }
   .seg button + button { border-left:1px solid var(--line); }
   .seg button[aria-pressed="true"] { background:var(--brass); color:var(--on-brass); font-weight:600; }
 
@@ -192,8 +193,10 @@
   }
   .ctrl { display:flex; flex-direction:column; gap:4px; }
   .ctrl-help { display:flex; gap:5px; min-height:15px; }
-  .seg-help { justify-content:space-around; }
-  .facet { position:relative; display:flex; flex-direction:column; gap:4px; align-items:flex-start; }
+  /* mirrors the two equal halves of the segmented control, so each marker
+     lands on its own button's centre rather than near it */
+  .seg-help { display:grid; grid-template-columns:1fr 1fr; gap:0; justify-items:center; }
+  .facet { position:relative; display:flex; flex-direction:column; gap:4px; align-items:center; }
   .facet-btn {
     font:inherit; font-size:12.5px; color:var(--text-2); background:var(--surface);
     border:1px solid var(--line); border-radius:2px; padding:8px 12px; cursor:pointer;
