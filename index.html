@@ -1099,9 +1099,9 @@
     ]},
     { key:"mandate", label:"Mandate", note:"Filters describing what the office invests in and how. Co-investment means the office put money into a specific deal alongside the fund manager leading it, rather than only committing to that manager's fund. We mark it confirmed only when we found a deal that was publicly disclosed.", facets:[
       { key:"sector",   label:"Sector focus",      kind:"sector",  opts:function(){ return distinct(function(r){return r.sectors;}).sort().map(function(v){return {v:v,t:v.charAt(0).toUpperCase()+v.slice(1)};}); } },
-      { key:"vehicle",  label:"How they invest",   kind:"vehicle", opts:function(){ return opts("vehicle", distinct(function(r){return r.vehicles;})); } },
+      { key:"vehicle",  label:"How the firm invests",   kind:"vehicle", opts:function(){ return opts("vehicle", distinct(function(r){return r.vehicles;})); } },
       { key:"coinvest", label:"Invests alongside fund managers", kind:"coinvest",opts:function(){ return opts("coinvest", ["evidenced","not-found","unknown"]); } },
-      { key:"geo",      label:"Where they deploy", kind:"geo",     opts:function(){ return opts("geo", distinct(function(r){return r.investGeo;})); } }
+      { key:"geo",      label:"Where the firm invests", kind:"geo",     opts:function(){ return opts("geo", distinct(function(r){return r.investGeo;})); } }
     ]},
     { key:"signal", label:"Signal", note:"Filters describing recent activity. Every item here is an event with a date that already happened. The Predictability Index is our own estimate, calculated from those events.", facets:[
       { key:"signalType", label:"Recent activity", kind:"signalType", opts:function(){ return opts("signalType", distinct(function(r){return r.signals.map(function(s){return s.type;});})); } },
@@ -1179,36 +1179,36 @@
   var SIGNAL_WORDS = {
     investment:["invested","investment","made an investment","deployed","acquired","backed","bought"],
     "fund-commitment":["fund commitment","committed capital to funds","committed capital to a fund","commit capital to funds","committing capital to funds","committed to a fund","committed to funds","commits to funds","anchored","commitment"],
-    hire:["hire","hired","hiring","key hire","recruited","new team","added a team"],
+    hire:["hired into their investment team","hired into the investment team","investment team","hired into","key hire","recruited","hiring","hired","hire","new team","added a team"],
     allocation:["allocation change","increased allocation","raised allocation","rebalanc","expanded the"],
     target:["stated target","announced a target","allocation target","public target"]
   };
   var ROLE_WORDS = {
-    cio:["cio","chief investment officer"],
-    directs:["head of direct","direct investments lead","private markets","investment director","head of investments","director of alternatives"],
-    credit:["credit lead","head of credit","private credit partner"],
-    leadership:["ceo","chief executive","managing partner","managing director","md"],
+    cio:["chief investment officers","chief investment officer","cios","cio"],
+    directs:["heads of direct investments","head of direct investments","head of direct","direct investments lead","private market investments","private markets","private market","investment directors","investment director","heads of investments","head of investments","directors of alternatives","director of alternatives"],
+    credit:["private credit partners","private credit partner","credit leads","credit lead","heads of credit","head of credit"],
+    leadership:["chief executives","chief executive","managing partners","managing partner","managing directors","managing director","ceos","ceo","md"],
     family:["family principal","family member","the family"]
   };
   var ORIGIN_WORDS = {
-    "tech-exit":["tech wealth","technology wealth","tech exit","software exit","founder wealth"],
-    energy:["energy wealth","oil wealth"],
-    "real-estate":["real estate wealth","property wealth"],
-    industrial:["industrial wealth","manufacturing wealth"],
-    shipping:["shipping wealth","maritime wealth"],
+    "tech-exit":["tech wealth","technology wealth","tech exit","software exit","founder wealth","wealth came from technology","wealth came from a technology"],
+    energy:["energy wealth","oil wealth","wealth came from energy"],
+    "real-estate":["real estate wealth","property wealth","wealth came from real estate"],
+    industrial:["industrial wealth","manufacturing wealth","wealth came from industry","wealth came from manufacturing"],
+    shipping:["shipping wealth","maritime wealth","wealth came from shipping","wealth came from maritime"],
     pharma:["pharmaceutical wealth","pharma wealth"],
     luxury:["luxury wealth","fashion wealth"]
   };
   var COINVEST_WORDS = ["co-invest","coinvest","co invest","alongside","invest with managers","fund manager","fund managers","side-by-side","side by side"];
   var CHANNEL_WORDS = {
-    phoneMobile:["mobile number","mobile phone","cell phone","cellphone","mobile"],
+    phoneMobile:["mobile phone numbers","mobile phone number","mobile numbers","mobile number","mobile phone","cell phone","cellphone","mobile"],
     phoneOffice:["office line","office phone","desk line","direct line","direct dial"],
     linkedin:["linkedin profile","linkedin address","linkedin"],
     emailCorp:["corporate email","work email","company email"]
   };
   var CONTACT_WORDS = {
-    gap:["no usable contact","no contact","without a contact","cannot be reached","no way to reach","contact gap","documented gap"],
-    complete:["verified email","verified contact","confirmed email address","confirmed email","reachable today","complete contact"],
+    gap:["no usable contact details","no usable contact","no contact details","no contact","without a contact","cannot be reached","no way to reach","contact gap","documented gap"],
+    complete:["verified email addresses","verified email address","verified email","verified contact","confirmed email addresses","confirmed email address","confirmed email","reachable today","complete contact"],
     usable:["with an email","with email","email address","contactable","reachable","can i reach","how do i reach","who do i contact","who to call"],
     named:["named principal","named contact","named decision","who runs","who leads","who heads","decision-maker","decision maker"]
   };
@@ -1758,24 +1758,24 @@
   var MODES = {
     firm: {
       noun:"office", nounPlural:"offices",
-      placeholder:"Ask about the firms — what they invest in and how often",
+      placeholder:"Ask about family office firms: what a firm invests in, and how often",
       sub:"You can ask about four things. Type a question in your own words, or click an example below.",
       cats:[
-        { k:"Who the firm is", q:["Single-family offices under $1B", "Offices built on shipping wealth"] },
-        { k:"What they invest in", q:["Which single-family offices invest directly in healthcare?", "Which offices co-invest alongside fund managers?"] },
-        { k:"Recent activity", q:["Which offices committed capital to funds within the last 6 months?", "Which offices made a key hire recently?"] },
-        { k:"How to reach them", q:["Nordic offices under $1B with a confirmed email address", "Which principals have a mobile number?"] }
+        { k:"Who the firm is", q:["Single-family offices with AUM under $1B", "Family offices whose wealth came from shipping"] },
+        { k:"What the firm invests in", q:["Which single-family offices invest directly in healthcare?", "Which offices co-invest alongside fund managers?"] },
+        { k:"What the firm has done recently", q:["Which offices committed capital to funds within the last 6 months?", "Which offices hired into their investment team recently?"] },
+        { k:"How to reach the firm's decision maker", q:["Nordic offices with AUM under $1B that have confirmed email addresses", "Which offices have a mobile phone number for their principal?"] }
       ]
     },
     principal: {
       noun:"principal", nounPlural:"principals",
-      placeholder:"Ask about the people — what they are responsible for and how to reach them",
+      placeholder:"Ask about decision makers: what a person is responsible for, and how to reach them",
       sub:"Results are people. Firms where we could not identify a decision maker are left out.",
       cats:[
-        { k:"Who the person is", q:["Chief investment officers at single-family offices", "Who leads private markets?"] },
-        { k:"What they are responsible for", q:["Who runs private credit in Europe?", "Who leads healthcare at a single-family office?"] },
-        { k:"Recent activity at their firm", q:["Principals at offices that invested recently", "Principals at offices that committed capital to funds"] },
-        { k:"How to reach them", q:["Which principals have a confirmed email address?", "Which principals have a mobile number?"] }
+        { k:"Who the decision maker is", q:["Chief investment officers at single-family offices", "Which principals lead private market investments?"] },
+        { k:"What the decision maker is responsible for", q:["Which principals run private credit at European offices?", "Which principals lead healthcare investing at single-family offices?"] },
+        { k:"What the decision maker's firm has done recently", q:["Principals at offices that made an investment recently", "Principals at offices that committed capital to funds"] },
+        { k:"How to reach the decision maker", q:["Which principals have a confirmed email address?", "Which principals have a mobile phone number?"] }
       ]
     }
   };
@@ -1975,8 +1975,8 @@
       '<span class="basis">' + esc(r.typeBasis) + "</span>" +
       '<div class="attrs">' +
       '<div><div class="attr-k">Source of wealth</div><div class="attr-v">' + esc(lab("origin", r.origin)) + "</div></div>" +
-      '<div><div class="attr-k">How they invest</div><div class="attr-v">' + (r.vehicles.length ? esc(r.vehicles.map(function (v) { return lab("vehicle", v); }).join(" · ")) : '<span class="muted">Not established</span>') + "</div></div>" +
-      '<div><div class="attr-k">Where they deploy</div><div class="attr-v">' + (r.investGeo.length ? esc(r.investGeo.map(function (v) { return lab("geo", v); }).join(" · ")) : '<span class="muted">Not established</span>') + "</div></div>" +
+      '<div><div class="attr-k">How the firm invests</div><div class="attr-v">' + (r.vehicles.length ? esc(r.vehicles.map(function (v) { return lab("vehicle", v); }).join(" · ")) : '<span class="muted">Not established</span>') + "</div></div>" +
+      '<div><div class="attr-k">Where the firm invests</div><div class="attr-v">' + (r.investGeo.length ? esc(r.investGeo.map(function (v) { return lab("geo", v); }).join(" · ")) : '<span class="muted">Not established</span>') + "</div></div>" +
       "</div>" +
       '<div class="rows">' +
       '<div class="row"><div class="row-key">Mandate</div><div class="row-val">' + esc(r.mandate) + "</div></div>" +
@@ -2100,10 +2100,10 @@
     var have = {}; state.cons.forEach(function (c) { have[c.key] = 1; });
     var out = [];
     if (!have.coinvest) out.push("Which offices co-invest alongside fund managers?");
-    if (!have.signalType) out.push("Which offices made a key hire recently?");
-    if (!have.contact) out.push("Which offices have a confirmed email address?");
+    if (!have.signalType) out.push("Which offices hired into their investment team recently?");
+    if (!have.contact) out.push("Which offices have a confirmed email address for their principal?");
     if (!have.vehicle) out.push("Which offices commit capital to funds?");
-    out.push("Which offices have no usable contact?");
+    out.push("Which offices have no usable contact details?");
     return out.slice(0, 3);
   }
 
@@ -2116,7 +2116,7 @@
       { k:"loc", t:"Location", g:function (h) { return esc(h.r.city) + ", " + esc(h.r.country); } },
       { k:"aum", t:"AUM", g:function (h) { return esc(h.r.aumLabel); }, cls:"num" },
       { k:"origin", t:"Wealth from", g:function (h) { return esc(lab("origin", h.r.origin)); } },
-      { k:"vehicle", t:"How they invest", g:function (h) { return h.r.vehicles.length ? esc(h.r.vehicles.map(function (v) { return lab("vehicle", v); }).join(", ")) : '<span style="color:var(--text-3)">—</span>'; } },
+      { k:"vehicle", t:"How the firm invests", g:function (h) { return h.r.vehicles.length ? esc(h.r.vehicles.map(function (v) { return lab("vehicle", v); }).join(", ")) : '<span style="color:var(--text-3)">—</span>'; } },
       { k:"coinvest", t:"Co-invest", g:function (h) { return coBadge(h.r.coinvest.status); } },
       { k:"principal", t:"Principal", g:function (h) { return h.r.principal.name ? esc(h.r.principal.name) + '<br><span style="color:var(--text-3);font-size:11px">' + esc(h.r.principal.title) + "</span>" : '<span style="color:var(--text-3)">—</span>'; } },
       { k:"email", t:"Email", g:function (h) { return (h.r.principal.email ? '<span class="mono">' + esc(h.r.principal.email) + "</span>" : '<span style="color:var(--text-3)">—</span>') + "<br>" + badge(h.r.principal.emailStatus); } },
