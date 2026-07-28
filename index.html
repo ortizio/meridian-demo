@@ -138,7 +138,8 @@
   .go:hover { background:var(--brass-bright); }
 
   /* ── what you can ask ── */
-  .asks { margin-top:14px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); overflow:hidden; }
+  /* no overflow:hidden here — it would clip the help popover that opens from inside */
+  .asks { margin-top:14px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); }
   .asks-head { padding:13px 16px 12px; border-bottom:1px solid var(--line-soft); display:flex; flex-wrap:wrap; align-items:baseline; gap:10px; }
   .asks-title { font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; font-weight:700; color:var(--brass); }
   .asks-sub { font-size:12px; color:var(--text-3); }
@@ -153,7 +154,7 @@
   .preset { font:inherit; font-size:12.5px; line-height:1.4; color:var(--text-2); background:none; border:0; border-left:2px solid var(--line); padding:3px 0 3px 9px; cursor:pointer; text-align:left; transition:color .15s,border-color .15s; }
   .preset:hover { color:var(--brass); border-left-color:var(--brass); }
 
-  .ask-pred { padding:13px 15px; background:var(--brass-wash); border-top:1px solid var(--brass-line); }
+  .ask-pred { padding:13px 15px; background:var(--brass-wash); border-top:1px solid var(--brass-line); border-radius:0 0 var(--radius) var(--radius); }
   .ask-pred-head { display:flex; align-items:baseline; gap:9px; flex-wrap:wrap; margin-bottom:8px; }
   .ask-pred-k { font-size:9.5px; text-transform:uppercase; letter-spacing:.1em; font-weight:700; color:var(--brass); }
   .ask-pred-tag { font-size:9px; text-transform:uppercase; letter-spacing:.07em; font-weight:700; color:var(--brass); border:1px solid var(--brass-line); border-radius:2px; padding:2px 6px; }
@@ -161,8 +162,11 @@
   @media (min-width:840px) { .ask-pred-row { flex-direction:row; flex-wrap:wrap; gap:6px 22px; } }
   .preset.pred { color:var(--brass); border-left-color:var(--brass-line); }
   .preset.pred:hover { color:var(--brass-bright); border-left-color:var(--brass); }
-  .ask-pred-note { font-size:11.5px; color:var(--text-2); line-height:1.55; margin:9px 0 0; max-width:92ch; }
-  .ask-pred-note b { color:var(--text); }
+  /* this one holds a full paragraph, so it needs more room and a left anchor */
+  #pred-help .help-pop { width:360px; left:0; transform:none; }
+  @media (max-width:700px) {
+    #pred-help .help-pop { position:fixed; left:12px; right:12px; width:auto; top:auto; bottom:12px; }
+  }
 
   /* ── facet bar ── */
   .facetbar { display:flex; flex-wrap:wrap; gap:9px; align-items:flex-end; margin-top:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
@@ -453,18 +457,13 @@
         <div class="ask-pred-head">
           <span class="ask-pred-k">Predictability Index</span>
           <span class="ask-pred-tag">Estimated from past activity</span>
+          <span id="pred-help"></span>
         </div>
         <div class="ask-pred-row">
           <button class="preset pred" type="button">Which offices are most likely to invest in healthcare again?</button>
           <button class="preset pred" type="button">Which offices deploy capital most consistently?</button>
           <button class="preset pred" type="button">Which offices routinely invest in private credit?</button>
         </div>
-        <p class="ask-pred-note">Every firm has a score out of 100 that estimates how consistently it invests. We
-          calculate it from that firm's own recorded activity: how many investments it has made, how recently,
-          how often it returns to the same theme, how regular its pace is, and whether it has published a
-          target. Each score lists the figures we used and the areas the firm has invested in before. No firm
-          has told us what it will do next. <b>If a firm has no recorded activity in an area, we do not produce
-          a score.</b> Ask about crypto and the answer will tell you the dataset holds nothing to calculate from.</p>
       </div>
     </section>
 
@@ -1739,7 +1738,8 @@
     firm:   ["Firm", "Filters describing the office itself: whether it serves one family or several, how much money it manages, where it is based, and how the family made its money."],
     mandate:["Mandate", "Filters describing what the office invests in: which sectors, whether it invests directly or through funds, whether it puts money into individual deals alongside the fund manager running them, and which regions it invests in."],
     signal: ["Signal", "Filters describing recent activity: investments, fund commitments, hires and allocation changes, each with a date. This group also holds the Predictability Index, which is our estimate of how consistently a firm invests."],
-    contact:["Contact", "Filters describing whether you can reach the decision maker: which contact methods we hold, how well each one is verified, the person's role, and when we last checked the record."]
+    contact:["Contact", "Filters describing whether you can reach the decision maker: which contact methods we hold, how well each one is verified, the person's role, and when we last checked the record."],
+    predict:["Predictability Index", "Every firm has a score out of 100 that estimates how consistently it invests. We calculate it from that firm's own recorded activity: how many investments it has made, how recently, how often it returns to the same theme, how regular its pace is, whether it has hired into its investment team, and whether it has published a target. Each score lists the figures we used and the areas the firm has invested in before. No firm has told us what it will do next. If a firm has no recorded activity in an area, we do not produce a score — ask about crypto and the answer will tell you the dataset holds nothing to calculate from."]
   };
   function helpHTML(key) {
     return '<span class="help-wrap"><button class="help" type="button" data-help="' + key +
@@ -2399,6 +2399,8 @@
 
   el("view-help").innerHTML = helpHTML("answer") + helpHTML("table");
   wireHelp(el("view-help"));
+  el("pred-help").innerHTML = helpHTML("predict");
+  wireHelp(el("pred-help"));
 
   el("mode-firm").addEventListener("click", function () {
     if (state.mode === "firm") return;
