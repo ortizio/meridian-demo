@@ -239,6 +239,9 @@
   .monitor-note b { color:var(--caution); font-weight:600; }
 
   /* ── CRM cluster: named, described, and openly not built yet ── */
+  /* this cluster has no help row, so its content is shorter than its neighbours'.
+     Centre the label and buttons together rather than letting them sit at the top. */
+  .crm-group { justify-content:center; padding-top:11px; }
   .crm-row { display:flex; gap:7px; flex-wrap:wrap; align-items:flex-end; }
   .crm-item { position:relative; }
   .crm-btn {
