@@ -128,7 +128,40 @@
   @media (max-width:700px) { .help-pop { position:fixed; left:12px; right:12px; width:auto; transform:none; top:auto; bottom:12px; } }
 
   /* ── search ── */
-  .searchbar { padding:22px 0 0; }
+  /* ── the search block ──
+     Search is the product. It carries a brass border and a titled header strip so
+     it reads as one labelled thing rather than as loose controls among the panels
+     above and below it. Nothing that does not search belongs inside this border. */
+  .core {
+    margin-top:26px; padding:0 17px 17px;
+    border:1px solid var(--brass-line); border-radius:var(--radius);
+    background:var(--surface); box-shadow:var(--shadow);
+  }
+  .core-head {
+    margin:0 -17px 16px; padding:12px 17px;
+    background:var(--brass-wash); border-bottom:1px solid var(--brass-line);
+    border-radius:var(--radius) var(--radius) 0 0;
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:12px;
+  }
+  .core-k { font-size:11px; text-transform:uppercase; letter-spacing:.15em; font-weight:700; color:var(--brass); }
+  /* --text-2, not --text-3: this sentence explains the main thing the product does,
+     and on the tinted strip --text-3 measured 3.05:1 in the light theme */
+  .core-sub { font-size:11.5px; color:var(--text-2); line-height:1.5; flex:1 1 320px; min-width:0; }
+  /* the block already carries the outer border, so the bar inside it does not
+     need a rule of its own under the filters */
+  /* Only View and Filters live here now. Stretching Filters to fill the row left a
+     1005px panel holding four small buttons, so the three controls sit centred as a
+     group instead — no dead space inside a panel, none trailing off the right. */
+  .core .facetbar { border-bottom:0; padding-bottom:0; justify-content:center; }
+
+  /* ── work with your results ── */
+  .band { margin-top:18px; }
+  .band-head { display:flex; flex-wrap:wrap; align-items:baseline; gap:11px; margin-bottom:9px; }
+  .band-k { font-size:10px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; color:var(--text-2); }
+  .band-sub { font-size:11.5px; color:var(--text-3); line-height:1.5; flex:1 1 300px; min-width:0; }
+  .band-bar { display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:stretch; }
+  @media (max-width:760px) { .band-bar { grid-template-columns:1fr; } }
+
   .field { display:flex; gap:9px; align-items:center; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:5px 5px 5px 15px; box-shadow:var(--shadow); transition:border-color .18s; }
   .field:focus-within { border-color:var(--brass-line); }
   .field > svg { flex:none; color:var(--text-3); }
@@ -244,8 +277,8 @@
   /* ── CRM cluster: named, described, and openly not built yet ── */
   /* this cluster has no help row, so its content is shorter than its neighbours'.
      Centre the label and buttons together rather than letting them sit at the top. */
-  .crm-group { justify-content:center; padding-top:11px; }
-  .crm-row { display:flex; gap:5px; flex-wrap:wrap; align-items:flex-end; }
+  .crm-group { justify-content:center; align-items:center; padding-top:11px; }
+  .crm-row { display:flex; gap:5px; flex-wrap:wrap; align-items:flex-end; justify-content:center; }
   .crm-item { position:relative; }
   .crm-btn {
     font:inherit; font-size:12.5px; color:var(--text-3);
@@ -271,9 +304,9 @@
   /* ── on-demand research ── */
   /* every other control on this row changes which records you see. This one
      changes what is in them, so it is the only filled button in the bar. */
-  /* grows into whatever is left of the row, so the bar ends flush instead of ragged
-     and the cluster reads as a deliberate full-width strip when the bar does wrap */
-  .agent-group { justify-content:center; align-items:center; flex:1 1 auto; padding:9px 10px; }
+  /* no flex-grow needed now that this sits in its own two-column band rather than
+     competing for room with the filters */
+  .agent-group { justify-content:center; align-items:center; padding:9px 10px; }
   .agent-item { position:relative; }
   /* the label is 30 characters. On one line the cluster is 240px wide and forces
      the whole bar onto two rows, so it breaks after "On Demand" instead. */
@@ -582,7 +615,32 @@
     <div class="stat-strip" id="stats"></div>
   </header>
 
-  <section class="searchbar">
+  <div class="browse">
+    <section class="panel-x" aria-labelledby="trend-k">
+      <div class="panel-x-k" id="trend-k">Trending</div>
+      <p class="panel-x-sub">What the offices in this dataset have actually been doing. Counted across all
+        12 records, not just the ones your last question returned.</p>
+      <div class="trend-tabs" role="tablist" aria-label="Trending">
+        <button type="button" role="tab" id="tab-tx" aria-selected="true">Family office transactions</button>
+        <button type="button" role="tab" id="tab-tr" aria-selected="false">Family office trends</button>
+        <button type="button" role="tab" id="tab-rp" aria-selected="false">Family office reports</button>
+      </div>
+      <div class="trend-body" id="trend-body"></div>
+    </section>
+
+    <section class="panel-x" aria-labelledby="tools-k">
+      <div class="panel-x-k" id="tools-k">Family office fundraising tools</div>
+      <p class="panel-x-sub">Resources for managers raising capital from family offices.</p>
+      <div id="tools-list"></div>
+    </section>
+  </div>
+
+  <section class="core" aria-labelledby="core-k">
+    <div class="core-head">
+      <span class="core-k" id="core-k">Search</span>
+      <span class="core-sub">Ask a question about family offices in your own words, then narrow the
+        records with the filters. Everything the platform answers starts here.</span>
+    </div>
 
     <div class="modes" role="group" aria-label="What you are searching for">
       <button class="mode" type="button" id="mode-firm" aria-pressed="true">
@@ -624,26 +682,6 @@
       </div>
     </section>
 
-    <div class="browse">
-      <section class="panel-x" aria-labelledby="trend-k">
-        <div class="panel-x-k" id="trend-k">Trending</div>
-        <p class="panel-x-sub">What the offices in this dataset have actually been doing. Counted across all
-          12 records, not just the ones your last question returned.</p>
-        <div class="trend-tabs" role="tablist" aria-label="Trending">
-          <button type="button" role="tab" id="tab-tx" aria-selected="true">Family office transactions</button>
-          <button type="button" role="tab" id="tab-tr" aria-selected="false">Family office trends</button>
-          <button type="button" role="tab" id="tab-rp" aria-selected="false">Family office reports</button>
-        </div>
-        <div class="trend-body" id="trend-body"></div>
-      </section>
-
-      <section class="panel-x" aria-labelledby="tools-k">
-        <div class="panel-x-k" id="tools-k">Family office fundraising tools</div>
-        <p class="panel-x-sub">Resources for managers raising capital from family offices.</p>
-        <div id="tools-list"></div>
-      </section>
-    </div>
-
     <div class="facetbar" id="facetbar">
       <div class="ctrl-group">
         <span class="ctrl-label" id="view-label">View</span>
@@ -655,11 +693,26 @@
           </div>
         </div>
       </div>
-      <div class="ctrl-group">
+      <div class="ctrl-group filters-group">
         <span class="ctrl-label" id="filters-label">Filters</span>
         <div id="facet-groups" role="group" aria-labelledby="filters-label"
-             style="display:flex;gap:7px;flex-wrap:wrap;align-items:flex-end"></div>
+             style="display:flex;gap:7px;flex-wrap:wrap;align-items:flex-end;justify-content:center"></div>
       </div>
+      <button class="ghost" type="button" id="reset">Reset all</button>
+    </div>
+
+    <div class="active" id="active"></div>
+  </section>
+
+  <!-- Neither of these searches anything. They act on an answer once you have
+       one, so they sit outside the search block rather than inside it. -->
+  <section class="band" aria-labelledby="band-k">
+    <div class="band-head">
+      <span class="band-k" id="band-k">Work with your results</span>
+      <span class="band-sub">Save records from an answer into a list, or send a research agent to fill
+        what the answer leaves unknown.</span>
+    </div>
+    <div class="band-bar">
       <div class="ctrl-group crm-group">
         <span class="ctrl-label" id="crm-label">CRM</span>
         <div id="crm-row" class="crm-row" role="group" aria-labelledby="crm-label"></div>
@@ -668,10 +721,7 @@
         <span class="ctrl-label" id="agent-label">Research</span>
         <div id="agent-row" role="group" aria-labelledby="agent-label"></div>
       </div>
-      <button class="ghost" type="button" id="reset">Reset all</button>
     </div>
-
-    <div class="active" id="active"></div>
   </section>
 
   <div class="stage" id="stage" hidden>
