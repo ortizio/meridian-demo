@@ -312,6 +312,52 @@
     .agent-pop, .agent-pop.up { position:fixed; left:12px; right:12px; width:auto; top:auto; bottom:12px; max-height:76vh; }
   }
 
+  /* ── trending and fundraising tools ── */
+  /* browse content rather than answer content: corpus-wide, and deliberately not
+     tied to the last question, so it is labelled as counting all 12 records */
+  .browse { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:18px; margin-top:26px; align-items:start; }
+  @media (max-width:880px) { .browse { grid-template-columns:1fr; } }
+  .panel-x { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:15px 17px 16px; }
+  .panel-x-k { font-size:9.5px; text-transform:uppercase; letter-spacing:.13em; font-weight:700; color:var(--brass); }
+  .panel-x-sub { font-size:11.5px; color:var(--text-3); line-height:1.55; margin-top:6px; }
+
+  .trend-tabs { display:flex; border:1px solid var(--line); border-radius:2px; overflow:hidden; margin-top:13px; width:max-content; max-width:100%; }
+  .trend-tabs button { font:inherit; font-size:12px; border:0; background:var(--surface); color:var(--text-2); padding:7px 12px; cursor:pointer; white-space:nowrap; transition:background .15s,color .15s; }
+  .trend-tabs button + button { border-left:1px solid var(--line); }
+  .trend-tabs button:hover { color:var(--text); }
+  .trend-tabs button[aria-selected="true"] { background:var(--brass); color:var(--on-brass); font-weight:600; }
+  @media (max-width:520px) { .trend-tabs { flex-direction:column; width:100%; } .trend-tabs button + button { border-left:0; border-top:1px solid var(--line); } }
+  .trend-body { margin-top:14px; }
+  .trend-foot { font-size:10.5px; color:var(--text-3); line-height:1.5; margin-top:11px; padding-top:10px; border-top:1px solid var(--line); }
+
+  .tx { display:grid; grid-template-columns:54px 1fr; gap:11px; padding:9px 0; border-top:1px solid var(--line-soft); }
+  .tx:first-child { border-top:0; padding-top:0; }
+  .tx-d { font-family:var(--font-data); font-size:10.5px; color:var(--text-3); font-variant-numeric:tabular-nums; padding-top:2px; }
+  .tx-firm { font-size:12.5px; font-weight:600; color:var(--text); }
+  .tx-type { font-size:8.5px; text-transform:uppercase; letter-spacing:.09em; font-weight:700; color:var(--brass); border:1px solid var(--brass-line); border-radius:2px; padding:2px 5px; margin-left:7px; white-space:nowrap; }
+  .tx-t { font-size:11.5px; color:var(--text-2); line-height:1.5; margin-top:3px; }
+
+  .trend-stat { display:grid; grid-template-columns:30px 1fr; gap:11px; padding:8px 0; border-top:1px solid var(--line-soft); align-items:baseline; }
+  .trend-stat:first-child { border-top:0; padding-top:0; }
+  .trend-n { font-family:var(--font-data); font-size:15px; font-weight:700; color:var(--brass); text-align:right; font-variant-numeric:tabular-nums; }
+  .trend-t { font-size:11.5px; color:var(--text-2); line-height:1.5; }
+  .spark-k { font-size:9px; text-transform:uppercase; letter-spacing:.11em; font-weight:700; color:var(--text-3); margin:14px 0 8px; padding-top:11px; border-top:1px solid var(--line-soft); }
+  .spark { display:flex; align-items:flex-end; gap:4px; height:64px; border-bottom:1px solid var(--line); }
+  .spark-b { flex:1; min-width:0; background:var(--brass-wash); border:1px solid var(--brass-line); border-bottom:0; border-radius:1px 1px 0 0; }
+  /* the tallest month is the one worth noticing, so it is the only filled bar */
+  .spark-b.peak { background:var(--brass); border-color:var(--brass); }
+  .spark-x { display:flex; gap:4px; margin-top:6px; }
+  .spark-x span { flex:1; min-width:0; font-family:var(--font-data); font-size:8.5px; color:var(--text-3); text-align:center; font-variant-numeric:tabular-nums; }
+  .soon { font-size:12px; color:var(--text-2); line-height:1.6; }
+  .soon + .soon { margin-top:9px; }
+
+  .tool { padding:11px 0; border-top:1px solid var(--line-soft); }
+  .tool:first-child { border-top:0; padding-top:3px; }
+  .tool-k { font-size:12.5px; font-weight:600; color:var(--text); display:flex; flex-wrap:wrap; align-items:baseline; gap:7px; }
+  .tool.lead .tool-k { color:var(--brass); }
+  .tool-v { font-size:11.5px; color:var(--text-2); line-height:1.55; margin-top:3px; }
+  .tool-note { font-size:10.5px; color:var(--text-3); line-height:1.5; margin-top:12px; padding-top:11px; border-top:1px solid var(--line); }
+
   .facet-grid { display:flex; flex-direction:column; gap:12px; }
   .facet-row { display:flex; flex-direction:column; gap:5px; }
   .facet-lab { font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-3); font-weight:650; }
@@ -632,6 +678,26 @@
       <p id="empty-why"></p>
       <p>Remove one of the filters above to see more results.</p>
     </div>
+  </div>
+
+  <div class="browse">
+    <section class="panel-x" aria-labelledby="trend-k">
+      <div class="panel-x-k" id="trend-k">Trending</div>
+      <p class="panel-x-sub">What the offices in this dataset have actually been doing. Counted across all
+        12 records, not just the ones your last question returned.</p>
+      <div class="trend-tabs" role="tablist" aria-label="Trending">
+        <button type="button" role="tab" id="tab-tx" aria-selected="true">Family office transactions</button>
+        <button type="button" role="tab" id="tab-tr" aria-selected="false">Family office trends</button>
+        <button type="button" role="tab" id="tab-rp" aria-selected="false">Family office reports</button>
+      </div>
+      <div class="trend-body" id="trend-body"></div>
+    </section>
+
+    <section class="panel-x" aria-labelledby="tools-k">
+      <div class="panel-x-k" id="tools-k">Family office fundraising tools</div>
+      <p class="panel-x-sub">Resources for managers raising capital from family offices.</p>
+      <div id="tools-list"></div>
+    </section>
   </div>
 
   <p class="foot">
@@ -2064,6 +2130,152 @@
       "confident guesses.</b></div>";
   }
 
+  /* ── Trending ──
+     Everything below is counted from DATA at render time rather than written out,
+     so the figures cannot drift away from the records they describe. */
+
+  var MONTH_NAME = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function monthLabel(d) { return MONTH_NAME[+d.slice(5, 7) - 1] + " " + d.slice(2, 4); }
+
+  /* every recorded event, each carrying the firm it belongs to */
+  function allEvents() {
+    var out = [];
+    DATA.forEach(function (r) {
+      r.signals.forEach(function (s) { out.push({ firm:r.name, id:r.id, d:s.d, type:s.type, t:s.t, tags:s.tags || [] }); });
+    });
+    return out.sort(function (a, b) { return b.d.localeCompare(a.d); });
+  }
+  /* money moving or being reallocated. A hire is staffing and a target is an
+     announcement, so neither belongs in a transaction list. */
+  var TX_TYPES = { investment:1, "fund-commitment":1, allocation:1 };
+
+  function trendTransactions() {
+    var tx = allEvents().filter(function (e) { return TX_TYPES[e.type]; });
+    /* six rows puts this panel within ~25px of the tools panel beside it, so the
+       pair reads as a matched block rather than one column overhanging the other */
+    var top = tx.slice(0, 6);
+    return top.map(function (e) {
+      return '<div class="tx"><div class="tx-d">' + esc(monthLabel(e.d)) + "</div><div>" +
+        '<div class="tx-firm">' + esc(e.firm) +
+        '<span class="tx-type">' + esc(LABEL.signalType[e.type] || e.type) + "</span></div>" +
+        '<div class="tx-t">' + esc(e.t) + "</div></div></div>";
+    }).join("") +
+    '<div class="trend-foot">Showing the ' + top.length + " most recent of " + tx.length +
+    " recorded transactions. Every one is attached to a dated record you can open from a search result.</div>";
+  }
+
+  function trendTrends() {
+    var ev = allEvents(), n = ev.length;
+    var SECTORS = { healthcare:"healthcare", credit:"private credit", "real estate":"real estate",
+                    technology:"technology", industrials:"industrials", consumer:"consumer",
+                    infrastructure:"infrastructure", renewables:"renewables" };
+    var ranked = Object.keys(SECTORS).map(function (k) {
+      var hits = ev.filter(function (e) { return e.tags.indexOf(k) !== -1; });
+      var offices = {};
+      hits.forEach(function (e) { offices[e.id] = 1; });
+      return { k:k, label:SECTORS[k], n:hits.length, offices:Object.keys(offices).length };
+    }).filter(function (x) { return x.n; }).sort(function (a, b) { return b.n - a.n; });
+
+    var direct = ev.filter(function (e) { return e.tags.indexOf("direct") !== -1; }).length;
+    var funds  = ev.filter(function (e) { return e.tags.indexOf("funds") !== -1; }).length;
+    var hires  = ev.filter(function (e) { return e.type === "hire"; });
+    var hireOffices = {}; hires.forEach(function (e) { hireOffices[e.id] = 1; });
+    var recent = {}; ev.forEach(function (e) { if (monthsSince(e.d) <= 3) recent[e.id] = 1; });
+    var recentN = Object.keys(recent).length;
+
+    var top = ranked[0], second = ranked[1];
+    var stats = [
+      [top.n, "Events involving " + top.label + ", across " + top.offices +
+        (top.offices === 1 ? " office" : " offices") + ". That is more than any other sector; " +
+        second.label + " is next with " + second.n + "."],
+      [direct, "Events tagged as direct deals, against " + funds +
+        " tagged as fund commitments. These offices buy into companies themselves far more often than they back a manager."],
+      /* the number sits in its own column, so each sentence has to read on its own */
+      [recentN, "Offices that recorded something in the last three months. The remaining " +
+        (DATA.length - recentN) + " of the " + DATA.length + " have been quiet over that period."],
+      [hires.length, "Hires into investment teams, across " + Object.keys(hireOffices).length +
+        " offices. Each one is dated, so you can see what the office did after making it."]
+    ];
+
+    /* one bar per month that has any recorded event */
+    var months = {}; ev.forEach(function (e) { months[e.d] = (months[e.d] || 0) + 1; });
+    var keys = Object.keys(months).sort();
+    var peak = Math.max.apply(null, keys.map(function (k) { return months[k]; }));
+
+    return stats.map(function (s) {
+      return '<div class="trend-stat"><div class="trend-n">' + s[0] + '</div><div class="trend-t">' + esc(s[1]) + "</div></div>";
+    }).join("") +
+    '<div class="spark-k">Recorded events per month, ' + esc(monthLabel(keys[0])) + " to " + esc(monthLabel(keys[keys.length - 1])) + "</div>" +
+    '<div class="spark">' + keys.map(function (k) {
+      return '<div class="spark-b' + (months[k] === peak ? " peak" : "") +
+        '" style="height:' + Math.round((months[k] / peak) * 100) + '%" title="' +
+        esc(monthLabel(k)) + ": " + months[k] + '"></div>';
+    }).join("") + "</div>" +
+    '<div class="spark-x">' + keys.map(function (k) {
+      return "<span>" + esc(MONTH_NAME[+k.slice(5, 7) - 1]) + "</span>";
+    }).join("") + "</div>" +
+    '<div class="trend-foot">Counted across all ' + n + " recorded events in the file. Tallest month is " +
+    esc(monthLabel(keys.filter(function (k) { return months[k] === peak; })[0])) + " with " + peak + ".</div>";
+  }
+
+  function trendReports() {
+    return '<p class="soon">Meridian will publish two things from this dataset. A quarterly summary of what ' +
+      "the tracked offices actually did, broken out by sector, deal type and region. And a verification " +
+      "report giving confirmation rates by region and contact type, so a buyer knows how much of a list is " +
+      "reachable before paying for it.</p>" +
+      '<p class="soon">Both are written from the same records the search runs on, so every figure in a ' +
+      "report traces back to the dated events behind it.</p>" +
+      '<div class="trend-foot">Not built yet.</div>';
+  }
+
+  var TRENDS = [
+    ["tab-tx", trendTransactions],
+    ["tab-tr", trendTrends],
+    ["tab-rp", trendReports]
+  ];
+
+  /* ── fundraising tools ── */
+  var TOOLS = [
+    ["Family Office Catalyst", true,
+     "Turns a search into a fundraising plan. Choose the offices that fit your strategy, see which of them " +
+     "have actually backed something comparable, and get them ordered by who is worth approaching first."],
+    ["Target list builder", false,
+     "Save the results of a search as a working list, then export it with the source and the verification " +
+     "date attached to every row."],
+    ["Mandate fit check", false,
+     "Compare a fund's strategy against what each office has actually done, rather than against what its " +
+     "profile says it does."],
+    ["Outreach memo", false,
+     "A dated and fully cited written answer you can put in front of an investment committee without " +
+     "rewriting it first."],
+    ["Verification rates", false,
+     "Published confirmation rates by region and contact type, so you can judge how reachable a list is " +
+     "before you buy it."]
+  ];
+
+  function renderBrowse() {
+    var body = el("trend-body");
+    function show(id) {
+      TRENDS.forEach(function (t) {
+        var on = t[0] === id;
+        el(t[0]).setAttribute("aria-selected", on ? "true" : "false");
+        if (on) body.innerHTML = t[1]();
+      });
+    }
+    TRENDS.forEach(function (t) {
+      el(t[0]).addEventListener("click", function () { show(t[0]); });
+    });
+    show("tab-tx");
+
+    el("tools-list").innerHTML = TOOLS.map(function (t) {
+      return '<div class="tool' + (t[1] ? " lead" : "") + '"><div class="tool-k">' + esc(t[0]) + "</div>" +
+        '<div class="tool-v">' + esc(t[2]) + "</div></div>";
+    }).join("") +
+    '<div class="tool-note">None of these are built yet. They are listed here because they are what the ' +
+    "dataset is being assembled to support, and because what a tool needs decides which fields are worth " +
+    "verifying first.</div>";
+  }
+
   function closeAgent() {
     var btn = document.getElementById("agent-btn"), pop = document.getElementById("agent-pop");
     if (btn) btn.setAttribute("aria-expanded", "false");
@@ -2799,6 +3011,7 @@
   renderFacets();
   renderCRM();
   renderAgent();
+  renderBrowse();
   input.value = "Which single-family offices co-invest alongside fund managers?";
   run(input.value);
 })();
