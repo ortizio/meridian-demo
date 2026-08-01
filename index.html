@@ -349,11 +349,16 @@
              border:1px solid var(--line); border-radius:2px; padding:7px 11px; cursor:pointer;
              white-space:nowrap; transition:color .15s,border-color .15s; }
   .res-btn:hover, .res-btn[aria-expanded="true"] { color:var(--brass); border-color:var(--brass-line); }
-  .res-latest { font-size:11px; color:var(--text-3); margin-left:auto; min-width:0;
-                white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  /* The ticker rotates, so its text must start at a fixed x. An auto margin would
+     re-measure on every swap and shift the line sideways as the wording changes. */
+  .res-live { flex:1 1 0; min-width:0; display:flex; align-items:center; gap:9px; padding-left:9px; }
+  .res-live-k { flex:none; display:flex; align-items:center; gap:6px;
+                font-size:9px; text-transform:uppercase; letter-spacing:.11em; font-weight:700; color:var(--text-3); }
+  .res-latest { flex:1 1 0; min-width:0; font-size:11px; color:var(--text-3);
+                white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:opacity .3s ease; }
   .res-latest b { font-weight:600; color:var(--text-2); }
   .res-latest i { font-style:normal; font-family:var(--font-data); font-size:10px; }
-  @media (max-width:880px) { .res-latest { display:none; } }
+  @media (max-width:880px) { .res-live { display:none; } }
   .res-pop { position:absolute; top:calc(100% + 7px); left:0; z-index:50; width:560px; max-width:none;
              background:var(--surface); border:1px solid var(--brass-line); border-radius:var(--radius);
              box-shadow:var(--shadow-lg); padding:13px 15px 14px; overflow-y:auto; }
@@ -2298,15 +2303,15 @@
   ];
 
   function renderBrowse() {
-    var newest = allEvents()[0];
     el("res").innerHTML =
       RES.map(function (r, i) {
         return '<div class="res-item">' +
           '<button class="res-btn" type="button" aria-expanded="false" data-res="' + i + '">' + esc(r[0]) + "</button>" +
           '<div class="res-pop' + (r[4] ? " narrow" : "") + '" hidden></div></div>';
       }).join("") +
-      '<span class="res-latest" title="' + esc(newest.firm + " — " + newest.t) + '">Latest: ' +
-        '<i>' + esc(monthLabel(newest.d)) + "</i> <b>" + esc(newest.firm) + "</b> " + esc(newest.t) + "</span>";
+      '<div class="res-live"><span class="res-live-k"><span class="live-dot"></span>Latest</span>' +
+        '<span class="res-latest" id="res-latest" aria-live="polite"></span></div>';
+    startLatest();
 
     el("res").querySelectorAll("[data-res]").forEach(function (b) {
       var r = RES[+b.getAttribute("data-res")];
@@ -2328,6 +2333,43 @@
       });
       pop.addEventListener("click", function (e) { e.stopPropagation(); });
     });
+  }
+
+  /* Rotating ticker over the five newest events. It is the one thing on the page
+     that moves on its own, which is the point: the signal feed is the reason to
+     come back, and a static line would not say so. */
+  var latestTimer = null;
+  function startLatest() {
+    var host = el("res-latest");
+    if (!host) return;
+    var items = allEvents().slice(0, 5), i = 0, paused = false;
+
+    function paint(n) {
+      var e = items[n];
+      host.innerHTML = "<i>" + esc(monthLabel(e.d)) + "</i> <b>" + esc(e.firm) + "</b> " + esc(e.t);
+      host.title = e.firm + " — " + e.t;
+    }
+    paint(0);
+
+    /* one item, held still, for anyone who has asked the OS not to animate things */
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    host.addEventListener("mouseenter", function () { paused = true; });
+    host.addEventListener("mouseleave", function () { paused = false; });
+    host.addEventListener("focus", function () { paused = true; });
+    host.addEventListener("blur", function () { paused = false; });
+
+    if (latestTimer) clearInterval(latestTimer);
+    latestTimer = setInterval(function () {
+      /* skip while hovered, and while the tab is in the background */
+      if (paused || document.hidden) return;
+      host.style.opacity = "0";
+      setTimeout(function () {
+        i = (i + 1) % items.length;
+        paint(i);
+        host.style.opacity = "1";
+      }, 300);
+    }, 4600);
   }
 
   function closeRes() {
