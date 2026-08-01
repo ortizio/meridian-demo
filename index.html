@@ -265,6 +265,47 @@
   @media (max-width:700px) {
     .crm-pop, .crm-pop.up { position:fixed; left:12px; right:12px; width:auto; top:auto; bottom:12px; }
   }
+  /* ── on-demand research ── */
+  /* every other control on this row changes which records you see. This one
+     changes what is in them, so it is the only filled button in the bar. */
+  /* tighter than its neighbours on purpose: this label is long, and the four
+     clusters plus Reset all only share one row if this one gives back the slack */
+  .agent-group { justify-content:center; padding:11px 10px; }
+  .agent-item { position:relative; }
+  .agent-btn {
+    font:inherit; font-size:12px; font-weight:600;
+    color:var(--on-brass); background:var(--brass);
+    border:1px solid var(--brass); border-radius:2px;
+    padding:8px 11px; cursor:pointer; white-space:nowrap;
+    display:flex; align-items:center; gap:7px;
+    transition:background .15s, box-shadow .15s;
+  }
+  .agent-btn:hover, .agent-btn[aria-expanded="true"] { background:var(--brass-bright); box-shadow:0 0 0 3px var(--brass-wash); }
+  .agent-btn svg { flex:none; opacity:.9; }
+  /* anchored right: this button sits at the end of the row, so a left-anchored
+     panel of this width would always run off the edge */
+  .agent-pop {
+    position:absolute; top:calc(100% + 7px); right:0; z-index:50; width:430px;
+    background:var(--surface); border:1px solid var(--brass-line); border-radius:var(--radius);
+    box-shadow:var(--shadow-lg); padding:12px 15px; overflow-y:auto;
+  }
+  .agent-pop.up { top:auto; bottom:calc(100% + 7px); }
+  .agent-pop-k { font-size:9px; text-transform:uppercase; letter-spacing:.1em; font-weight:700; color:var(--brass); margin-bottom:6px; display:flex; justify-content:space-between; gap:8px; align-items:baseline; }
+  .agent-pop-k em { font-style:normal; color:var(--caution); font-size:8.5px; }
+  .agent-pop-v { font-size:12px; color:var(--text-2); line-height:1.55; }
+  .agent-sub { font-size:9px; text-transform:uppercase; letter-spacing:.11em; font-weight:700; color:var(--text-3); margin:13px 0 2px; }
+  .agent-gap { display:grid; grid-template-columns:26px 1fr; gap:10px; padding:7px 0; border-top:1px solid var(--line-soft); align-items:baseline; }
+  .agent-gap-n { font-family:var(--font-data); font-size:14px; font-weight:700; color:var(--brass); text-align:right; font-variant-numeric:tabular-nums; }
+  .agent-gap-k { font-size:12px; color:var(--text); font-weight:600; }
+  /* --text-2, matching .crm-pop-v: this line is the explanation, not a footnote */
+  .agent-gap-v { font-size:11px; color:var(--text-2); line-height:1.45; margin-top:2px; }
+  .agent-clear { font-size:11.5px; color:var(--text-3); padding:8px 0 2px; border-top:1px solid var(--line-soft); }
+  .agent-note { font-size:10.5px; color:var(--text-3); line-height:1.5; margin-top:9px; padding-top:9px; border-top:1px solid var(--line); }
+  .agent-note b { color:var(--text-2); font-weight:600; }
+  @media (max-width:700px) {
+    .agent-pop, .agent-pop.up { position:fixed; left:12px; right:12px; width:auto; top:auto; bottom:12px; max-height:76vh; }
+  }
+
   .facet-grid { display:flex; flex-direction:column; gap:12px; }
   .facet-row { display:flex; flex-direction:column; gap:5px; }
   .facet-lab { font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-3); font-weight:650; }
@@ -549,6 +590,10 @@
       <div class="ctrl-group crm-group">
         <span class="ctrl-label" id="crm-label">CRM</span>
         <div id="crm-row" class="crm-row" role="group" aria-labelledby="crm-label"></div>
+      </div>
+      <div class="ctrl-group agent-group">
+        <span class="ctrl-label" id="agent-label">Research</span>
+        <div id="agent-row" role="group" aria-labelledby="agent-label"></div>
       </div>
       <div class="spacer"></div>
       <button class="ghost" type="button" id="reset">Reset all</button>
@@ -1908,6 +1953,117 @@
     });
   }
 
+  /* ── on-demand research ──
+     The gaps listed are counted from the records actually on screen, so the
+     panel names the work this specific answer would generate rather than a
+     generic capability. Nothing here writes to a record; see the closing note. */
+  var GAPS = [
+    { k:"No confirmed email address",
+      v:"Find an address for the named decision maker and confirm a message reaches that mailbox.",
+      f:function (r) { return !r.principal || r.principal.emailStatus !== "verified"; } },
+    { k:"No mobile number",
+      v:"Look for a published mobile. This is the hardest field to obtain and the one customers ask for most often.",
+      f:function (r) { return !r.principal || r.principal.phoneMobileStatus !== "verified"; } },
+    { k:"No confirmed direct phone line",
+      v:"Confirm a number that reaches the decision maker rather than the main switchboard.",
+      f:function (r) { return !r.principal || r.principal.phoneStatus !== "verified"; } },
+    { k:"Firm type not confirmed",
+      v:"Establish from filings and the firm's own statements whether the office serves one family or several.",
+      f:function (r) { return r.type === "unk"; } },
+    { k:"No named decision maker",
+      v:"Identify who runs the investment decision and record where the title came from.",
+      f:function (r) { return !r.principal || !r.principal.name; } },
+    { k:"No activity recorded in the last 6 months",
+      v:"Sweep filings and public announcements for anything the office has done since its most recent recorded event.",
+      f:function (r) {
+        if (!r.signals.length) return true;
+        var newest = r.signals.map(function (s) { return s.d; }).sort().pop();
+        return monthsSince(newest) > 6;
+      } }
+  ];
+
+  var IC_AGENT = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
+    '<circle cx="10.4" cy="8" r="4"/><path d="M1.4 8h3.5"/><path d="M3.4 6.1 5.3 8 3.4 9.9"/></svg>';
+
+  function renderAgent() {
+    el("agent-row").innerHTML =
+      '<div class="agent-item">' +
+        '<button class="agent-btn" type="button" aria-expanded="false" id="agent-btn">' +
+          IC_AGENT + "On Demand Agentic Intelligence</button>" +
+        '<div class="agent-pop" id="agent-pop" hidden></div>' +
+      "</div>";
+
+    var btn = el("agent-btn"), pop = el("agent-pop");
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var open = btn.getAttribute("aria-expanded") === "true";
+      closePanels(); closeHelp(); closeCRM(); closeAgent();
+      if (open) return;
+      pop.innerHTML = agentPanel();
+      btn.setAttribute("aria-expanded", "true");
+      pop.hidden = false;
+      pop.style.maxHeight = "";
+      if (window.innerWidth > 700) {
+        var hr = btn.parentNode.getBoundingClientRect();
+        var below = window.innerHeight - hr.bottom - 18, above = hr.top - 18;
+        /* +1: scrollHeight rounds down against a fractional layout height, and a
+           cap one pixel short of the content shows a scrollbar on a panel that fits */
+        var needed = pop.scrollHeight + 1;
+        if (needed > below && above > below) {
+          pop.classList.add("up");
+          pop.style.maxHeight = Math.max(220, Math.min(needed, above)) + "px";
+        } else {
+          pop.style.maxHeight = Math.max(220, Math.min(needed, below)) + "px";
+        }
+      }
+    });
+    pop.addEventListener("click", function (e) { e.stopPropagation(); });
+  }
+
+  function agentPanel() {
+    /* Count against the answer on screen. A refusal is not an answer, so it falls
+       back to the whole file — "the records in this answer" under a declined
+       verdict would describe a result set the customer was never shown. */
+    var declined = state.g && state.g.kind === "declined";
+    var onScreen = !declined && state.hits.length > 0;
+    var scope = onScreen ? state.hits.map(function (h) { return h.r; }) : DATA;
+    var rows = GAPS.map(function (g) {
+      return { k:g.k, v:g.v, n:scope.filter(g.f).length };
+    }).filter(function (g) { return g.n > 0; });
+
+    var head =
+      '<div class="agent-pop-k"><span>On demand agentic intelligence</span><em>Not built yet</em></div>' +
+      '<div class="agent-pop-v">When an answer leaves something unknown, Meridian sends a research ' +
+      "agent to find that one missing field and writes back whatever it can confirm. Customer questions " +
+      "decide where the research effort goes, so the records improve fastest in the places customers " +
+      "actually use.</div>";
+
+    var scopeLine = onScreen
+      ? "What is missing from the " + scope.length + " " + (scope.length === 1 ? "record" : "records") + " in this answer"
+      : "What is missing across all " + scope.length + " records";
+
+    var body = rows.length
+      ? rows.map(function (g) {
+          return '<div class="agent-gap"><div class="agent-gap-n">' + g.n + "</div><div>" +
+            '<div class="agent-gap-k">' + esc(g.k) + "</div>" +
+            '<div class="agent-gap-v">' + esc(g.v) + "</div></div></div>";
+        }).join("")
+      : '<div class="agent-clear">Every field is confirmed on these records. There is nothing to send an agent after.</div>';
+
+    return head +
+      '<div class="agent-sub">' + esc(scopeLine) + "</div>" + body +
+      '<div class="agent-note">Nothing an agent finds goes straight into a record. Findings are held ' +
+      "until the evidence passes an automated check, and anything that needs a judgement call goes to a " +
+      "person first. <b>Without that check, research at this scale would fill the database with " +
+      "confident guesses.</b></div>";
+  }
+
+  function closeAgent() {
+    var btn = document.getElementById("agent-btn"), pop = document.getElementById("agent-pop");
+    if (btn) btn.setAttribute("aria-expanded", "false");
+    if (pop) { pop.hidden = true; pop.classList.remove("up"); pop.style.maxHeight = ""; }
+  }
+
   /* ── two search levels ── */
   var MODES = {
     firm: {
@@ -2099,8 +2255,8 @@
       p.hidden = true; p.classList.remove("up"); p.style.maxHeight = "";
     });
   }
-  document.addEventListener("click", function () { closePanels(); closeHelp(); closeCRM(); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closePanels(); closeHelp(); closeCRM(); } });
+  document.addEventListener("click", function () { closePanels(); closeHelp(); closeCRM(); closeAgent(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closePanels(); closeHelp(); closeCRM(); closeAgent(); } });
 
   /* ── active constraint chips ── */
   function renderActive() {
@@ -2636,6 +2792,7 @@
   renderMode();
   renderFacets();
   renderCRM();
+  renderAgent();
   input.value = "Which single-family offices co-invest alongside fund managers?";
   run(input.value);
 })();
