@@ -624,6 +624,26 @@
       </div>
     </section>
 
+    <div class="browse">
+      <section class="panel-x" aria-labelledby="trend-k">
+        <div class="panel-x-k" id="trend-k">Trending</div>
+        <p class="panel-x-sub">What the offices in this dataset have actually been doing. Counted across all
+          12 records, not just the ones your last question returned.</p>
+        <div class="trend-tabs" role="tablist" aria-label="Trending">
+          <button type="button" role="tab" id="tab-tx" aria-selected="true">Family office transactions</button>
+          <button type="button" role="tab" id="tab-tr" aria-selected="false">Family office trends</button>
+          <button type="button" role="tab" id="tab-rp" aria-selected="false">Family office reports</button>
+        </div>
+        <div class="trend-body" id="trend-body"></div>
+      </section>
+
+      <section class="panel-x" aria-labelledby="tools-k">
+        <div class="panel-x-k" id="tools-k">Family office fundraising tools</div>
+        <p class="panel-x-sub">Resources for managers raising capital from family offices.</p>
+        <div id="tools-list"></div>
+      </section>
+    </div>
+
     <div class="facetbar" id="facetbar">
       <div class="ctrl-group">
         <span class="ctrl-label" id="view-label">View</span>
@@ -678,26 +698,6 @@
       <p id="empty-why"></p>
       <p>Remove one of the filters above to see more results.</p>
     </div>
-  </div>
-
-  <div class="browse">
-    <section class="panel-x" aria-labelledby="trend-k">
-      <div class="panel-x-k" id="trend-k">Trending</div>
-      <p class="panel-x-sub">What the offices in this dataset have actually been doing. Counted across all
-        12 records, not just the ones your last question returned.</p>
-      <div class="trend-tabs" role="tablist" aria-label="Trending">
-        <button type="button" role="tab" id="tab-tx" aria-selected="true">Family office transactions</button>
-        <button type="button" role="tab" id="tab-tr" aria-selected="false">Family office trends</button>
-        <button type="button" role="tab" id="tab-rp" aria-selected="false">Family office reports</button>
-      </div>
-      <div class="trend-body" id="trend-body"></div>
-    </section>
-
-    <section class="panel-x" aria-labelledby="tools-k">
-      <div class="panel-x-k" id="tools-k">Family office fundraising tools</div>
-      <p class="panel-x-sub">Resources for managers raising capital from family offices.</p>
-      <div id="tools-list"></div>
-    </section>
   </div>
 
   <p class="foot">
@@ -2151,9 +2151,9 @@
 
   function trendTransactions() {
     var tx = allEvents().filter(function (e) { return TX_TYPES[e.type]; });
-    /* six rows puts this panel within ~25px of the tools panel beside it, so the
-       pair reads as a matched block rather than one column overhanging the other */
-    var top = tx.slice(0, 6);
+    /* five rows keeps this panel level with the tools panel beside it, so the pair
+       reads as a matched block rather than one column overhanging the other */
+    var top = tx.slice(0, 5);
     return top.map(function (e) {
       return '<div class="tx"><div class="tx-d">' + esc(monthLabel(e.d)) + "</div><div>" +
         '<div class="tx-firm">' + esc(e.firm) +
@@ -2235,22 +2235,20 @@
   ];
 
   /* ── fundraising tools ── */
+  /* descriptions stay to one or two lines: this panel now sits above the answer,
+     so every line it adds pushes the answer further down the page */
   var TOOLS = [
     ["Family Office Catalyst", true,
-     "Turns a search into a fundraising plan. Choose the offices that fit your strategy, see which of them " +
-     "have actually backed something comparable, and get them ordered by who is worth approaching first."],
+     "Turns a search into a fundraising plan: which offices fit your strategy, which have backed something " +
+     "comparable, and who to approach first."],
     ["Target list builder", false,
-     "Save the results of a search as a working list, then export it with the source and the verification " +
-     "date attached to every row."],
+     "Save a search as a working list, then export it with the source and verification date on every row."],
     ["Mandate fit check", false,
-     "Compare a fund's strategy against what each office has actually done, rather than against what its " +
-     "profile says it does."],
+     "Compare a fund's strategy against what each office has actually done, not what its profile says."],
     ["Outreach memo", false,
-     "A dated and fully cited written answer you can put in front of an investment committee without " +
-     "rewriting it first."],
+     "A dated, fully cited written answer you can put in front of an investment committee unedited."],
     ["Verification rates", false,
-     "Published confirmation rates by region and contact type, so you can judge how reachable a list is " +
-     "before you buy it."]
+     "Published confirmation rates by region and contact type, so you can judge a list before buying it."]
   ];
 
   function renderBrowse() {
